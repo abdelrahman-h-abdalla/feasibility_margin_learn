@@ -111,9 +111,6 @@ def main():
             if iteration % 50000 == 0:
                 file_suffix += 1
 
-        except Exception as e:
-            exceptions += 1
-            print ('Exception Occurred ', e)
 
     print ('\n\nTotal Execution Time:', time.time() - start_time, 'seconds\n')
 

@@ -15,7 +15,7 @@ def train(training_dataloader, validation_dataloader, device, optimizer, network
         sub_epoch_iterator = 0
 
         # Train and Validate
-        for training_iterable, validation_iterable in itertools.izip(training_dataloader,
+        for training_iterable, validation_iterable in zip(training_dataloader,
                                                                        itertools.cycle(validation_dataloader)):
             training_batch, training_targets = training_iterable[0].to(device), training_iterable[1].to(device)
             network.train()

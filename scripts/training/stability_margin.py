@@ -40,7 +40,7 @@ def main():
     network.to(device)
 
     optimizer = optim.Adam(network.parameters(), lr=LEARNING_RATE)
-    print '\nTraining for', network.get_trainable_parameters(), 'network parameters.\n'
+    print('\nTraining for', network.get_trainable_parameters(), 'network parameters.\n')
 
     # TensorBoard
     log_path = paths.LOGS_PATH + '/' + data_folder + '/' + paths.INIT_DATETIME_STR
@@ -101,7 +101,7 @@ def main():
         test_loss += (loss.item() / BATCH_SIZE)
 
         if sub_epoch_iterator % EVALUATE_STEPS == EVALUATE_STEPS - 1:
-            print '[Test, %d, %5d] loss: %.8f' % (1, sub_epoch_iterator + 1, test_loss / EVALUATE_STEPS)
+            print('[Test, %d, %5d] loss: %.8f' % (1, sub_epoch_iterator + 1, test_loss / EVALUATE_STEPS))
             iterator += 1
 
             writer.add_scalars('Loss', {'Test': test_loss / EVALUATE_STEPS}, iterator)

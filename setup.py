@@ -6,7 +6,7 @@ setup(
     packages=find_packages(),
     author='Siddhant Gangapurwala',
     author_email='siddhant@gangapurwala.com',
-    python_requires='>=2.7.0<3',
+    python_requires='>=3.5.0',
     install_requires=[
         'torch',
         'numpy',

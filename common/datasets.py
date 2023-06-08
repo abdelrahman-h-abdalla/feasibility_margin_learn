@@ -72,7 +72,7 @@ class TrainingDataset:
                         data_parser.append(filename=os.path.join(path, file_name))
 
                         num_files += 1
-                        print '\rFiles Processed: {}'.format(num_files),
+                        print('\rFiles Processed: {}'.format(num_files),)
                 if max_files is not None and num_files >= max_files:
                     break
             print

@@ -43,7 +43,7 @@ class DataParser:
                 else:
                     self._data = data
         else:
-            print "file is empty ", filename, "skip append"
+            print("file is empty ", filename, "skip append")
 
         return data
 

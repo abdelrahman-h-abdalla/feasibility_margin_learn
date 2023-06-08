@@ -24,9 +24,9 @@ def main():
     np.savetxt(param_save_name, model_parameters.reshape((1, -1)), delimiter=', ',
                newline='\n', fmt='%1.10f')
 
-    print '\nSaved model parameters in the following order:'
+    print('\nSaved model parameters in the following order:')
     for parameter_key in list(network.state_dict().keys()):
-        print '   ', parameter_key, '| Dimension:', network.state_dict()[parameter_key].shape
+        print('   ', parameter_key, '| Dimension:', network.state_dict()[parameter_key].shape)
 
 
 if __name__ == '__main__':
