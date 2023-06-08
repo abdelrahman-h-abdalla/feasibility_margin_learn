@@ -19,31 +19,39 @@ class TrainingDataset:
             np.zeros(3),  # Angular acceleration
             np.zeros(3),  # External force
             np.zeros(3),  # External torque
-            np.array([0.36, 0.21, -0.47]),  # LF foot
-            np.array([0.36, -0.21, -0.47]),  # RF foot
-            np.array([-0.36, 0.21, -0.47]),  # LH foot
-            np.array([-0.36, -0.21, -0.47]),  # RH foot
+            np.array([0.3, 0.2, -0.45]),  # LF foot
+            np.array([0.3, -0.2, -0.45]),  # RF foot
+            np.array([-0.3, 0.2, -0.45]),  # LH foot
+            np.array([-0.3, -0.2, -0.45]),  # RH foot
             np.array([0.5]),  # Friction
-            np.ones(4) * 0.5,  # Feet in contact
+            np.ones(4) * 0.765,  # Feet in contact
             np.array([0, 0, 1] * 4),  # Contact normals
             np.zeros(1)  # Stability margin
         ])
 
         self._data_multiplier = np.concatenate([
-            np.array([6.5, 5.5, 30]),  # Rotation along gravity axis
-            np.array([5.0, 5.0, 20]),  # Linear velocity
-            np.array([3.4, 3.4, 10]),  # Linear acceleration
-            np.array([5.0, 5.0, 3.4]),  # Angular acceleration
-            np.array([0.05, 0.05, 0.2]),  # External force
-            np.array([0.05, 0.05, 0.2]),  # External torque
-            np.ones(3) * 21.0,  # LF foot
-            np.ones(3) * 21.0,  # RF foot
-            np.ones(3) * 21.0,  # LH foot
-            np.ones(3) * 21.0,  # RH foot
-            np.ones(1) * 5.0,  # Friction
-            np.ones(4) * 2.0,  # Feet in contact
-            np.array([5.0, 5.0, 25] * 4),  # Contact normals
-            np.ones(1) * 10.0  # Stability margin
+            np.array([1/0.0734, 0.750, 0.003]),  # Rotation along gravity axis
+            np.array([0.198, 0.198, 0.053]),  # Linear velocity
+            np.array([2.219, 2.203, 0.233]),  # Linear acceleration
+            np.array([0.199, 0.199, 0.304]),  # Angular acceleration
+            np.array([1.00, 1.00, 1.0]),  # External force
+            np.array([1.00, 1.00, 1.0]),  # External torque
+            np.ones(1) * 0.152,
+            np.ones(1) * 0.085,
+            np.ones(1) * 0.077,   # LF foot
+            np.ones(1) * 0.152,
+            np.ones(1) * 0.085,
+            np.ones(1) * 0.077,   # RF foot
+            np.ones(1) * 0.152,
+            np.ones(1) * 0.085,
+            np.ones(1) * 0.077,   # LH foot
+            np.ones(1) * 0.152,
+            np.ones(1) * 0.085,
+            np.ones(1) * 0.077,   # RH foot
+            np.ones(1) * 0.112,  # Friction
+            np.ones(4) * 0.422,  # Feet in contact
+            np.array([0.166, 0.160, 0.0348] * 4),  # Contact normals
+            np.ones(1) * 0.111  # Stability margin
         ])
 
     def get_data_offset(self):
@@ -126,9 +134,11 @@ class TrainingDataset:
                 training_data[:, 35:47],  # Contact normals
                 training_data[:, 47].reshape(-1, 1)  # Stability Margin
             ])
-
             if process_data:
-                training_data = (training_data - self._data_offset) * self._data_multiplier
+                self.data_offset = data_offset = np.mean(training_data, axis=0)
+                self.data_multiplier = data_multiplier = np.mean(training_data, axis=0)
+                self.data_multiplier[self.data_multiplier == 0] = 1 # Prevent division by 0 for unsampled inputs
+                training_data = (training_data - self._data_offset) / self._data_multiplier
 
             data_parser.update_data(training_data)
             data_parser.set_io_split_index(-1)
@@ -145,4 +155,4 @@ class TrainingDataset:
         if input_only:
             return (data - self._data_offset[:-1]) * self._data_multiplier[:-1]
 
-        return (data - self._data_offset) * self._data_multiplier
+        return (data - self._data_offset) / self._data_multiplier
