@@ -113,9 +113,11 @@ def main():
                 writer.add_scalars('Prediction', {'NetworkOutput': output[-1].item() / 10.0},
                                    prediction_iterator)
                 prediction_iterator += 1
+            writer.flush()
 
         sub_epoch_iterator += 1
-
+    print("Tested!")
+    
     while True:
         try:
             pass

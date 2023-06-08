@@ -62,7 +62,11 @@ class TrainingDataset:
             paths = ProjectPaths()
 
             num_files = 0
-
+            num_files_test = 0
+            for path, _, files in os.walk(paths.DATA_PATH + '/' + self._data_folder):
+                for file_name in files: 
+                        num_files_test += 1
+            print("Number of files:", num_files_test)
             for path, _, files in os.walk(paths.DATA_PATH + '/' + self._data_folder):
                 for file_name in files:
                     if max_files is not None and num_files >= max_files:
@@ -80,7 +84,8 @@ class TrainingDataset:
             # Update the data in the data parser object and split it as input and output
             training_data = data_parser.data()
 
-            rotation_matrices = R.from_euler('XYZ', training_data[:, :3], degrees=False).as_dcm()
+            # Compute rotation matrix (from base to world) from roll/pitch/yaw - Intrinsic rotations.
+            rotation_matrices = R.from_euler('XYZ', training_data[:, :3], degrees=False).as_dcm() # 
             rotation_matrices_inv = np.transpose(rotation_matrices, (0, 2, 1))
 
             # Convert to the base frame
