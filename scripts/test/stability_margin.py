@@ -12,11 +12,14 @@ def main():
     paths = ProjectPaths()
     dataset_handler = TrainingDataset()
 
-    model_directory = '/enter/trained/model/directory/'
+    model_directory = '/final/stability_margin/'
     model_directory = paths.TRAINED_MODELS_PATH + model_directory
+    print("model directory: ", model_directory)
 
-    network = MultiLayerPerceptron(in_dim=47, out_dim=1, hidden_layers=None, activation=F.softsign, dropout=0.0)
+    network = MultiLayerPerceptron(in_dim=47, out_dim=1, hidden_layers=[256,128,128], activation=F.softsign, dropout=0.0)
     network.load_state_dict(torch.load(model_directory + 'network_state_dict.pt'))
+    # network.load_params_from_txt(model_directory + 'network_parameters_anymal_c.txt')
+
 
     network.eval()
 
