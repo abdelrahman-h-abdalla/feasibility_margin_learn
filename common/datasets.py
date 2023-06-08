@@ -138,7 +138,7 @@ class TrainingDataset:
                 self.data_offset = data_offset = np.mean(training_data, axis=0)
                 self.data_multiplier = data_multiplier = np.mean(training_data, axis=0)
                 self.data_multiplier[self.data_multiplier == 0] = 1 # Prevent division by 0 for unsampled inputs
-                training_data = (training_data - self._data_offset) / self._data_multiplier
+                training_data = self.scale_data(training_data)
 
             data_parser.update_data(training_data)
             data_parser.set_io_split_index(-1)
@@ -150,9 +150,13 @@ class TrainingDataset:
             return data_parser
         else:
             return self._data_parser
+        
 
-    def scale_data(self, data, input_only=False):
-        if input_only:
-            return (data - self._data_offset[:-1]) * self._data_multiplier[:-1]
-
+    def scale_data(self, data):
         return (data - self._data_offset) / self._data_multiplier
+    
+    def scale_input(self, input):
+        return (input - self._data_offset[:-1]) / self._data_multiplier[:-1]
+    
+    def scale_output(self, output):
+        return (output - self._data_offset[:-1]) / self._data_multiplier[:-1]

@@ -23,21 +23,138 @@ def main():
 
     network.eval()
 
-    network_input = np.concatenate([
-        np.array([0.0, 0.0, 1.0]),
-        np.zeros(15),
-        np.array([0.36, 0.21, -0.47]),
-        np.array([0.36, -0.21, -0.47]),
-        np.array([-0.36, 0.21, -0.47]),
-        np.array([-0.36, -0.21, -0.47]),
-        np.array([0.5]),
-        np.ones(4),
-        np.array([0.0, 0.0, 1.0] * 4)
-    ])
+    delta_pos_range = 0.6
+    num_of_tests = 25
+    delta_pos_range_vec = np.linspace(-delta_pos_range/2.0, delta_pos_range/2.0, num_of_tests)
+    print('Stability Margin X:')
+    for delta in delta_pos_range_vec:
+        network_input = np.concatenate([
+            np.array([0.0, 0.0, 1.0]),
+            np.zeros(15),
+            np.array([0.3 - delta, 0.2, -0.4]),
+            np.array([0.3 - delta, -0.2, -0.4]),
+            np.array([-0.3 - delta, 0.2, -0.4]),
+            np.array([-0.3 - delta, -0.2, -0.4]),
+            np.array([0.5]),
+            np.ones(4),
+            np.array([0.0, 0.0, 1.0] * 4)
+        ])
+        network_input = dataset_handler.scale_input(network_input)
+        output = network(torch.from_numpy(network_input).float()).item()
+        output = dataset_handler.scale_output(output)
+        print(output)
 
-    network_input = dataset_handler.scale_data(network_input, input_only=True)
-    print 'Stability Margin: ', 0.1 * network(torch.from_numpy(network_input).float()).item()
+    print('\n------------------------')
+    print('Stability Margin X LH:')
+    for delta in delta_pos_range_vec:
+        network_input = np.concatenate([
+            np.array([0.0, 0.0, 1.0]),
+            np.zeros(15),
+            np.array([0.3 - delta, 0.2, -0.4]),
+            np.array([0.3 - delta, -0.2, -0.4]),
+            np.array([-0.3 - delta, 0.2, -0.4]),
+            np.array([-0.3 - delta, -0.2, -0.4]),
+            np.array([0.5]),
+            np.ones(2),
+            np.zeros(1),
+            np.ones(1),
+            np.array([0.0, 0.0, 1.0] * 4)
+        ])
+        network_input = dataset_handler.scale_input(network_input)
+        output = network(torch.from_numpy(network_input).float()).item()
+        output = dataset_handler.scale_output(output)
+        print(output)
+
+    print('\n------------------------')
+    print('Stability Margin Y LH:')
+    for delta in delta_pos_range_vec:
+        network_input = np.concatenate([
+            np.array([0.0, 0.0, 1.0]),
+            np.zeros(15),
+            np.array([0.3, 0.2 - delta, -0.4]),
+            np.array([0.3, -0.2 - delta, -0.4]),
+            np.array([-0.3, 0.2 - delta, -0.4]),
+            np.array([-0.3, -0.2 - delta, -0.4]),
+            np.array([0.5]),
+            np.ones(2),
+            np.zeros(1),
+            np.ones(1),
+            np.array([0.0, 0.0, 1.0] * 4)
+        ])
+        network_input = dataset_handler.scale_input(network_input)
+        output = network(torch.from_numpy(network_input).float()).item()
+        output = dataset_handler.scale_output(output)
+        print(output)
+
+    print('\n------------------------')
+    print('Stability Margin Y:')
+    for delta in delta_pos_range_vec:
+        network_input = np.concatenate([
+            np.array([0.0, 0.0, 1.0]),
+            np.zeros(15),
+            np.array([0.3 , 0.2 - delta, -0.4]),
+            np.array([0.3 , -0.2 - delta, -0.4]),
+            np.array([-0.3, 0.2 - delta, -0.4]),
+            np.array([-0.3, -0.2 - delta, -0.4]),
+            np.array([0.5]),
+            np.ones(4),
+            np.array([0.0, 0.0, 1.0] * 4)
+        ])
+        network_input = dataset_handler.scale_input(network_input)
+        output = network(torch.from_numpy(network_input).float()).item()
+        output = dataset_handler.scale_output(output)
+        print(output)
+
+    delta_acc_range = 8.0
+    delta_acc_range_vec = np.linspace(-delta_acc_range/2.0, delta_acc_range/2.0, num_of_tests)
+
+    print('\n------------------------')
+    print('Stability Margin X ACC:')
+    for delta in delta_acc_range_vec:
+        network_input = np.concatenate([
+            np.array([0.0, 0.0, 1.0]),
+            np.zeros(3),
+            np.array([0. + delta, 0., 0.]),
+            np.zeros(9),
+            np.array([0.3, 0.2, -0.4]),
+            np.array([0.3, -0.2, -0.4]),
+            np.array([-0.3, 0.2, -0.4]),
+            np.array([-0.3, -0.2, -0.4]),
+            np.array([0.5]),
+            np.zeros(1),
+            np.ones(2),
+            np.zeros(1),
+            np.array([0.0, 0.0, 1.0] * 4)
+        ])
+        network_input = dataset_handler.scale_input(network_input)
+        output = network(torch.from_numpy(network_input).float()).item()
+        output = dataset_handler.scale_output(output)
+        print(output)
+
+    print('\n------------------------')
+    print('Stability Margin Y ACC:')
+    for delta in delta_acc_range_vec:
+        network_input = np.concatenate([
+            np.array([0.0, 0.0, 1.0]),
+            np.zeros(3),
+            np.array([0., 0. + delta, 0.]),
+            np.zeros(9),
+            np.array([0.3, 0.2, -0.4]),
+            np.array([0.3, -0.2, -0.4]),
+            np.array([-0.3, 0.2, -0.4]),
+            np.array([-0.3, -0.2, -0.4]),
+            np.array([0.5]),
+            np.zeros(1),
+            np.ones(2),
+            np.zeros(1),
+            np.array([0.0, 0.0, 1.0] * 4)
+        ])
+        network_input = dataset_handler.scale_input(network_input)
+        output = network(torch.from_numpy(network_input).float()).item()
+        output = dataset_handler.scale_output(output)
+        print(output)
 
 
 if __name__ == '__main__':
     main()
+
