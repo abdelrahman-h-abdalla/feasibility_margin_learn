@@ -5,12 +5,19 @@ import itertools
 
 
 def train(training_dataloader, validation_dataloader, device, optimizer, network, writer, batch_size=64, epochs=8,
-          evaluate_steps=50, save_path=None):
+          evaluate_steps=50, patience=5, save_path=None):
     iterator = 0
+
+    best_val_loss = float('inf')
+    best_epoch_val_loss = float('inf')
+    patience_counter = 0
+    best_model = None  # To store the best model over mini batches
+    best_epoch_model = None # To store the best model over all epochs
 
     for epoch in range(epochs):
         training_loss = 0.0
         validation_loss = 0.0
+        epoch_validation_loss = 0.0
 
         sub_epoch_iterator = 0
 
@@ -42,6 +49,8 @@ def train(training_dataloader, validation_dataloader, device, optimizer, network
                 loss = nn.MSELoss()(output, validation_targets)
 
                 validation_loss += (loss.item() / batch_size) # accumulated loss validation mini-batches
+                epoch_validation_loss += (loss.item() / batch_size) # accumulated loss of all validation batches in each epoch
+                
                 if sub_epoch_iterator % evaluate_steps == evaluate_steps - 1:  # update every 50 mini-batches
                     print(
                             '[Training, %d, %5d] loss: %.8f' % (
@@ -56,12 +65,36 @@ def train(training_dataloader, validation_dataloader, device, optimizer, network
                     writer.add_scalars('Loss', {'Validation': validation_loss / evaluate_steps}, iterator)
                     writer.flush()
 
+                    # Check loss every x mini-batches and update best model if it improved
+                    if validation_loss / evaluate_steps < best_val_loss:
+                        best_val_loss = validation_loss / evaluate_steps
+                        # Save the best model in memory (note it only takes model of only last batch)
+                        best_model = network.state_dict()
+
                     iterator += 1
                     training_loss = 0.0
                     validation_loss = 0.0
 
                 sub_epoch_iterator += 1
-
+        
+        print('Avg validation loss of epoch:', epoch_validation_loss / sub_epoch_iterator)
+        # Check best loss in last epoch (from all mini-batches)
+        if epoch_validation_loss / sub_epoch_iterator < best_epoch_val_loss:
+            best_epoch_val_loss = epoch_validation_loss / sub_epoch_iterator
+            best_epoch_model = best_model
+            patience_counter = 0  # reset counter
+        else:
+            patience_counter += 1  # increment counter
+            
+        # If performance didn't improve for 'patience' number of epochs, stop training
+        if patience_counter >= patience:
+            print("Early stopping due to lack of improvement in validation loss")
+            print("Trained!")
+            if save_path is not None and best_model is not None:
+                torch.save(best_epoch_model, save_path)
+            return iterator
+    
+    print("Trained!")
     if save_path is not None:
         torch.save(network.state_dict(), save_path)
 

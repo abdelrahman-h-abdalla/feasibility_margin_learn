@@ -14,11 +14,12 @@ import torch.optim as optim
 from tensorboard import program
 from torch.utils.tensorboard import SummaryWriter
 
-EPOCHS = 128
+EPOCHS = 800
 BATCH_SIZE = 1024
 LEARNING_RATE = 0.0001
 SAVE_TRACED_MODEL = False
 EVALUATE_STEPS = 50
+PATIENCE = 5
 LAUNCH_TENSORBOARD = True
 
 
@@ -26,7 +27,7 @@ def main():
     paths = ProjectPaths()
 
     training_dataset_handler = TrainingDataset()
-    data_parser = training_dataset_handler.get_training_data_parser()
+    data_parser = training_dataset_handler.get_training_data_parser(max_files=2)
     data_folder = training_dataset_handler.get_data_folder()
 
     # Use torch data_loader to sample training data
@@ -68,7 +69,7 @@ def main():
 
     # Train and Validate
     iterator_offset = train(training_dataloader, validation_dataloader, device, optimizer, network, writer,
-                            BATCH_SIZE, EPOCHS, EVALUATE_STEPS, save_path=save_path)
+                            BATCH_SIZE, EPOCHS, EVALUATE_STEPS, PATIENCE, save_path=save_path)
 
     if SAVE_TRACED_MODEL:
         save_path = model_save_dir + '/traced_network_model.pt'
