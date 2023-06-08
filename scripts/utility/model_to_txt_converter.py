@@ -18,7 +18,7 @@ def main():
 
     model_parameters = list(network.state_dict().keys())
     model_parameters = np.concatenate(
-        [network.state_dict()[key].cpu().numpy().transpose().reshape(-1) for key in model_parameters])
+        [network.state_dict()[key].cpu().numpy().reshape(-1) for key in model_parameters])
 
     param_save_name = model_directory + 'network_parameters_anymal_c.txt'
     np.savetxt(param_save_name, model_parameters.reshape((1, -1)), delimiter=', ',
