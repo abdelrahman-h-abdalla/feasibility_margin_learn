@@ -9,11 +9,11 @@ import pypoman
 import numpy as np
 from numpy import array, dot, eye, hstack, vstack, zeros
 from scipy.spatial import ConvexHull
-from jet_leg.constraints.constraints import Constraints
-from jet_leg.kinematics.kinematics_interface import KinematicsInterface
-from jet_leg.robots.robot_model_interface import RobotModelInterface
-from jet_leg.computational_geometry.math_tools import Math
-from jet_leg.computational_geometry.geometry import Geometry
+from jet_leg_common.jet_leg.constraints.constraints import Constraints
+from jet_leg_common.jet_leg.kinematics.kinematics_interface import KinematicsInterface
+from jet_leg_common.jet_leg.robots.robot_model_interface import RobotModelInterface
+from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
+from jet_leg_common.jet_leg.computational_geometry.geometry import Geometry
 from cvxopt import matrix, solvers
 import time
 

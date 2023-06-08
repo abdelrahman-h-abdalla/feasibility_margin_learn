@@ -26,7 +26,7 @@ can be either 'ONLY_ACTUATION' or only 'ONLY_FRICTION')
 import numpy as np
 
 from context import jet_leg 
-from jet_leg.sequential_iterative_projection import SequentialIterativeProjection
+from jet_leg_common.jet_leg.sequential_iterative_projection import SequentialIterativeProjection
 
 '''User parameters'''
 comWF = np.array([0.2, 0.05, 0.0])

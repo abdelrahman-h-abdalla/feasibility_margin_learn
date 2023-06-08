@@ -11,13 +11,13 @@ import time
 from numpy import array
 
 import matplotlib.pyplot as plt
-from jet_leg.plotting_tools import Plotter
-from jet_leg.math_tools import Math
-from jet_leg.computational_dynamics import ComputationalDynamics
-from jet_leg.height_map import HeightMap
+from jet_leg_common.jet_leg.plotting_tools import Plotter
+from jet_leg_common.jet_leg.math_tools import Math
+from jet_leg_common.jet_leg.computational_dynamics import ComputationalDynamics
+from jet_leg_common.jet_leg.height_map import HeightMap
 
-from jet_leg.path_sequential_iterative_projection import PathIterativeProjection
-from jet_leg.iterative_projection_parameters import IterativeProjectionParameters
+from jet_leg_common.jet_leg.path_sequential_iterative_projection import PathIterativeProjection
+from jet_leg_common.jet_leg.iterative_projection_parameters import IterativeProjectionParameters
 
     
 ''' MAIN '''

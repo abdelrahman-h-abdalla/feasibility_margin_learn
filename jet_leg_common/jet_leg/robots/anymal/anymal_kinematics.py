@@ -9,7 +9,6 @@ class anymalKinematics():
     def __init__(self, anymal_type = 'anymal_boxy'):
         self.PKG = os.path.dirname(os.path.abspath(__file__)) + '/../../../resources/urdfs/anymal/'
         self.URDF = self.PKG + 'urdf/' + anymal_type + '.urdf'
-        print self.URDF
         if self.PKG is None:
             self.robot = RobotWrapper.BuildFromURDF(self.URDF)
         else:

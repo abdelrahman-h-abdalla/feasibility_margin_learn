@@ -9,15 +9,15 @@ import pypoman
 import numpy as np
 from numpy import array, dot, eye, hstack, vstack, zeros
 from scipy.spatial import ConvexHull
-from jet_leg.constraints.constraints import Constraints
-from jet_leg.kinematics.kinematics_interface import KinematicsInterface
-from jet_leg.robots.robot_model_interface import RobotModelInterface
-from jet_leg.computational_geometry.math_tools import Math
-from jet_leg.computational_geometry.geometry import Geometry
-from jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
-from jet_leg.dynamics.instantaneous_capture_point import InstantaneousCapturePoint
-from jet_leg.dynamics.zero_moment_point import ZeroMomentPoint
-from jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
+from jet_leg_common.jet_leg.constraints.constraints import Constraints
+from jet_leg_common.jet_leg.kinematics.kinematics_interface import KinematicsInterface
+from jet_leg_common.jet_leg.robots.robot_model_interface import RobotModelInterface
+from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
+from jet_leg_common.jet_leg.computational_geometry.geometry import Geometry
+from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
+from jet_leg_common.jet_leg.dynamics.instantaneous_capture_point import InstantaneousCapturePoint
+from jet_leg_common.jet_leg.dynamics.zero_moment_point import ZeroMomentPoint
+from jet_leg_common.jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
 from cvxopt import matrix, solvers
 import time
 
@@ -168,7 +168,7 @@ class ComputationalDynamics:
             compressed_hull, actuation_polygons, computation_time = self.iterative_projection_bretl(iterative_projection_params, saturate_normal_force)
             return compressed_hull, actuation_polygons, computation_time
         except ValueError as err:
-            print 'Could not compute the feasible region'
+            print('Could not compute the feasible region')
             print(err.args)
             return False, False, False
 
@@ -182,7 +182,7 @@ class ComputationalDynamics:
         else:
             vertices_WF = pypoman.project_polytope(proj, self.ineq, self.eq, method='bretl', max_iter=500, init_angle=0.0)
             if vertices_WF is False:
-                print 'Project polytope function is False'
+                print('Project polytope function is False')
                 return False, False, False
 
             else:
@@ -223,7 +223,7 @@ class ComputationalDynamics:
 
         if isIKoutOfWorkSpace:
             #unfeasible_points = np.vstack([unfeasible_points, com_WF])
-            print 'something is wrong in the inequalities or the point is out of workspace'
+            print('something is wrong in the inequalities or the point is out of workspace')
             x = -1
             return False, x, LP_actuation_polygons
         else:
@@ -379,13 +379,13 @@ class ComputationalDynamics:
             isPointFeasible, margin = self.compGeom.isPointRedundant(facets, reference_point)
             return isPointFeasible, margin
         else:
-            print "Warning! IP failed."
+            print("Warning! IP failed.")
             return False, -1000.0
 
     def getReferencePoint(self, iterative_projection_params, type):
         comWF = iterative_projection_params.getCoMPosWF()
         if(type=="ICP"):
-            print "compute ICP"
+            print("compute ICP")
             ICP = self.icp.compute(iterative_projection_params)
             iterative_projection_params.instantaneousCapturePoint = ICP
             referencePoint = np.array([ICP[0], ICP[1]])
@@ -395,7 +395,7 @@ class ComputationalDynamics:
         elif(type=="COM"):
             referencePoint = np.array([comWF[0], comWF[1]])
         else:
-            print "Reference point type unspecified"
+            print("Reference point type unspecified")
 
         return referencePoint
 

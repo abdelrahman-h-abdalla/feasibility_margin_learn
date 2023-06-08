@@ -17,7 +17,7 @@ import matplotlib as mpl
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
 import random as rnd
-from jet_leg.bilinear_constraints import BilinearConstraints
+from jet_leg_common.jet_leg.bilinear_constraints import BilinearConstraints
 
 
 '''MAIN '''

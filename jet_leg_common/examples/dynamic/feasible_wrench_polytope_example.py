@@ -8,13 +8,13 @@ Created on Tue Jun 12 10:54:31 2018
 import numpy as np
 
 from numpy import array
-from jet_leg.plotting.plotting_tools import Plotter
+from jet_leg_common.jet_leg.plotting.plotting_tools import Plotter
 import random
-from jet_leg.computational_geometry.math_tools import Math
-from jet_leg.dynamics.computational_dynamics import ComputationalDynamics
-from jet_leg.dynamics.feasible_wrench_polytope import FeasibleWrenchPolytope
-from jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
-from jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
+from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
+from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
+from jet_leg_common.jet_leg.dynamics.feasible_wrench_polytope import FeasibleWrenchPolytope
+from jet_leg_common.jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
+from jet_leg_common.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
 import time
 import matplotlib.pyplot as plt
 

@@ -6,8 +6,8 @@ Created on Tue Dec 17 10:54:31 2019
 """
 
 import numpy as np
-from jet_leg.dynamics.vertex_based_projection import VertexBasedProjection
-from jet_leg.optimization.lp_vertex_redundancy import LpVertexRedundnacy
+from jet_leg_common.jet_leg.dynamics.vertex_based_projection import VertexBasedProjection
+from jet_leg_common.jet_leg.optimization.lp_vertex_redundancy import LpVertexRedundnacy
 from scipy.spatial import HalfspaceIntersection
 from cvxopt import matrix
 

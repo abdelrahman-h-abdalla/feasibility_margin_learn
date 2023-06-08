@@ -5,7 +5,7 @@ Created on Mon May 28 13:05:01 2018
 @author: rorsolino
 """
 import numpy as np
-from jet_leg.computational_geometry.geometry import Geometry
+from jet_leg_common.jet_leg.computational_geometry.geometry import Geometry
 
 class ComputationalGeometry(Geometry):
 
@@ -159,7 +159,7 @@ class ComputationalGeometry(Geometry):
 
         matrix_sizeX = int(windowSizeX / resolutionY)+1
         matrix_sizeY = int(windowSizeY / resolutionY)+1
-        print "matrix size", matrix_sizeX, matrix_sizeY
+        print("matrix size", matrix_sizeX, matrix_sizeY)
         binary_matrix = np.zeros((matrix_sizeY, matrix_sizeX))
         margin_matrix = np.zeros((matrix_sizeY, matrix_sizeX))
         feasible_points = np.zeros((0, 2))
@@ -174,7 +174,7 @@ class ComputationalGeometry(Geometry):
                 point2check = np.array([point2checkX, point2checkY])
                 params.setCoMPosWF(comWF)
                 IP_points, force_polytopes, IP_computation_time = compDyn.try_iterative_projection_bretl(params)
-                print "IP points", IP_points
+                print("IP points", IP_points)
                 if IP_points is not False:
                     facets = self.compute_halfspaces_convex_hull(IP_points)
                     isPointFeasible, margin = self.isPointRedundant(facets, point2check)
@@ -183,7 +183,7 @@ class ComputationalGeometry(Geometry):
                     margin = -0.5
                 # LPparams.setCoMPosWF(com_WF)
                 # isPointFeasible, x = lpCheck.isPointRedundant(IP_points.T, point2check)
-                print idX, idY
+                print(idX, idY)
                 margin_matrix[idY, idX] = margin
                 if isPointFeasible:
                     binary_matrix[idY, idX] = 1

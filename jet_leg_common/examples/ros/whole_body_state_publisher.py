@@ -9,7 +9,7 @@ Created on Tue Oct 23 11:37:03 2018
 # license removed for brevity
 import rospy
 from context import jet_leg 
-from jet_leg.wholeBodyStateInterface import WholeBodyStateInterface
+from jet_leg_common.jet_leg.wholeBodyStateInterface import WholeBodyStateInterface
 from dwl_msgs.msg import WholeBodyState, BaseState, JointState, ContactState
 from std_msgs.msg import String
 

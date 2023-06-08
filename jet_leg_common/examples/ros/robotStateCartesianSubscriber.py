@@ -20,10 +20,10 @@ from geometry_msgs.msg import Point
 from xpp_msgs.msg import RobotStateCartesian
 from xpp_msgs.msg import StateLin3d
 import std_msgs
-from jet_leg.dynamics.computational_dynamics import ComputationalDynamics
-from jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
-from jet_leg.optimization.jacobians import Jacobians
-from jet_leg.computational_geometry.robotStateCartesianInterface import RobotStateCartesianInterface
+from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
+from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
+from jet_leg_common.jet_leg.optimization.jacobians import Jacobians
+from jet_leg_common.jet_leg.computational_geometry.robotStateCartesianInterface import RobotStateCartesianInterface
 
 stderr = sys.stderr
 sys.stderr = open(os.devnull, 'w')

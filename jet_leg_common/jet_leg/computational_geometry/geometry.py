@@ -7,7 +7,7 @@ Created on Tue Oct 30 15:18:59 2018
 
 import numpy as np
 from scipy.spatial import ConvexHull
-from jet_leg.computational_geometry.math_tools import Math
+from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
 
 class Geometry(Math):
     
@@ -58,20 +58,20 @@ class Geometry(Math):
         centroidY = np.sum(vertices[:-1,1])
         centroidY = centroidY/float(vertices_number)
         centroid = [centroidX, centroidY] # the centroid is always inside the polygon, therefore its distance from the edges has to be always negative
-        print vertices_number, centroid
+        print(vertices_number, centroid)
         new_facets = np.zeros((numberOfFacets, 3))
         for j in np.arange(0, numberOfFacets):
             #normalVec = self.normalize(A[j])
             normalVec = A[j]
             distance = np.dot(normalVec, centroid) + b[j]
-            print "old distance", distance
+            print("old distance", distance)
             if distance >= 0:
                 new_facets[j,0:2] = -A[j]
                 new_facets[j, 2] = -b[j]
             else:
                 new_facets[j,0:2] = A[j]
                 new_facets[j, 2] = b[j]
-            print "new distance", np.dot(new_facets[j,0:2], centroid) + new_facets[j,2]
+            print("new distance", np.dot(new_facets[j,0:2], centroid) + new_facets[j,2])
 
         return new_facets
 

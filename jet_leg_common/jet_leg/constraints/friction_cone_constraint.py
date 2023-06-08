@@ -6,7 +6,7 @@ Created on Mon May 28 13:00:59 2018
 """
 
 import numpy as np
-from jet_leg.computational_geometry.math_tools import Math
+from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
 
 class FrictionConeConstraint:
     def __init__(self):

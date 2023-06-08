@@ -1,4 +1,4 @@
-from jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
+from jet_leg_common.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
 import numpy as np
 from scipy.spatial.transform import Rotation as Rot
 

@@ -5,9 +5,9 @@ Created on Wed Nov 14 15:07:45 2018
 @author: Romeo Orsolino
 """
 import numpy as np
-from math_tools import Math
+from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
 from scipy.spatial.transform import Rotation as Rot
-from jet_leg.robots.robot_model_interface import RobotModelInterface
+from jet_leg_common.jet_leg.robots.robot_model_interface import RobotModelInterface
 
 class IterativeProjectionParameters:
     def __init__(self, robot_name):
@@ -393,7 +393,7 @@ class IterativeProjectionParameters:
                 self.stanceFeet[2] = int(received_data.data[j])
             if str(received_data.name[j]) == str("future_stance_RH"):
                 self.stanceFeet[3] = int(received_data.data[j])  
-        print 'stance feet ', self.stanceFeet
+        print('stance feet ', self.stanceFeet)
         self.numberOfContacts = np.sum(self.stanceFeet)
         
     def getCurrentStanceFeetFlags(self, received_data):

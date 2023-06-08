@@ -1,0 +1,7 @@
+*.pyc
+*.pyo
+.ropeproject
+MANIFEST
+build/
+dist/
+pypoman.egg-info/

@@ -17,16 +17,16 @@ import matplotlib.cm as cmx
 
 from numpy import array
 from numpy.linalg import norm
-from jet_leg.plotting_tools import Plotter
+from jet_leg_common.jet_leg.plotting_tools import Plotter
 import random
-from jet_leg.math_tools import Math
-from jet_leg.computational_dynamics import ComputationalDynamics
-from jet_leg.iterative_projection_parameters import IterativeProjectionParameters
-from jet_leg.foothold_planning_interface import FootholdPlanningInterface
-from jet_leg.foothold_planning import FootHoldPlanning
+from jet_leg_common.jet_leg.math_tools import Math
+from jet_leg_common.jet_leg.computational_dynamics import ComputationalDynamics
+from jet_leg_common.jet_leg.iterative_projection_parameters import IterativeProjectionParameters
+from jet_leg_common.jet_leg.foothold_planning_interface import FootholdPlanningInterface
+from jet_leg_common.jet_leg.foothold_planning import FootHoldPlanning
 
 import matplotlib.pyplot as plt
-from jet_leg.arrow3D import Arrow3D
+from jet_leg_common.jet_leg.arrow3D import Arrow3D
         
 plt.close('all')
 math = Math()

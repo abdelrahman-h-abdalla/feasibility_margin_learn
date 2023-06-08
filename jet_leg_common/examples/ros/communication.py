@@ -23,12 +23,12 @@ from geometry_msgs.msg import Point
 from xpp_msgs.msg import RobotStateCartesian
 from feasible_region.msg import  Polygon3D, LegsPolygons
 
-from jet_leg.dynamics.computational_dynamics import ComputationalDynamics
-from jet_leg.computational_geometry.math_tools import Math
-from jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
-#from jet_leg.optimization.foothold_planning_interface import FootholdPlanningInterface
+from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
+from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
+from jet_leg_common.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
+#from jet_leg_common.jet_leg.optimization.foothold_planning_interface import FootholdPlanningInterface
 
-from jet_leg.optimization.foothold_planning import FootHoldPlanning
+from jet_leg_common.jet_leg.optimization.foothold_planning import FootHoldPlanning
 
 stderr = sys.stderr
 sys.stderr = open(os.devnull, 'w')

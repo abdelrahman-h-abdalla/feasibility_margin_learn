@@ -131,7 +131,7 @@ class Math:
             d_temp = self.find_point_to_line_signed_distance(s1, s2, point_to_check)
             #            print i, s1, s2, d_temp
             if d_temp < 0.0:
-                print 'Warning! found negative distance. Polygon might not be in clockwise order...'
+                print('Warning! found negative distance. Polygon might not be in clockwise order...')
             elif d_temp < residual_radius:
                 residual_radius = d_temp
 
@@ -167,7 +167,7 @@ class Math:
                     point_to_com_distance = np.vstack([point_to_com_distance, d])
 
             else:
-                print "lines are parallel!"
+                print("lines are parallel!")
                 #while new_point is False:
                 #    desired_com_line = self.line(starting_point, starting_point+desired_direction)
                 #    new_point = self.two_lines_intersection(desired_com_line, actuation_region_edge)

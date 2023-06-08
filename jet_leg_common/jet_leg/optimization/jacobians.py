@@ -1,6 +1,6 @@
 import numpy as np
-from jet_leg.dynamics.computational_dynamics import ComputationalDynamics
-from jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
+from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
+from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
 import copy
 
 
@@ -13,7 +13,7 @@ class Jacobians:
     def computeComPosJacobianSecondOrderCentral(self, params):
         jacobian = np.zeros(3)
         initialCoMPos = copy.copy(params.comPositionWF)
-        print "initialCoMPos ", initialCoMPos
+        print("initialCoMPos ", initialCoMPos)
 
         for j in np.arange(0, 3):
             params.comPositionWF = initialCoMPos
@@ -202,10 +202,10 @@ class Jacobians:
         jac_com_lin_vel = np.zeros((3, num_of_tests[0]))
         count = 0
         for delta_vel in velocity_range:
-            print "delta_vel", delta_vel
+            print("delta_vel", delta_vel)
             params.comLinVel = [0.0, 0.0, 0.0]
             params.comLinVel[dimension] = delta_vel
-            print "count", count, params.comLinVel, params.comPositionWF, params.getContactsPosWF()
+            print("count", count, params.comLinVel, params.comPositionWF, params.getContactsPosWF())
             ''' compute iterative projection 
             Outputs of "iterative_projection_bretl" are:
             IP_points = resulting 2D vertices
@@ -273,7 +273,7 @@ class Jacobians:
         jac_base_orient = np.zeros((3, num_of_tests[0]))
         count = 0
         default_euler_angles = copy.deepcopy(params.eurlerAngles)
-        print "default euler", default_euler_angles
+        print("default euler", default_euler_angles)
 
         for delta in base_orient_range:
             eulerAngles = copy.deepcopy(default_euler_angles)
@@ -281,10 +281,10 @@ class Jacobians:
             params.setEulerAngles(eulerAngles)
 
             isPointFeasible, margin[count] = self.compDyn.compute_IP_margin(params, "COM")
-            print "params.eurlerAngles ", params.eurlerAngles
-            print "margin ", margin[count]
+            print("params.eurlerAngles ", params.eurlerAngles)
+            print("margin ", margin[count])
             marginJAcWrtBaseOrient = self.computeBaseOrientationJacobian(params)
-            print "margin jac wrt base orient", marginJAcWrtBaseOrient
+            print("margin jac wrt base orient", marginJAcWrtBaseOrient)
             jac_base_orient[:, count] = marginJAcWrtBaseOrient
 
             count += 1
@@ -320,16 +320,16 @@ class Jacobians:
 
             '''I now check whether the given CoM configuration is stable or not'''
             isCoMStable, contactForces, forcePolytopes = self.compDyn.check_equilibrium(params)
-            print "is CoM stable?", isCoMStable
+            print("is CoM stable?", isCoMStable)
             # print 'Contact forces:', contactForces
 
             facets = self.compGeom.compute_halfspaces_convex_hull(IP_points)
             point2check = self.compDyn.getReferencePoint(params)
-            print count, params.comLinVel, params.comPositionWF
+            print(count, params.comLinVel, params.comPositionWF)
             isPointFeasible, margin[count] = self.compGeom.isPointRedundant(facets, point2check)
 
             marginJacWrtComPos = self.computeComPosJacobian(params)
-            print "margin jac wrt com pos", marginJacWrtComPos
+            print("margin jac wrt com pos", marginJacWrtComPos)
             jac_com_pos[count] = marginJacWrtComPos[1]
             count += 1
 

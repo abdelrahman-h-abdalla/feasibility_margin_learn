@@ -6,12 +6,12 @@ Created on Sun Jul 22 21:26:46 2018
 """
 import numpy as np
 import random
-from jet_leg.math_tools import Math
-from jet_leg.plotting_tools import Plotter
+from jet_leg_common.jet_leg.math_tools import Math
+from jet_leg_common.jet_leg.plotting_tools import Plotter
 import matplotlib.pyplot as plt
-from jet_leg.arrow3D import Arrow3D
-from jet_leg.computational_dynamics import ComputationalDynamics
-from jet_leg.iterative_projection_parameters import IterativeProjectionParameters
+from jet_leg_common.jet_leg.arrow3D import Arrow3D
+from jet_leg_common.jet_leg.computational_dynamics import ComputationalDynamics
+from jet_leg_common.jet_leg.iterative_projection_parameters import IterativeProjectionParameters
 
 import unittest
 class TestLPGroundTruth():

@@ -10,10 +10,10 @@ from scipy.spatial import ConvexHull
 import matplotlib.pyplot as plt
 import numpy as np
 from cvxopt import matrix, solvers
-from jet_leg.dynamics.computational_dynamics import ComputationalDynamics
-from jet_leg.kinematics.kinematics_interface import KinematicsInterface
+from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
+from jet_leg_common.jet_leg.kinematics.kinematics_interface import KinematicsInterface
 from math_tools import Math
-from jet_leg.constraints.constraints import Constraints
+from jet_leg_common.jet_leg.constraints.constraints import Constraints
 import random
 
 plt.close('all')

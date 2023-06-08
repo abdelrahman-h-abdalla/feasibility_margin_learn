@@ -1,5 +1,5 @@
 import numpy as np
-from jet_leg.kinematics.kinematics_interface import KinematicsInterface
+from jet_leg_common.jet_leg.kinematics.kinematics_interface import KinematicsInterface
 
 kin = KinematicsInterface('anymal')
 

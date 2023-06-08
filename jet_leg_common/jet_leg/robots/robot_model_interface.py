@@ -6,9 +6,9 @@ Created on Mon Jul  2 05:34:42 2018
 """
 import numpy as np
 
-from jet_leg.robots.hyq.hyq_model import HyqModel
-from jet_leg.robots.anymal.anymal_model import AnymalModel
-from jet_leg.robots.hyqreal.hyqreal_model import HyqrealModel
+from jet_leg_common.jet_leg.robots.hyq.hyq_model import HyqModel
+from jet_leg_common.jet_leg.robots.anymal.anymal_model import AnymalModel
+from jet_leg_common.jet_leg.robots.hyqreal.hyqreal_model import HyqrealModel
 
 
 class RobotModelInterface:
@@ -21,7 +21,7 @@ class RobotModelInterface:
         elif self.robotName == 'hyqreal':
             self.robotModel = HyqrealModel()
         else:
-            print "Warning! could not set robot model!"
+            print("Warning! could not set robot model!")
 
         self.joint_torque_limits = self.robotModel.joint_torque_limits
         self.contact_torque_limits = self.robotModel.contact_torque_limits

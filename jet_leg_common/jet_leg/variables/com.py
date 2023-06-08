@@ -4,7 +4,7 @@ Created on Jan 23 2020
 @author: Romeo Orsolino
 """
 import numpy as np
-from jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
+from jet_leg_common.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
 
 class CoM:
     def __init__(self, ip_params):

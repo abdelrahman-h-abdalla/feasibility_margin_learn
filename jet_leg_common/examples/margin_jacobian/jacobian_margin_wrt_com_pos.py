@@ -9,12 +9,12 @@ import numpy as np
 from numpy import array
 from copy import deepcopy
 import random
-from jet_leg.computational_geometry.math_tools import Math
-from jet_leg.dynamics.computational_dynamics import ComputationalDynamics
-from jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
-from jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
-from jet_leg.optimization.jacobians import Jacobians
-from jet_leg.variables.com import CoM
+from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
+from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
+from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
+from jet_leg_common.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
+from jet_leg_common.jet_leg.optimization.jacobians import Jacobians
+from jet_leg_common.jet_leg.variables.com import CoM
 import time
 
 import matplotlib.pyplot as plt
@@ -54,9 +54,9 @@ stanceFeet = [1, 1, 1, 1]
 randomSwingLeg = random.randint(0, 3)
 tripleStance = False  # if you want you can define a swing leg using this variable
 if tripleStance:
-    print 'Swing leg', randomSwingLeg
+    print('Swing leg', randomSwingLeg)
     stanceFeet[randomSwingLeg] = 0
-print 'stanceLegs ', stanceFeet
+print('stanceLegs ', stanceFeet)
 
 ''' now I define the normals to the surface of the contact points. By default they are all vertical now'''
 axisZ = array([[0.0], [0.0], [1.0]])
@@ -120,7 +120,7 @@ com = CoM(params)
 delta_pos_range = 0.2
 num_of_tests = 25
 delta_pos_range_vec = np.linspace(-delta_pos_range/2.0, delta_pos_range/2.0, num_of_tests)
-print "number of tests", num_of_tests
+print("number of tests", num_of_tests)
 
 pos_margin_x, jac_com_pos_x = jac.plotMarginAndJacobianWrtComPosition(params_com_x, delta_pos_range_vec, 0) # dm / dx
 pos_margin_y, jac_com_pos_y = jac.plotMarginAndJacobianWrtComPosition(params_com_y, delta_pos_range_vec, 1) # dm / dy
@@ -128,7 +128,7 @@ pos_margin_z, jac_com_pos_z = jac.plotMarginAndJacobianWrtComPosition(params_com
 
 delta_vel_range = 3.0
 delta_vel_range_vec = np.linspace(-delta_vel_range/2.0, delta_vel_range/2.0, num_of_tests)
-print num_of_tests, np.shape(delta_vel_range_vec)
+print(num_of_tests, np.shape(delta_vel_range_vec))
 
 """ contact points in the World Frame"""
 LF_foot = np.array([0.3, 0.2, -0.4])

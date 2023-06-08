@@ -6,11 +6,11 @@ Created on Mon Jul  2 05:34:42 2018
 """
 import numpy as np
 
-from jet_leg.robots.dog_interface import DogInterface
-from jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
-from jet_leg.robots.hyq.hyq_kinematics import HyQKinematics
-from jet_leg.robots.anymal.anymal_kinematics import anymalKinematics
-from jet_leg.robots.hyqreal.hyqreal_kinematics import hyqrealKinematics
+from jet_leg_common.jet_leg.robots.dog_interface import DogInterface
+from jet_leg_common.jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
+from jet_leg_common.jet_leg.robots.hyq.hyq_kinematics import HyQKinematics
+from jet_leg_common.jet_leg.robots.anymal.anymal_kinematics import anymalKinematics
+from jet_leg_common.jet_leg.robots.hyqreal.hyqreal_kinematics import hyqrealKinematics
 
 
 class KinematicsInterface:
@@ -26,7 +26,7 @@ class KinematicsInterface:
         elif self.robotName == 'hyqreal':
             self.hyqrealKin = hyqrealKinematics()
         else:
-            print "Warning! could not set kinematic model"
+            print("Warning! could not set kinematic model")
 
     def get_jacobians(self):
         if self.robotName == 'hyq':
@@ -36,7 +36,7 @@ class KinematicsInterface:
         elif self.robotName == 'anymal_boxy' or self.robotName == 'anymal_coyote':
             return self.anymalKin.getLegJacobians()
         else:
-            print "Warning! Could not get jacobian matrix."
+            print("Warning! Could not get jacobian matrix.")
 
     def inverse_kin(self, contactsBF, foot_vel, stance_idx):
 
@@ -50,6 +50,6 @@ class KinematicsInterface:
             q, legIkSuccess = self.anymalKin.fixedBaseInverseKinematics(contactsBF, stance_idx)
             return q, legIkSuccess
         else:
-            print "Warning! Could not define IK."
+            print("Warning! Could not define IK.")
             return false
 

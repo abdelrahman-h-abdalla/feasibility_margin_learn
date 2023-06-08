@@ -5,15 +5,15 @@ Created on Mon May 28 13:00:59 2018
 @author: Romeo Orsolino
 """
 import numpy as np
-from jet_leg.computational_geometry.math_tools import Math
-from jet_leg.computational_geometry.leg_force_polytopes import LegForcePolytopes
+from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
+from jet_leg_common.jet_leg.computational_geometry.leg_force_polytopes import LegForcePolytopes
 from scipy.linalg import block_diag
 from scipy.spatial.transform import Rotation as Rot
-from jet_leg.robots.dog_interface import DogInterface
-from jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
-from jet_leg.computational_geometry.polytopes import Polytope
-from jet_leg.constraints.friction_cone_constraint import FrictionConeConstraint
-from jet_leg.constraints.force_polytope_constraint import ForcePolytopeConstraint
+from jet_leg_common.jet_leg.robots.dog_interface import DogInterface
+from jet_leg_common.jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
+from jet_leg_common.jet_leg.computational_geometry.polytopes import Polytope
+from jet_leg_common.jet_leg.constraints.friction_cone_constraint import FrictionConeConstraint
+from jet_leg_common.jet_leg.constraints.force_polytope_constraint import ForcePolytopeConstraint
 import copy
 
 class Constraints:    
@@ -115,7 +115,7 @@ class Constraints:
             d = np.hstack([d, d_cone])
         
         if contactsNumber == 0:
-            print 'contactsNumber is zero, there are no stance legs set! This might be because Gazebo is in pause.'
+            print('contactsNumber is zero, there are no stance legs set! This might be because Gazebo is in pause.')
             
         return C, d, isIKoutOfWorkSpace, forcePolytopes
     

@@ -12,9 +12,9 @@ from context import jet_leg
 from numpy import array, cross, dot, eye, hstack, vstack, zeros, matrix
 from numpy.linalg import norm
 
-from jet_leg.math_tools import Math
-from jet_leg.computational_dynamics import ComputationalDynamics
-from jet_leg.iterative_projection_parameters import IterativeProjectionParameters
+from jet_leg_common.jet_leg.math_tools import Math
+from jet_leg_common.jet_leg.computational_dynamics import ComputationalDynamics
+from jet_leg_common.jet_leg.iterative_projection_parameters import IterativeProjectionParameters
 
 import matplotlib as mpl
 import matplotlib.colors as colors
@@ -25,7 +25,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3DCollection
 from matplotlib.collections import PatchCollection
 
-from jet_leg.arrow3D import Arrow3D
+from jet_leg_common.jet_leg.arrow3D import Arrow3D
 
 def set_axes_radius(ax, origin, radius):
     ax.set_xlim3d([origin[0] - radius, origin[0] + radius])

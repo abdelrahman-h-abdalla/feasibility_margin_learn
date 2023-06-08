@@ -4,13 +4,13 @@ Created on Mon May 28 13:00:59 2018
 @author: Romeo Orsolino
 """
 import numpy as np
-from jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
-from jet_leg.computational_geometry.math_tools import Math
+from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
+from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
 from scipy.spatial.transform import Rotation as Rot
 from scipy.linalg import block_diag
-from jet_leg.robots.dog_interface import DogInterface
-from jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
-from jet_leg.constraints.friction_cone_constraint import FrictionConeConstraint
+from jet_leg_common.jet_leg.robots.dog_interface import DogInterface
+from jet_leg_common.jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
+from jet_leg_common.jet_leg.constraints.friction_cone_constraint import FrictionConeConstraint
 
 
 class ForcePolytopeConstraint:
@@ -36,7 +36,7 @@ class ForcePolytopeConstraint:
             C1 = np.zeros((0, 0))
             d1 = np.zeros((1, 0))
             current_actuation_polygon_WF = 0
-            print 'Out of workspace IK!!!'
+            print('Out of workspace IK!!!')
         else:
             jacobianMatrices = np.array([J_LF, J_RF, J_LH, J_RH])
             #            print 'Jacobians',jacobianMatrices

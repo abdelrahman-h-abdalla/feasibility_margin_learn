@@ -8,14 +8,14 @@ Created on Tue Jun 12 10:54:31 2018
 import numpy as np
 
 from numpy import array
-from jet_leg.plotting.plotting_tools import Plotter
+from jet_leg_common.jet_leg.plotting.plotting_tools import Plotter
 import random
-from jet_leg.computational_geometry.math_tools import Math
-from jet_leg.dynamics.computational_dynamics import ComputationalDynamics
-from jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
+from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
+from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
+from jet_leg_common.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
 
 import matplotlib.pyplot as plt
-from jet_leg.plotting.arrow3D import Arrow3D
+from jet_leg_common.jet_leg.plotting.arrow3D import Arrow3D
 
 plt.close('all')
 math = Math()

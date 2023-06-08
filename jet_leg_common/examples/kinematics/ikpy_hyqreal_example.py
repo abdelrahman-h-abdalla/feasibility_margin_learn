@@ -5,7 +5,7 @@ Created on Mon Jul  2 06:10:18 2018
 @author: Romeo Orsolino
 """
 
-from jet_leg.hyqreal_kinematics import HyQRealKinematics
+from jet_leg_common.jet_leg.hyqreal_kinematics import HyQRealKinematics
 import numpy as np
 
 

@@ -6,8 +6,8 @@ Created on Mon Jul  2 05:34:42 2018
 """
 import numpy as np
 
-from jet_leg.robots.dog_interface import DogInterface
-from jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
+from jet_leg_common.jet_leg.robots.dog_interface import DogInterface
+from jet_leg_common.jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
 
 class HyQKinematics:
     def __init__(self):
@@ -821,7 +821,7 @@ class HyQKinematics:
         elif legID == 3:
             q = self.hyq_RH_chain.inverse_kinematics(target_frame)
         else:
-            print "warning: leg ID is wrong"
+            print("warning: leg ID is wrong")
         q_leg = q[1:4]
         return q_leg
 
@@ -949,7 +949,7 @@ class HyQKinematics:
 #       //Check if the outputs are inf or nan
         for joint in self.dog.legJoints:
             if not np.isfinite(q_leg[joint]):
-                print "Position of joint ",joint," and leg ", 0," is not finite !!!" 
+                print("Position of joint ",joint," and leg ", 0," is not finite !!!" )
 #            return false;
             
         return q_leg
