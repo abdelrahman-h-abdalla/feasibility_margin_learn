@@ -1,9 +1,13 @@
 import random
+import os
 import numpy as np
 
 from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
 from jet_leg_common.jet_leg.robots.robot_model_interface import RobotModelInterface
 
+def seed_random():
+    random.seed(os.getpid())
+    np.random.seed(os.getpid())
 
 def stance_feet(low=0, high=1):
     """ stanceFeet vector contains 1 if the foot is on the ground and 0 if it is in the air """

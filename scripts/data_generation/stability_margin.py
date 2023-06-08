@@ -42,6 +42,7 @@ def computation(i, q):
     comp_geom = ComputationalGeometry()
 
     robot_name = 'anymal_coyote'
+    seed_random()
     stance_feet_list = stance_feet(high=2)  # Get random stance configuration
     com_world = com_positions(robot_name)  # Center of Mass in world frame
     com_lin_vel = linear_velocity()  # Random Linear Velocity
