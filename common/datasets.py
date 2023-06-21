@@ -136,7 +136,7 @@ class TrainingDataset:
             ])
             if process_data:
                 self.data_offset = data_offset = np.mean(training_data, axis=0)
-                self.data_multiplier = data_multiplier = np.mean(training_data, axis=0)
+                self.data_multiplier = data_multiplier = np.std(training_data, axis=0)
                 self.data_multiplier[self.data_multiplier == 0] = 1 # Prevent division by 0 for unsampled inputs
                 training_data = self.scale_data(training_data)
 
