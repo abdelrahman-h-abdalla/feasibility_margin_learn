@@ -159,4 +159,4 @@ class TrainingDataset:
         return (input - self._data_offset[:-1]) / self._data_multiplier[:-1]
     
     def scale_output(self, output):
-        return (output - self._data_offset[:-1]) / self._data_multiplier[:-1]
+        return (output * self._data_offset[:-1]) + self._data_multiplier[:-1]
