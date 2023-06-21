@@ -11,7 +11,11 @@ class TrainingDataset:
     def __init__(self, data_folder='stability_margin'):
         self._data_folder = data_folder
         self._data_parser = None
+        self.paths = ProjectPaths()
+        # File to save normalization parameters for dataset
+        self.normal_save_name = os.path.join(self.paths.DATA_PATH + '/' + self._data_folder) + '/normalization.txt'
 
+        # Set normalization parameters to default values in case saved values doesn't exist
         self._data_offset = np.concatenate([
             np.array([0, 0, 1]),  # Rotation along gravity axis
             np.zeros(3),  # Linear velocity
@@ -19,18 +23,18 @@ class TrainingDataset:
             np.zeros(3),  # Angular acceleration
             np.zeros(3),  # External force
             np.zeros(3),  # External torque
-            np.array([0.3, 0.2, -0.45]),  # LF foot
-            np.array([0.3, -0.2, -0.45]),  # RF foot
-            np.array([-0.3, 0.2, -0.45]),  # LH foot
-            np.array([-0.3, -0.2, -0.45]),  # RH foot
-            np.array([0.5]),  # Friction
-            np.ones(4) * 0.765,  # Feet in contact
-            np.array([0, 0, 1] * 4),  # Contact normals
-            np.zeros(1)  # Stability margin
+            np.array([0.31, 0.19, -0.48]),  # LF foot
+            np.array([0.31, -0.19, -0.48]),  # RF foot
+            np.array([-0.31, 0.19, -0.48]),  # LH foot
+            np.array([-0.31, -0.19, -0.48]),  # RH foot
+            np.array([0.51]),  # Friction
+            np.ones(4) * 0.767,  # Feet in contact
+            np.array([0, 0, 0.97] * 4),  # Contact normals
+            np.zeros(1)  #  Stability margin
         ])
 
         self._data_multiplier = np.concatenate([
-            np.array([1/0.0734, 0.750, 0.003]),  # Rotation along gravity axis
+            np.array([0.0734, 0.0750, 0.003]),  # Rotation along gravity axis
             np.array([0.198, 0.198, 0.053]),  # Linear velocity
             np.array([2.219, 2.203, 0.233]),  # Linear acceleration
             np.array([0.199, 0.199, 0.304]),  # Angular acceleration
@@ -53,6 +57,19 @@ class TrainingDataset:
             np.array([0.166, 0.160, 0.0348] * 4),  # Contact normals
             np.ones(1) * 0.111  # Stability margin
         ])
+
+        if os.path.exists(self.normal_save_name):
+            loaded_array = np.loadtxt(self.normal_save_name, dtype=float)
+            # Check if the loaded data can be reshaped to two arrays of the given shape
+            shape = self._data_offset.shape
+            if loaded_array.size == np.prod(shape) * 2:
+                # Reshape the loaded array to the original shape
+                reshaped_array = loaded_array.reshape(-1, shape[0])
+                self._data_offset, self._data_multiplier = reshaped_array[0], reshaped_array[1]
+            else:
+                print("Normalization file does not contain two arrays of correct shape")
+        else:
+            print("Normalization file not found.")
 
     def get_data_offset(self):
         return self._data_offset
@@ -135,10 +152,15 @@ class TrainingDataset:
                 training_data[:, 47].reshape(-1, 1)  # Stability Margin
             ])
             if process_data:
-                self.data_offset = data_offset = np.mean(training_data, axis=0)
-                self.data_multiplier = data_multiplier = np.std(training_data, axis=0)
+                self.data_offset = np.mean(training_data, axis=0)
+                self.data_multiplier = np.std(training_data, axis=0)
                 self.data_multiplier[self.data_multiplier == 0] = 1 # Prevent division by 0 for unsampled inputs
                 training_data = self.scale_data(training_data)
+                # Save normalization parameters in text file with data
+                normalization = np.stack((self._data_offset, self._data_multiplier))
+                np.savetxt(self.normal_save_name,
+                           normalization.reshape(-1, normalization.shape[-1]), fmt='%.8f')
+
 
             data_parser.update_data(training_data)
             data_parser.set_io_split_index(-1)
@@ -159,4 +181,4 @@ class TrainingDataset:
         return (input - self._data_offset[:-1]) / self._data_multiplier[:-1]
     
     def scale_output(self, output):
-        return (output * self._data_offset[:-1]) + self._data_multiplier[:-1]
+        return (output * self._data_multiplier[-1]) + self._data_offset[-1]
