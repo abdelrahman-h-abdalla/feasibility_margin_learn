@@ -13,7 +13,7 @@ from jet_leg_common.jet_leg.computational_geometry.computational_geometry import
 from jet_leg_common.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
 
 CONSTRAINTS = 'FRICTION_AND_ACTUATION'
-MAX_ITERATIONS = 1000000
+MAX_ITERATIONS = 1000000 #iterations correspond to approximately 58.2106878757s
 COMPUTE_JACOBIAN = False
 STORE_BINARY_MATRIX = False
 

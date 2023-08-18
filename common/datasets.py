@@ -17,22 +17,21 @@ class TrainingDataset:
 
         # Set normalization parameters to default values in case saved values doesn't exist
         self._data_offset = np.concatenate([
-            np.array([0, 0, 1]),  # Rotation along gravity axis
+            np.array([0, 0, 1.0]),  # Rotation along gravity axis
             np.zeros(3),  # Linear velocity
             np.zeros(3),  # Linear acceleration
             np.zeros(3),  # Angular acceleration
             np.zeros(3),  # External force
             np.zeros(3),  # External torque
-            np.array([0.31, 0.19, -0.48]),  # LF foot
-            np.array([0.31, -0.19, -0.48]),  # RF foot
-            np.array([-0.31, 0.19, -0.48]),  # LH foot
-            np.array([-0.31, -0.19, -0.48]),  # RH foot
+            np.array([0.29, 0.19, -0.46]),  # LF foot
+            np.array([0.29, -0.19, -0.46]),  # RF foot
+            np.array([-0.29, 0.19, -0.46]),  # LH foot
+            np.array([-0.29, -0.19, -0.46]),  # RH foot
             np.array([0.51]),  # Friction
             np.ones(4) * 0.767,  # Feet in contact
-            np.array([0, 0, 0.97] * 4),  # Contact normals
+            np.array([0, 0, 1.0] * 4),  # Contact normals
             np.zeros(1)  #  Stability margin
         ])
-
         self._data_multiplier = np.concatenate([
             np.array([0.0734, 0.0750, 0.003]),  # Rotation along gravity axis
             np.array([0.198, 0.198, 0.053]),  # Linear velocity
@@ -40,22 +39,22 @@ class TrainingDataset:
             np.array([0.199, 0.199, 0.304]),  # Angular acceleration
             np.array([1.00, 1.00, 1.0]),  # External force
             np.array([1.00, 1.00, 1.0]),  # External torque
-            np.ones(1) * 0.152,
-            np.ones(1) * 0.085,
-            np.ones(1) * 0.077,   # LF foot
-            np.ones(1) * 0.152,
-            np.ones(1) * 0.085,
-            np.ones(1) * 0.077,   # RF foot
-            np.ones(1) * 0.152,
-            np.ones(1) * 0.085,
-            np.ones(1) * 0.077,   # LH foot
-            np.ones(1) * 0.152,
-            np.ones(1) * 0.085,
-            np.ones(1) * 0.077,   # RH foot
+            np.ones(1) * 0.173,
+            np.ones(1) * 0.087,
+            np.ones(1) * 0.087,   # LF foot
+            np.ones(1) * 0.173,
+            np.ones(1) * 0.087,
+            np.ones(1) * 0.087,   # RF foot
+            np.ones(1) * 0.173,
+            np.ones(1) * 0.087,
+            np.ones(1) * 0.087,   # LH foot
+            np.ones(1) * 0.173,
+            np.ones(1) * 0.087,
+            np.ones(1) * 0.087,   # RH foot
             np.ones(1) * 0.112,  # Friction
             np.ones(4) * 0.422,  # Feet in contact
             np.array([0.166, 0.160, 0.0348] * 4),  # Contact normals
-            np.ones(1) * 0.111  # Stability margin
+            np.ones(1) * 0.1111  # Stability margin
         ])
 
         if os.path.exists(self.normal_save_name):
@@ -84,15 +83,14 @@ class TrainingDataset:
         if self._data_parser is None:
             # Get training data
             data_parser = DataParser()
-            paths = ProjectPaths()
 
             num_files = 0
             num_files_test = 0
-            for path, _, files in os.walk(paths.DATA_PATH + '/' + self._data_folder):
+            for path, _, files in os.walk(self.paths.DATA_PATH + '/' + self._data_folder):
                 for file_name in files: 
                         num_files_test += 1
             print("Number of files:", num_files_test)
-            for path, _, files in os.walk(paths.DATA_PATH + '/' + self._data_folder):
+            for path, _, files in os.walk(self.paths.DATA_PATH + '/' + self._data_folder):
                 for file_name in files:
                     if max_files is not None and num_files >= max_files:
                         break
@@ -182,3 +180,7 @@ class TrainingDataset:
     
     def scale_output(self, output):
         return (output * self._data_multiplier[-1]) + self._data_offset[-1]
+    
+    def unscale_gradient(self, gradient):
+        return gradient / self._data_multiplier[:-1]
+        
