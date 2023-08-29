@@ -13,7 +13,7 @@ from jet_leg_common.jet_leg.computational_geometry.computational_geometry import
 from jet_leg_common.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
 
 CONSTRAINTS = 'FRICTION_AND_ACTUATION'
-MAX_ITERATIONS = 1000000 #iterations correspond to approximately 58.2106878757s
+MAX_ITERATIONS = 500000
 COMPUTE_JACOBIAN = False
 STORE_BINARY_MATRIX = False
 
@@ -40,8 +40,6 @@ def computation(i, q):
     comp_dyn = ComputationalDynamics(robot_name)
     params = IterativeProjectionParameters(robot_name=robot_name)
     comp_geom = ComputationalGeometry()
-
-    robot_name = 'anymal_coyote'
     seed_random()
     stance_feet_list = stance_feet(high=2)  # Get random stance configuration
     com_world = com_positions(robot_name)  # Center of Mass in world frame
@@ -133,7 +131,7 @@ def main():
 
     num_cpu = psutil.cpu_count(True)
 
-    with multiprocessing.Pool(num_cpu, maxtasksperchild=24) as pool:
+    with multiprocessing.Pool(num_cpu) as pool:
         manager = multiprocessing.Manager() # To manage the writing to file
         q = manager.Queue() 
         global start_time

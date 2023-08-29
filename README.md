@@ -40,6 +40,13 @@ like so:
 cd $PROJECT_ROOT/scripts
 python data_generation/stability_margin.py
 ```
+If you want to generate a large amount of data, run
+```
+cd $PROJECT_ROOT/scripts/data_generation
+./repeat_generation.sh
+```
+The script will repeatedly run the data generating script `data_generation/stability_margin.py`.
+This avoids running the data generating script once with a large amount of data, filling up the RAM in the process.
 The generated dataset will be stored in the `$PROJECT_ROOT/data` directory.
 
 ## Training

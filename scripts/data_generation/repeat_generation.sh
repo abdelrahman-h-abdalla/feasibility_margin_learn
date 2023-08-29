@@ -1,1 +1,1 @@
-for run in {1..49}; do python stability_margin.py; done
+for run in {1..100}; do python stability_margin.py; done

@@ -10,6 +10,7 @@ import webbrowser
 import torch
 import torch.nn as nn
 import torch.optim as optim
+torch.cuda.empty_cache()
 
 from tensorboard import program
 from torch.utils.tensorboard import SummaryWriter
@@ -19,7 +20,7 @@ BATCH_SIZE = 1024
 LEARNING_RATE = 0.0001
 SAVE_TRACED_MODEL = False
 EVALUATE_STEPS = 50
-PATIENCE = 5
+PATIENCE = 10
 LAUNCH_TENSORBOARD = True
 
 
@@ -27,7 +28,7 @@ def main():
     paths = ProjectPaths()
 
     training_dataset_handler = TrainingDataset()
-    data_parser = training_dataset_handler.get_training_data_parser(max_files=2)
+    data_parser = training_dataset_handler.get_training_data_parser(max_files=400)
     data_folder = training_dataset_handler.get_data_folder()
 
     # Use torch data_loader to sample training data
