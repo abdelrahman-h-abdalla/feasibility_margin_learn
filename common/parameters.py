@@ -1,13 +1,18 @@
 import random
 import os
 import numpy as np
+import time
 
 from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
 from jet_leg_common.jet_leg.robots.robot_model_interface import RobotModelInterface
 
 def seed_random():
-    random.seed(os.getpid())
-    np.random.seed(os.getpid())
+    time_part = int(time.time() * 1000) & 0xFFFFFF  # Use milliseconds and keep 24 bits
+    pid_part = os.getpid() & 0xFF  # Keep 8 bits of PID
+    seed_value = time_part | (pid_part << 24)  # Combine
+    print("seed_value:", seed_value)
+    random.seed(seed_value)
+    np.random.seed(seed_value)
 
 def stance_feet(low=0, high=1):
     """ stanceFeet vector contains 1 if the foot is on the ground and 0 if it is in the air """
