@@ -150,9 +150,9 @@ class TrainingDataset:
                 training_data[:, 47].reshape(-1, 1)  # Stability Margin
             ])
             if process_data:
-                self.data_offset = np.mean(training_data, axis=0)
-                self.data_multiplier = np.std(training_data, axis=0)
-                self.data_multiplier[self.data_multiplier == 0] = 1 # Prevent division by 0 for unsampled inputs
+                self._data_offset = np.mean(training_data, axis=0)
+                self._data_multiplier = np.std(training_data, axis=0)
+                self._data_multiplier[self._data_multiplier == 0] = 1 # Prevent division by 0 for unsampled inputs
                 training_data = self.scale_data(training_data)
                 # Save normalization parameters in text file with data
                 normalization = np.stack((self._data_offset, self._data_multiplier))
