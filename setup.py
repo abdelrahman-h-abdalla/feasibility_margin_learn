@@ -8,14 +8,15 @@ setup(
     author_email='siddhant@gangapurwala.com',
     python_requires='>=3.5.0',
     install_requires=[
-        'torch',
+        'torch==1.5.1',
         'numpy',
         'pandas',
         'matplotlib',
         'scipy',
-        'tensorboard',
+        'tensorboard==2.4.1',
+	'protobuf==3.19.6',
         'seaborn',
-        'transforms3d',
+        'transforms3d==0.3.1',
         'psutil'
     ]
 )
