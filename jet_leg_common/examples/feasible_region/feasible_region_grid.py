@@ -5,20 +5,25 @@ Created on Tue Jun 12 10:54:31 2018
 @author: Romeo Orsolino
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import numpy as np
 import time
 from numpy import array
-from jet_leg_common.jet_leg.plotting.plotting_tools import Plotter
+from jet_leg_common.jet_leg.jet_leg.plotting.plotting_tools import Plotter
 import random
-from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
-from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
-from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
-from jet_leg_common.jet_leg.dynamics.instantaneous_capture_point import InstantaneousCapturePoint
-from jet_leg_common.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
-from jet_leg_common.jet_leg.optimization.lp_vertex_redundancy import LpVertexRedundnacy
+from jet_leg_common.jet_leg.jet_leg.computational_geometry.math_tools import Math
+from jet_leg_common.jet_leg.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
+from jet_leg_common.jet_leg.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
+from jet_leg_common.jet_leg.jet_leg.dynamics.instantaneous_capture_point import InstantaneousCapturePoint
+from jet_leg_common.jet_leg.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
+from jet_leg_common.jet_leg.jet_leg.optimization.lp_vertex_redundancy import LpVertexRedundnacy
 
 import matplotlib.pyplot as plt
-from jet_leg_common.jet_leg.plotting.arrow3D import Arrow3D
+from jet_leg_common.jet_leg.jet_leg.plotting.arrow3D import Arrow3D
+
 
 
 plt.close('all')
@@ -41,12 +46,12 @@ constraint_mode_IP = ['FRICTION_AND_ACTUATION',
 # number of decision variables of the problem
 # n = nc*6
 comWF = np.array([.0, 0.0, 0.0])
-comWF_lin_acc = np.array([0.0, .0, .0])
-comWF_ang_acc = np.array([10.0, 0.0, .0])
+comWF_lin_acc = np.array([.0, .0, .0])
+comWF_ang_acc = np.array([10.0, .0, .0])
 
 ''' extForceW is an optional external pure force (no external torque for now) applied on the CoM of the robot.'''
-extForce = np.array([0., 0.0, 0.0 * 9.81])  # units are N
-extCentroidalTorque = np.array([0.0, 0.0, 0.0])  # units are Nm
+extForce = np.array([0.0, 0.0, 0.0 * 9.81])  # units are N
+extCentroidalTorque = np.array([.0, .0, .0])  # units are Nm
 extCentroidalWrench = np.hstack([extForce, extCentroidalTorque])
 
 """ contact points in the World Frame"""
@@ -66,9 +71,9 @@ stanceFeet = [0, 1, 1, 0]
 randomSwingLeg = random.randint(0, 3)
 tripleStance = False  # if you want you can define a swing leg using this variable
 if tripleStance:
-    print 'Swing leg', randomSwingLeg
+    print('Swing leg', randomSwingLeg)
     stanceFeet[randomSwingLeg] = 0
-print 'stanceLegs ', stanceFeet
+print('stanceLegs ', stanceFeet)
 
 ''' now I define the normals to the surface of the contact points. By default they are all vertical now'''
 axisZ = array([[0.0], [0.0], [1.0]])
@@ -93,8 +98,8 @@ params.useInstantaneousCapturePoint = True
 params.setContactsPosWF(contactsWF)
 params.externalCentroidalWrench = extCentroidalWrench # forces = [+- 100.0N, +- 100N, 200N,]  torques = [+- 25.0 Nm, +- 25Nm, +- 25Nm,]
 params.setCoMPosWF(comWF)
-params.comLinVel = [0.25, 0.0, 0.0]  # [+- 2.0m/s, +- 2.0m/s, 0.5m/s]
-params.setCoMLinAcc(comWF_lin_acc)   # [+- 5m/s^2,+- 5m/s^2,+- 5m/s^2]
+params.comLinVel = [0.25, 0.0, 0.0] # [+- 2.0m/s, +- 2.0m/s, 0.5m/s]
+params.setCoMLinAcc(comWF_lin_acc) # [+- 5m/s^2,+- 5m/s^2,+- 5m/s^2]
 params.setCoMAngAcc(comWF_ang_acc)   # [+- 1rad/s^2,+- 1rad/s^2,+- 1rad/s^2]
 params.setTorqueLims(comp_dyn.robotModel.robotModel.joint_torque_limits)
 params.setActiveContacts(stanceFeet)
@@ -102,7 +107,6 @@ params.setConstraintModes(constraint_mode_IP)
 params.setContactNormals(normals)
 params.setFrictionCoefficient(mu)
 params.setTotalMass(comp_dyn.robotModel.robotModel.trunkMass)
-
 
 ''' compute iterative projection 
 Outputs of "iterative_projection_bretl" are:
@@ -115,11 +119,12 @@ IP_points, force_polytopes, IP_computation_time = comp_dyn.iterative_projection_
 # print "Inequalities", comp_dyn.ineq
 # print "actuation polygons"
 # print actuation_polygons
+print("IP points: ", IP_points)
 
 '''I now check whether the given CoM configuration is stable or not'''
 isConfigurationStable, contactForces, forcePolytopes = comp_dyn.check_equilibrium(params)
-print "is CoM stable", isConfigurationStable
-print 'contact forces', contactForces
+print("is CoM stable: ", isConfigurationStable)
+print('contact forces', contactForces)
 
 ''' compute Instantaneous Capture Point (ICP) and check if it belongs to the feasible region '''
 if params.useInstantaneousCapturePoint:
@@ -128,8 +133,8 @@ if params.useInstantaneousCapturePoint:
     params.instantaneousCapturePoint = icp
     lpCheck = LpVertexRedundnacy()
     isIcpInsideFeasibleRegion, lambdas = lpCheck.isPointRedundant(IP_points.T, icp)
-    print "is ICP stable? ", isIcpInsideFeasibleRegion
-    print "distance from edges of the polygon", np.min(lambdas)
+    print("is ICP stable? ", isIcpInsideFeasibleRegion)
+    print("distance from edges of the polygon", np.min(lambdas))
 
 
 start_t_IP = time.time()
@@ -137,7 +142,10 @@ compGeom = ComputationalGeometry()
 #feasibility = compGeom.isPointRedundantGivenVertices(IP_points, [0.2, 0.1])
 #print "is point feasible", feasibility
 binaryMatrix, feasible_points, unfeasible_points, marginMatrix = compGeom.computeFeasibleRegionBinaryMatrix(IP_points)
-print "time needed to compute the grid points", time.time() - start_t_IP
+print("time for computing the grid points: ", time.time() - start_t_IP)
+# import sys
+# np.set_printoptions(threshold=sys.maxsize)
+# print("marginMatrix: ", marginMatrix)
 
 '''Plotting the contact points in the 3D figure'''
 fig = plt.figure()
@@ -181,7 +189,7 @@ for j in range(0,
     ax.scatter(contactsWF[idx, 0], contactsWF[idx, 1], 0.0, c='k', s=100)
     ax.add_artist(a)
 
-print 'sum of vertical forces is', fz_tot
+print('sum of vertical forces is', fz_tot)
 
 ''' plotting Iterative Projection points '''
 plotter = Plotter()
@@ -193,7 +201,6 @@ for j in range(0, nc):  # this will only show the force polytopes of the feet th
 
 ''' 2D figure '''
 plt.figure()
-
 for j in range(0,
                nc):  # this will only show the contact positions and normals of the feet that are defined to be in stance
     idx = int(stanceID[j])
@@ -226,16 +233,13 @@ unfeasiblePointsSize = np.size(unfeasible_points, 0)
 #    plt.scatter(unfeasible_points[j, 0], unfeasible_points[j, 1], c='r', s=50)
 #    lastUnfeasibleIndex = j
 
-print "number of feasible points", feasiblePointsSize
-print "number of unfeasible points", unfeasiblePointsSize,
-
+print("number of feasible points", feasiblePointsSize)
+print("number of unfeasible points", unfeasiblePointsSize)
 plt.grid()
 plt.xlabel("X [m]")
 plt.ylabel("Y [m]")
 plt.legend()
-
-#
 plt.figure()
-# plt.imshow(marginMatrix, cmap='gray')
-plt.imshow(binaryMatrix, cmap='gray')
+plt.imshow(marginMatrix)
+# plt.imshow(binaryMatrix, cmap='gray')
 plt.show()

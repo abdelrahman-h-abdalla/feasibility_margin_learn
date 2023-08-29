@@ -3,6 +3,7 @@ import numpy as np
 class AnymalModel:
     def __init__(self, anymal_type):
         self.anymal_type = anymal_type
+        
         if self.anymal_type == 'anymal_boxy':
             self.trunkMass = 35
             self.trunkInertia = np.array([[0.946438, -0.000938112, 0.00595386],
@@ -35,7 +36,7 @@ class AnymalModel:
             self.trunkInertia = np.array([[0.946438, -0.000938112, 0.00595386],
                                           [-0.000938112, 1.94478, 0.00146328],
                                           [0.00595386, 0.00146328, 2.01835]])
-
+            
             ''' torque limits for each leg (this code assumes three joints per leg)
             HAA = Hip Abduction Adduction
             HFE = Hip Flextion Extension

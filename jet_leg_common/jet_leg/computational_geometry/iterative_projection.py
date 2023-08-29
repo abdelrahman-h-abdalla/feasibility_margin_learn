@@ -213,6 +213,7 @@ class IterativeProjection:
             #print new_hs
             hs = np.vstack([hs, new_hs])
         return hs
+            
 
 # constraint_mode = 'ONLY_ACTUATION'
 # com = np.array([0.0, 0.0, 0.0])
@@ -222,51 +223,51 @@ class IterativeProjection:
 # LH_foot = np.array([-0.3, 0.3, -0.5])
 # RH_foot = np.array([-0.3, -0.3, -0.5])
 # Y_inner = np.vstack((LF_foot[0:2],RF_foot[0:2],LH_foot[0:2],RH_foot[0:2],LF_foot[0:2]))
-# 
+
 # #Y_inner = np.random.rand(30, 2)
-# 
+
 # hull = ConvexHull(Y_inner)
 # polygon = Polygon(Y_inner)
 # iterativeProjection = IterativeProjection()
-# 
+
 # innerPolygon = InnerPolygon(Y_inner)
-# 
+
 # set1 = PolygonTriple()
-# 
-# 
+
+
 # polygon.clockwise_sort(polygon)
 # hs = iterativeProjection.compute_halfspaces(polygon)
 # #print hs
-# 
+
 # nc = 3
-# 
+
 # contactsToStack = np.vstack((LF_foot,RF_foot,LH_foot,RH_foot))
 # contacts = contactsToStack[0:nc, :]
-# 
+
 # axisZ= np.array([[0.0], [0.0], [1.0]])
-# 
+
 # math = Math()
 # n1 = np.transpose(np.transpose(math.rpyToRot(1.5,1.5,0.0)).dot(axisZ))
 # n2 = np.transpose(np.transpose(math.rpyToRot(0.0,0.0,0.0)).dot(axisZ))
 # n3 = np.transpose(np.transpose(math.rpyToRot(0.0,0.0,0.0)).dot(axisZ))
 # n4 = np.transpose(np.transpose(math.rpyToRot(0.0,0.0,0.0)).dot(axisZ))
 # normals = np.vstack([n1, n2, n3, n4])
-# 
-# 
+
+
 # ''' initialize Y_inner and Y_outer '''
 # inner_vx, directions = iterativeProjection.initiliaze_inner_appriximation(constraint_mode, mass, nc, contacts, com, normals)
 # outer_vx = iterativeProjection.initiliaze_outer_appriximation(inner_vx, directions)
 # '''1) Compute the edges of Y inner'''
-# 
+
 # '''2) Pick the edge cutting off the greatest fraction  of Y outer '''
-# 
+
 # '''3) Find the point in Y furthest outside this edge '''
-# 
+
 # '''4) Update the outer approximation '''
-# 
+
 # '''5) Update the inner approximation '''
-# 
-# 
+
+
 # #plt.plot(Y_inner[:,0], Y_inner[:,1], 'o')
 # #for simplex in hull.simplices:
 # #    plt.plot(Y_inner[simplex, 0], Y_inner[simplex, 1], 'k-')

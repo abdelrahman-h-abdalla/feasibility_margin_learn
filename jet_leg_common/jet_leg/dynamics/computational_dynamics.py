@@ -5,6 +5,10 @@ Created on Tue Jun  5 15:57:17 2018
 @author: Romeo Orsolino
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import pypoman
 import numpy as np
 from numpy import array, dot, eye, hstack, vstack, zeros
@@ -38,6 +42,22 @@ class ComputationalDynamics:
         self.zmp = ZeroMomentPoint()
 
     ''' 
+    This function computes the linear and angular inertial terms '''
+    def compute_inertial_terms(self, robotMass, robotInertia,
+                               acceleration_lin = [0., 0., 0.],
+                               acceleration_ang = [0., 0., 0.],
+                               velocity_ang = [[0.], [0.], [0.]]):
+
+        linear_momentum_dot = np.multiply(robotMass, acceleration_lin)
+        coriolis = robotInertia.dot(velocity_ang)
+        coriolis = np.cross(np.transpose(velocity_ang), np.transpose(coriolis))
+        coriolis = coriolis[0]
+        angular_momentum_dot = np.matmul(robotInertia, acceleration_ang) + coriolis
+        
+        return linear_momentum_dot, angular_momentum_dot
+
+
+    ''' 
     This function is used to prepare all the variables that will be later used 
     for the computation of the Iterative Projection algorithm 
     
@@ -53,47 +73,67 @@ class ComputationalDynamics:
     saturate_normal_force = if True this sets a max constant value on the normal force of the friction cones
     '''
     def setup_iterative_projection(self, iterative_projection_params, saturate_normal_force):
-        #print "CoM position in IP setup ", iterative_projection_params.getCoMPosWF()
+        
         stanceLegs = iterative_projection_params.getStanceFeet()
         contactsWF = iterative_projection_params.getContactsPosWF()
+        robotMass = iterative_projection_params.getTotalMass()
+        robotInertia = iterative_projection_params.getTotalInertia()
+        height = iterative_projection_params.comPositionWF[2]
+
+        ''' parameters to be tuned'''
+        g = 9.81
         contactsNumber = np.sum(stanceLegs)
-
-        if contactsNumber > 2:
-            iterative_projection_params.useContactTorque = False
-        else:
-            iterative_projection_params.useContactTorque = True
-
+        
         # Unprojected state is:
         #
         #     x = [f1_x, f1_y, f1_z, ... , f3_x, f3_y, f3_z]
         Ex = np.zeros((0)) 
-        Ey = np.zeros((0))        
+        Ey = np.zeros((0))
         G = np.zeros((6,0))
 
-        totalCentroidalWrench = self.rbd.computeCentroidalWrench(iterative_projection_params.robotMass,
-                                                                 self.robotModel.robotModel.trunkInertia,
-                                                                 iterative_projection_params.getCoMPosWF(),
-                                                                 iterative_projection_params.externalCentroidalWrench,
-                                                                 iterative_projection_params.getCoMLinAcc(),
-                                                                 iterative_projection_params.getCoMAngAcc())
+        extForce = iterative_projection_params.getExternalForce()
+        extTorque = iterative_projection_params.getExternalCentroidalTorque()
+        acceleration_lin = iterative_projection_params.getCoMLinAcc()
+        acceleration_ang = iterative_projection_params.getCoMAngAcc()
+        velocity_ang = iterative_projection_params.getCoMAngVel()
 
+        linear_momentum_dot, angular_momentum_dot = self.compute_inertial_terms(robotMass,
+                                                                               robotInertia,
+                                                                               acceleration_lin,
+                                                                               acceleration_ang)
+        # linear_momentum_dot = [0., 0., 0.]
+        # angular_momentum_dot = [0., 0., 0.]
         stanceIndex = iterative_projection_params.getStanceIndex(stanceLegs)
 
         for j in range(0,contactsNumber):
+
+            # Get the 3D position r of contact point of stance leg j
             r = contactsWF[int(stanceIndex[j]),:]
-            #print "foot ", r
+            #print 'r is ', r
+
+            # Build grasp matrix of the set of contact points
+            # See equations 12 and 13 in Feasible Region paper
+            # or equation 6 in Bretl
+
+            # Get the transformation for forces (3D) or wrenches (6D)
             if not iterative_projection_params.useContactTorque:
-                graspMatrix = self.math.getGraspMatrix(r)[:,0:3]
+                graspMatrix = self.math.getGraspMatrix(r)[:,0:3]  # forces (3D)
             else:
-                graspMatrix = self.math.getGraspMatrix(r)[:,0:5]
+                graspMatrix = self.math.getGraspMatrix(r)[:,0:5]  # wrenches (6D)
+            # print("grasp mat", graspMatrix)
             Ex = hstack([Ex, -graspMatrix[4]])
             Ey = hstack([Ey, graspMatrix[3]])
-            G = hstack([G, graspMatrix])
-
-        #print "totalCentroidalWrench", totalCentroidalWrench
-        E = vstack((Ex, Ey)) / (totalCentroidalWrench[2] )
-        #f = zeros(2)
-        f = hstack([ totalCentroidalWrench[4], - totalCentroidalWrench[3]])  / (totalCentroidalWrench[2])
+            # print "Ex", Ex
+            # print "Ey", Ey
+            G = hstack([G, graspMatrix])  # Full grasp matrix
+            
+#        print 'grasp matrix',G
+        E = vstack((Ex, Ey)) / (g*robotMass - extForce[2] + linear_momentum_dot[2])
+        # print "E", E
+        f = np.array([(-extTorque[1] + angular_momentum_dot[1] - (extForce[0] - linear_momentum_dot[0]) * height) /
+                      (g*robotMass - extForce[2] + linear_momentum_dot[2]),
+                      (extTorque[0] - angular_momentum_dot[0] - (extForce[1] - linear_momentum_dot[1]) * height) /
+                      (g*robotMass - extForce[2] + linear_momentum_dot[2])])
         proj = (E, f)  # y = E * x + f
         
         # see Equation (52) in "ZMP Support Areas for Multicontact..."
@@ -103,15 +143,110 @@ class ComputationalDynamics:
             [0, 0, 1, 0, 0, 0],
             [0, 0, 0, 0, 0, 1]])
         A = dot(A_f_and_tauz, G)
-        t = hstack([totalCentroidalWrench[0:3], totalCentroidalWrench[5]])
-        #print "total wrench ", totalCentroidalWrench
+        # Extension of equation 51 to add additional CoM constraint resulting from external forces and torques
+        # Added instead of 0 block (upper right) in C_ext in Pypoman
+        A_y = np.zeros((A_f_and_tauz.shape[0], 2))
+        A_y[-1] = np.array([[extForce[1] - linear_momentum_dot[1], - extForce[0] + linear_momentum_dot[0]]])
+#        print A
+        t = hstack([- extForce[0] + linear_momentum_dot[0],
+                    - extForce[1] + linear_momentum_dot[1],
+                    g*robotMass - extForce[2] + linear_momentum_dot[2],
+                    - extTorque[2] + angular_momentum_dot[2]])
+#        print extForceWF, t
 #        print 'mass ', robotMass
+#        print A,t
         eq = (A, t)  # A * x == t
 
         C, d, isIKoutOfWorkSpace, actuation_polygons = self.constr.getInequalities(iterative_projection_params)
-        ineq = (C, d)    
-        return proj, eq, ineq, actuation_polygons, isIKoutOfWorkSpace
-        
+        ineq = (C, d)
+        return proj, eq, A_y, ineq, actuation_polygons, isIKoutOfWorkSpace
+
+    def setup_general_plane_iterative_projection(self, iterative_projection_params, saturate_normal_force):
+
+        stanceLegs = iterative_projection_params.getStanceFeet()
+        contactsWF = iterative_projection_params.getContactsPosWF()
+        robotMass = iterative_projection_params.robotMass
+        robotInertia = iterative_projection_params.getTotalInertia()
+        g = 9.81
+        contactsNumber = np.sum(stanceLegs)
+
+        extForce = iterative_projection_params.getExternalForce()
+        extTorque = iterative_projection_params.getExternalCentroidalTorque()
+        acceleration_lin = iterative_projection_params.getCoMLinAcc()
+        acceleration_ang = iterative_projection_params.getCoMAngAcc()
+        velocity_ang = iterative_projection_params.getCoMAngVel()
+
+        linear_momentum_dot, angular_momentum_dot = self.compute_inertial_terms(robotMass,
+                                                                               robotInertia,
+                                                                               acceleration_lin,
+                                                                               acceleration_ang)
+        # linear_momentum_dot = robotMass*acceleration
+        # linear_momentum_dot = np.array([0., 0., 0.])
+        # linear_momentum_dot = iterative_projection_params. getInertialForces()
+        # angular_momentum_dot = np.array([0., 0., 0.])
+        # angular_momentum_dot = iterative_projection_params.getInertialMoments()
+        plane_normal = iterative_projection_params.get_plane_normal()
+        projection_plane_z_intercept = iterative_projection_params.get_CoM_plane_z_intercept()
+        stanceIndex = iterative_projection_params.getStanceIndex(stanceLegs)
+
+        G = np.zeros((6, 0))
+
+        for j in range(0,contactsNumber):
+
+            # Get the 3D position r of contact point of stance leg j
+            r = contactsWF[int(stanceIndex[j]),:]
+
+            # Build grasp matrix of the set of contact points
+            # See equations 12 and 13 in Feasible Region paper
+            # or equation 6 in Bretl
+
+            # Get the transformation for forces (3D) or wrenches (6D)
+            if not iterative_projection_params.useContactTorque:
+                graspMatrix = self.math.getGraspMatrix(r)[:, 0:3]  # forces (3D)
+            else:
+                graspMatrix = self.math.getGraspMatrix(r)[:, 0:5]  # wrenches (6D)
+            # print "grasp mat", graspMatrix
+            G = hstack([G, graspMatrix])  # Full grasp matrix
+
+        A21_zeros = np.zeros((3,2))
+        A22 = self.compute_A22_block(g*robotMass, extForce, linear_momentum_dot, plane_normal)
+        A = np.hstack((G, np.vstack((A21_zeros, A22))))
+        t_linear = np.add(np.add(-np.array([0.0, 0.0, -g*robotMass]), linear_momentum_dot), -np.array(extForce))
+        t_angular = self.compute_t_angular_vector(projection_plane_z_intercept, extForce, extTorque,
+                                                  linear_momentum_dot, angular_momentum_dot)
+        t = np.concatenate([t_linear, t_angular])
+
+        eq = (A, t)  # A * x == t
+
+        C, d, isIKoutOfWorkSpace, actuation_polygons = self.constr.getInequalities(iterative_projection_params)
+        ineq = (C, d)
+
+        return eq, ineq, actuation_polygons, isIKoutOfWorkSpace
+
+
+    def compute_A22_block(self, gravity_term, ext_force, linear_momentum_dot, plane_normal):
+
+        A22 = np.zeros((3,2))
+
+        A22[0][0] = plane_normal[0]/plane_normal[2]*ext_force[1] + \
+                    - plane_normal[0]/plane_normal[2]*linear_momentum_dot[1]
+        A22[0][1] = - gravity_term + plane_normal[1]/plane_normal[2]*ext_force[1] + \
+                    ext_force[2] - plane_normal[1]/plane_normal[2]*linear_momentum_dot[1] - linear_momentum_dot[2]
+        A22[1][0] = -plane_normal[0]/plane_normal[2]*ext_force[0] - ext_force[2] + \
+                    plane_normal[0]/plane_normal[2]*linear_momentum_dot[0] + linear_momentum_dot[2] + gravity_term
+        A22[1][1] = - plane_normal[1]/plane_normal[2]*ext_force[0] + \
+                    plane_normal[1]/plane_normal[2]*linear_momentum_dot[0]
+        A22[2][0] = ext_force[1] - linear_momentum_dot[1]
+        A22[2][1] = -ext_force[0] + linear_momentum_dot[0]
+
+        return A22
+
+    def compute_t_angular_vector(self, d_intercept, ext_force, ext_torque, linear_momentum_dot, angular_momentum_dot):
+
+        return np.array([ext_force[1]*d_intercept - linear_momentum_dot[1]*d_intercept,
+                         -ext_force[0]*d_intercept + linear_momentum_dot[0]*d_intercept, 0]) + \
+               angular_momentum_dot - ext_torque
+
     def reorganizeActuationPolytopes(self, actPolytope):
         outputPolytopeX = np.zeros((1,8))
         outputPolytopeY = np.zeros((1,8))
@@ -163,24 +298,57 @@ class ComputationalDynamics:
 #        print 'out poly Z',outputPolytopeZ
         return outputPolytope
 
+    def fill_general_plane_region_z_component(self, vertices, plane_normal, plane_z_intercept):
+
+        vertices_3d = np.ndarray(shape=(vertices.shape[0], 3), dtype=float)
+        for i, vertix in enumerate(vertices):
+            vertices_3d[i] = np.append(vertices[i], self.math.compute_z_component_of_plane(vertix, plane_normal, plane_z_intercept))
+
+        return vertices_3d
+
+
     def try_iterative_projection_bretl(self, iterative_projection_params, saturate_normal_force = False):
         try:
             compressed_hull, actuation_polygons, computation_time = self.iterative_projection_bretl(iterative_projection_params, saturate_normal_force)
             return compressed_hull, actuation_polygons, computation_time
         except ValueError as err:
             print('Could not compute the feasible region')
-            print(err.args)
+            print((err.args))
             return False, False, False
+
 
     def iterative_projection_bretl(self, iterative_projection_params, saturate_normal_force = False):
 
         start_t_IP = time.time()
-#        print stanceLegs, contacts, normals, comWF, ng, mu, saturate_normal_force
-        proj, self.eq, self.ineq, actuation_polygons, isIKoutOfWorkSpace = self.setup_iterative_projection(iterative_projection_params, saturate_normal_force)
+
+        # Stop if no feet on the ground
+        stanceLegs = iterative_projection_params.getStanceFeet()
+        stanceIndex = iterative_projection_params.getStanceIndex(stanceLegs)
+        if len(stanceIndex) < 1:
+            return False, False, False
+
+        # if iterative_projection_params.plane_normal == [0,0,1]:
+        if False:
+            proj, self.eq, self.A_y, self.ineq, actuation_polygons, isIKoutOfWorkSpace = self.setup_iterative_projection(iterative_projection_params, saturate_normal_force)
+        else:
+            self.eq, self.ineq, actuation_polygons, isIKoutOfWorkSpace = self.setup_general_plane_iterative_projection(iterative_projection_params, saturate_normal_force)
+
         if isIKoutOfWorkSpace:
             return False, False, False
         else:
-            vertices_WF = pypoman.project_polytope(proj, self.ineq, self.eq, method='bretl', max_iter=500, init_angle=0.0)
+            try:
+                # if iterative_projection_params.plane_normal == [0,0,1]:
+                if False:
+                    vertices_WF = pypoman.project_polytope(proj, self.ineq, self.A_y, self.eq, method='bretl', max_iter=500, init_angle=0.0)
+                else:
+                    vertices_WF = pypoman.project_polytope_general_plane(self.ineq, self.eq, max_iter=500, init_angle=0.0)
+            except (ValueError, Exception) as e:
+                vertices_WF = False
+                if hasattr(e, 'message'):
+                    print((e.message))
+                else:
+                    print(e)
+
             if vertices_WF is False:
                 print('Project polytope function is False')
                 return False, False, False
@@ -190,15 +358,26 @@ class ComputationalDynamics:
                 try:
                     hull = ConvexHull(compressed_vertices)
                 except Exception as err:
-                    print("QHull type error: " + str(err))
-                    print("matrix to compute qhull:",compressed_vertices)
+                    print(("QHull type error: " + str(err)))
+                    print(("matrix to compute qhull:",compressed_vertices))
                     return False, False, False
-
+                
+                
+#        print 'hull ', hull.vertices
             compressed_hull = compressed_vertices[hull.vertices]
             compressed_hull = self.geom.clockwise_sort(compressed_hull)
+            # USE THIS TO COMPUTE THE REGION AT THE COM LEVEL
+            compressed_hull = self.fill_general_plane_region_z_component(compressed_hull,
+                                                                         iterative_projection_params.get_plane_normal(),
+                                                                         iterative_projection_params.get_CoM_plane_z_intercept())
+#            # USE THIS TO COMPUTE THE REGION AT THE FEET LEVEL
+#            compressed_hull = self.fill_general_plane_region_z_component(compressed_hull,
+#                                                                         iterative_projection_params.get_plane_normal(),
+#                                                                         iterative_projection_params.get_terrain_plane_z_intercept())                                                                         
             compressed_hull = compressed_hull
             computation_time = (time.time() - start_t_IP)
-            return compressed_hull, actuation_polygons, computation_time
+
+        return compressed_hull, actuation_polygons, computation_time
         
         
     def instantaneous_actuation_region_bretl(self, stanceLegs, contacts, normals, total_mass, comWF = np.array([0.0,0.0,0.0])):
@@ -227,7 +406,7 @@ class ComputationalDynamics:
             x = -1
             return False, x, LP_actuation_polygons
         else:
-            #print 'Solving LP'
+            # print('Solving LP')
             sol = solvers.lp(p, G, h, A, b)
             x = sol['x']
             status = sol['status']
@@ -290,7 +469,7 @@ class ComputationalDynamics:
                         unfeasible_points = np.vstack([unfeasible_points, com_WF])
 
                     
-        print("LP test: --- %s seconds ---" % (time.time() - start_t_LP))
+        print(("LP test: --- %s seconds ---" % (time.time() - start_t_LP)))
         
         return feasible_points, unfeasible_points, contact_forces
 
@@ -317,18 +496,26 @@ class ComputationalDynamics:
         totMass = LPparams.robotMass
         nc = np.sum(stanceLegs)
         grav = np.array([[0.], [0.], [-g*totMass]])
-        if not LPparams.useContactTorque:
-            p = matrix(np.zeros((3*nc,1)))
-        else:
+        if LPparams.useContactTorque:
             p = matrix(np.zeros((5*nc,1)))
+        else:
+            p = matrix(np.zeros((3*nc,1)))
 
         contactsPosWF = LPparams.getContactsPosWF()
+        comWorldFrame = LPparams.getCoMPosWF()
+        extForce = LPparams.getExternalForce()
+        extTorque = LPparams.getExternalCentroidalTorque()
+        totForce = grav
+        totForce[0] += extForce[0]
+        totForce[1] += extForce[1]
+        totForce[2] += extForce[2]
         totalCentroidalWrench = self.rbd.computeCentroidalWrench(LPparams.robotMass,
-                                                                 self.robotModel.robotModel.trunkInertia,
+                                                                 LPparams.robotInertia,
                                                                  LPparams.getCoMPosWF(),
                                                                  LPparams.externalCentroidalWrench,
                                                                  LPparams.getCoMLinAcc(),
                                                                  LPparams.getCoMAngAcc())
+
         if np.sum(stanceLegs) == 1:
             A = np.zeros((5,0))
         else:
@@ -336,16 +523,18 @@ class ComputationalDynamics:
         stanceIndex = LPparams.getStanceIndex(stanceLegs)
         for j in stanceIndex:
             j = int(j)
-            #print 'index in lp ',j
-            r = contactsPosWF[j,:]
+            # print 'index in lp ',j
+            r = contactsPosWF[j, :]
             GraspMat = self.math.getGraspMatrix(r)
             if not LPparams.useContactTorque:
-                A = np.hstack((A, GraspMat[:,0:3]))
+                A = np.hstack((A, GraspMat[:, 0:3]))
+                # print(A)
                 A = matrix(A)
                 b = matrix(totalCentroidalWrench.reshape((6)))
             else:
                 ''' non-zero foot size case'''
                 if np.sum(stanceLegs) == 1:
+                    print ("ciaooooo")
                     ''' if there is only one stance foot the problem is overconstrained and we can remove the constraint on tau_z'''
                     A = np.hstack((A, GraspMat[0:5,0:5]))
                     A = matrix(A)
@@ -355,7 +544,6 @@ class ComputationalDynamics:
                     A = np.hstack((A, GraspMat[:,0:5]))
                     A = matrix(A)
                     b = matrix(totalCentroidalWrench.reshape((6)))
-
 
 
         G, h, isIKoutOfWorkSpace, LP_actuation_polygons = self.constr.getInequalities(LPparams)
@@ -374,7 +562,7 @@ class ComputationalDynamics:
         '''
         IP_points, force_polytopes, IP_computation_time = self.try_iterative_projection_bretl(iterative_projection_params)
         if IP_points is not False:
-            facets = self.compGeom.compute_halfspaces_convex_hull(IP_points)
+            facets = self.compGeom.compute_halfspaces_convex_hull(IP_points[:,:2])
             reference_point = self.getReferencePoint(iterative_projection_params, reference_type)
             isPointFeasible, margin = self.compGeom.isPointRedundant(facets, reference_point)
             return isPointFeasible, margin
@@ -383,9 +571,9 @@ class ComputationalDynamics:
             return False, -1000.0
 
     def getReferencePoint(self, iterative_projection_params, type):
+
         comWF = iterative_projection_params.getCoMPosWF()
         if(type=="ICP"):
-            print("compute ICP")
             ICP = self.icp.compute(iterative_projection_params)
             iterative_projection_params.instantaneousCapturePoint = ICP
             referencePoint = np.array([ICP[0], ICP[1]])
@@ -396,10 +584,10 @@ class ComputationalDynamics:
             referencePoint = np.array([comWF[0], comWF[1]])
         else:
             print("Reference point type unspecified")
-
-        return referencePoint
-
+        return  referencePoint
+    
     def getReferencePointWrtBaseFrame(self, iterative_projection_params):
+        
         pendulum_height = 100.0
         iterative_projection_params.setCoMPosWF([0.0, 0.0, pendulum_height])
         comWF = iterative_projection_params.getCoMPosWF()

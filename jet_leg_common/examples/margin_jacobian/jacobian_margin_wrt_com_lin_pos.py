@@ -1,6 +1,5 @@
 """
 Created on Tue Jun 12 10:54:31 2018
-
 @author: Romeo Orsolino
 """
 
@@ -170,7 +169,6 @@ def plotAnalyticMarginAndDerivatives(pos_margin_x, jac_com_pos_x, pos_margin_y, 
     plt.subplot(436)
     plt.plot(delta_pos_range_vec_z, jac_com_pos_z[0, :], 'r-o', markersize=2, label='analytic (finite-diff)')
 
-    plt.subplot(439)
     plt.plot(delta_pos_range_vec_z, jac_com_pos_z[1, :], 'r-o', markersize=2, label='analytic (finite-diff)')
 
     plt.subplot(4, 3, 12)

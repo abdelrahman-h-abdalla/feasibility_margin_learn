@@ -4,6 +4,11 @@ Created on Tue Jun  5 09:43:27 2018
 
 @author: romeo orsolino
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import numpy as np
 
 class Math:
@@ -27,32 +32,41 @@ class Math:
 
     def getGraspMatrix(self, r):
         G = np.vstack([np.hstack([np.eye(3), np.zeros((3, 3))]),np.hstack([self.skew(r), np.eye(3)])])
-        return G
+        return G    
 
+    def plane_z_intercept(self, point_on_plane, plane_normal):
+        return point_on_plane[2] + \
+               plane_normal[0] / plane_normal[2] * point_on_plane[0] + \
+               plane_normal[1] / plane_normal[2] * point_on_plane[1]
+
+    def compute_z_component_of_plane(self, xy_components, plane_normal, z_intercept):
+        return -plane_normal[0]/plane_normal[2]*xy_components[0] - \
+               plane_normal[1]/plane_normal[2]*xy_components[1] + z_intercept
 
     def rpyToRot(self, roll, pitch, yaw):
+    
 
-
-
-        Rx =  np.array([ [   1   ,    0     	  ,  	  0],
+        
+        Rx =  np.array([ [   1   ,    0     	  ,  	  0], 
                          [0   ,    np.cos(roll) ,  np.sin(roll)],
                          [0   ,    -np.sin(roll),  np.cos(roll)]]);
 
 
         Ry = np.array([[np.cos(pitch) 	,	 0  ,   -np.sin(pitch)],
-                       [      0       ,    1  ,   0],
-                       [np.sin(pitch) 	,	0   ,  np.cos(pitch)]]);
-
-
+              [      0       ,    1  ,   0],
+              [np.sin(pitch) 	,	0   ,  np.cos(pitch)]]);
+          
+        
         Rz = np.array([[ np.cos(yaw)  ,  np.sin(yaw) ,		0],
-                       [-np.sin(yaw) ,  np.cos(yaw) ,  		0],
-                       [0      ,     0     ,       1]]);
-
+                      [-np.sin(yaw) ,  np.cos(yaw) ,  		0],
+                      [0      ,     0     ,       1]]);
+        
+        
 
         # R =  Rx.dot(Ry.dot(Rz));
         R =  Rz.dot(Ry.dot(Rx));
         return R
-
+    
     ''' 
         :param R: 
         :return: returns the Euler angles given the rotation matrix
@@ -74,7 +88,6 @@ class Math:
         y = 0.0
         return r, p, y
 
-
     def line(self, p1, p2):
         A = (p1[1] - p2[1])
         B = (p2[0] - p1[0])
@@ -95,10 +108,10 @@ class Math:
     def is_point_inside_segment(self, first_input_point, second_input_point, point_to_check):
         epsilon = 0.001
 
-        if (np.abs(first_input_point[0] - second_input_point[0]) < 1e-02):
-            alpha = (point_to_check[1] - second_input_point[1]) / (first_input_point[1] - second_input_point[1])
+        if (np.abs(first_input_point[0] - second_input_point[0]) < 1e-02):                     
+            alpha = (point_to_check[1] - second_input_point[1]) / (first_input_point[1] - second_input_point[1]) 
         else:
-            alpha = (point_to_check[0] - second_input_point[0]) / (first_input_point[0] - second_input_point[0])
+            alpha = (point_to_check[0] - second_input_point[0]) / (first_input_point[0] - second_input_point[0])                 
 
         if(alpha>=-epsilon)&(alpha<=1.0+epsilon):
             new_point = point_to_check
@@ -108,17 +121,17 @@ class Math:
         return new_point, alpha
 
     def find_point_to_line_signed_distance(self, segment_point1, segment_point2, point_to_check):
-        # this function returns a positive distance if the point is on the right side of the segment. This will return
-        # a positive distance for a polygon queried in clockwise order and with a point_to_check which lies inside the polygon itself
+        # this function returns a positive distance if the point is on the right side of the segment. This will return 
+        # a positive distance for a polygon queried in clockwise order and with a point_to_check which lies inside the polygon itself 
         num = (segment_point2[0] - segment_point1[0])*(segment_point1[1] - point_to_check[1]) - (segment_point1[0] - point_to_check[0])*(segment_point2[1] - segment_point1[1])
         denum_sq = (segment_point2[0] - segment_point1[0])*(segment_point2[0] - segment_point1[0]) + (segment_point2[1] - segment_point1[1])*(segment_point2[1] - segment_point1[1])
         dist = num/np.sqrt(denum_sq)
-        #        print segment_point1, segment_point2, point_to_check, dist
+#        print segment_point1, segment_point2, point_to_check, dist
         return dist
 
     def find_residual_radius(self, polygon, point_to_check):
-        # this function returns a positive distance if the point is on the right side of the segment. This will return
-        # a positive distance for a polygon queried in clockwise order and with a point_to_check which lies inside the polygon itself
+        # this function returns a positive distance if the point is on the right side of the segment. This will return 
+        # a positive distance for a polygon queried in clockwise order and with a point_to_check which lies inside the polygon itself 
         # print 'poly',polygon
         numberOfVertices = np.size(polygon,0)
         # print 'polygon in residual radius computation', polygon
@@ -129,15 +142,15 @@ class Math:
             s2 = polygon[i+1,:]
             # print s1, s2, point_to_check
             d_temp = self.find_point_to_line_signed_distance(s1, s2, point_to_check)
-            #            print i, s1, s2, d_temp
+#            print i, s1, s2, d_temp
             if d_temp < 0.0:
                 print('Warning! found negative distance. Polygon might not be in clockwise order...')
             elif d_temp < residual_radius:
                 residual_radius = d_temp
 
         # we dont need to compute for the last edge cause we added an extra point to close the polytop (last point equal to the first)
-
-        #        print polygon[numberOfVertices-1,:], polygon[0,:], d_temp
+        
+#        print polygon[numberOfVertices-1,:], polygon[0,:], d_temp
         return residual_radius
 
     def find_polygon_segment_intersection(self, vertices_input, desired_direction, starting_point):

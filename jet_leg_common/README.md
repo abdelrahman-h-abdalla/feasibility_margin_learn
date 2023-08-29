@@ -3,8 +3,6 @@
 
 
 # Feasible Region: an Actuation-Aware Extension of the Support Region
-Adapted from: https://github.com/orsoromeo/jet-leg
-
 This python library contains the code used for the motion planning formulation proposed in this [preprint](https://arxiv.org/abs/1903.07999#). In here you can also find the code used to generate the figures and plots of the manuscript. 
 
 <img src="https://github.com/orsoromeo/jet-leg/blob/master/figs/3contacts_F%26A.png" alt="hyqgreen" width="200"/>  <img src="https://github.com/orsoromeo/jet-leg/blob/master/figs/3contacts_onlyA.png" alt="planning" width="200"/>  <img src="https://github.com/orsoromeo/jet-leg/blob/master/figs/4contacts_F%26A.png" alt="hyqgreen" width="200"/>  <img src="https://github.com/orsoromeo/jet-leg/blob/master/figs/4contacts_onlyA.png" alt="planning" width="200"/>
@@ -24,6 +22,8 @@ APT dependencies:
 - CVXOPT
 - GLPK
 - Cython
+- Scipy
+- Numpy
 
 ROS dependencies:
 ```
@@ -31,20 +31,28 @@ sudo apt-get  install ros-kinetic-graph-msgs
 ```
 
 Python dependencies:
-- Numpy
-- Scipy
 - Pycddlib
 - Matplotlib
-- [Pypoman](https://github.com/stephane-caron/pypoman) for the manipulation of polyhedrical object
-- [Pinocchio](https://github.com/stack-of-tasks/pinocchio) 
-
+- Shapely
+- Pathos (multiprocessing)
 The above dependencies can be installed with the following commands:
 ```
-sudo apt-get install cython libglpk-dev python python-dev python-pip python-scipy
 CVXOPT_BUILD_GLPK=1 pip install cvxopt --user
+sudo apt-get install  libglpk-dev python python-dev python-pip cython python-scipy  python-numpy
 pip install pycddlib --user
-pip install pypoman
+pip install --user matplotlib
+pip install --user shapely
+pip install --user pathos
 ```
+
+Other dependencies:
+- [Pinocchio](https://github.com/stack-of-tasks/pinocchio) 
+
+after cloning remember to do in the jetleg folder:
+```
+git submodules update --init --recursive
+```
+
 You can remove all ``--user`` arguments to install these Python modules system-wide.
 
 ## Optional dependencies:

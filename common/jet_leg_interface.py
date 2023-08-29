@@ -1,8 +1,11 @@
 import numpy as np
 
+from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
 from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
 from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
 from jet_leg_common.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
+import copy
+from scipy.spatial.transform import Rotation as Rot
 
 import eigenpy
 eigenpy.switchToNumpyMatrix()
@@ -60,9 +63,10 @@ def compute_stability(comp_dyn=ComputationalDynamics('anymal_coyote'),
         informations needed for the computation of the IP'''
     params.setContactsPosWF(feet_position)
     params.setEulerAngles(com_euler)
-    params.externalCentroidalWrench = ext_centroidal_wrench
+    params.externalForce = ext_force  # params.externalForceWF is actually used anywhere at the moment
+    params.externalCentroidalTorque = ext_torque
     params.setCoMPosWF(com)
-    params.comLinVel = com_lin_vel  # [+- 2.0m/s, +- 2.0m/s, 0.5m/s]
+    params.setCoMLinVel(com_lin_vel)  # [+- 1.0m/s, +- 1.0m/s, 0.5m/s]
     params.setCoMLinAcc(com_lin_acc)  # [+- 5m/s^2,+- 5m/s^2,+- 5m/s^2]
     params.setCoMAngAcc(com_ang_acc)  # [+- 1rad/s^2,+- 1rad/s^2,+- 1rad/s^2]
     params.setTorqueLims(comp_dyn.robotModel.robotModel.joint_torque_limits)
@@ -80,7 +84,7 @@ def compute_stability(comp_dyn=ComputationalDynamics('anymal_coyote'),
     '''
     ip_points, force_polytopes, ip_computation_time = comp_dyn.iterative_projection_bretl(params)
 
-    facets = comp_geom.compute_halfspaces_convex_hull(ip_points)
+    facets = comp_geom.compute_halfspaces_convex_hull(ip_points[:,:2])
     reference_point = comp_dyn.getReferencePoint(params, "COM")
     point_feasibility, margin = comp_geom.isPointRedundant(facets, reference_point)
 

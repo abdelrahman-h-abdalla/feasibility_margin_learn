@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Created on Tue Jun 12 10:54:31 2018
 
@@ -5,8 +6,6 @@ Created on Tue Jun 12 10:54:31 2018
 """
 
 import numpy as np
-
-from context import jet_leg
 
 from numpy import array
 from numpy.linalg import norm
@@ -37,8 +36,7 @@ mu = 0.8
 
 axisZ = array([[0.0], [0.0], [1.0]])
 
-robot_name = 'anymal'
-comp_dyn = ComputationalDynamics(robot_name)
+comp_dyn = ComputationalDynamics('anymal')
 
 number_of_tests = 1000
 onlyFrictionTests3contacts = np.zeros((number_of_tests))
@@ -48,7 +46,7 @@ onlyActuationTests4contacts = np.zeros((number_of_tests))
 frictionAndActuation3contacts = np.zeros((number_of_tests))
 frictionAndActuation4contacts = np.zeros((number_of_tests))
 
-params = IterativeProjectionParameters(robot_name)
+params = IterativeProjectionParameters()
 
 
 def perform_statistics(number_of_tests, number_of_contacts, _constraint_mode):

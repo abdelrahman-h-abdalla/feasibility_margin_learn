@@ -58,9 +58,9 @@ stanceFeet = [1, 1, 1, 1]
 randomSwingLeg = random.randint(0, 3)
 tripleStance = False  # if you want you can define a swing leg using this variable
 if tripleStance:
-    print 'Swing leg', randomSwingLeg
+    print('Swing leg', randomSwingLeg)
     stanceFeet[randomSwingLeg] = 0
-print 'stanceLegs ', stanceFeet
+print('stanceLegs ', stanceFeet)
 
 ''' now I define the normals to the surface of the contact points. By default they are all vertical now'''
 axisZ = array([[0.0], [0.0], [1.0]])
@@ -78,7 +78,7 @@ comp_dyn = ComputationalDynamics(robot_name)
 
 '''You now need to fill the 'params' object with all the relevant 
     informations needed for the computation of the IP'''
-params = IterativeProjectionParameters(robot_name)
+params = IterativeProjectionParameters()
 """ contact points in the World Frame"""
 LF_foot = np.array([0.3, 0.2, -0.4])
 RF_foot = np.array([0.3, -0.2, -0.4])
@@ -112,11 +112,11 @@ delta_y_range = 0.5
 delta_step = 0.1
 num_of_tests = 25
 delta_y_range_vec = np.linspace(-delta_y_range/2.0, delta_y_range/2.0, num_of_tests)
-print "number of tests", num_of_tests
+print("number of tests", num_of_tests)
 foot_id = 1
 margin, jac_foot_pos = jac.plotMarginAndJacobianWrtFootPosition(params, foot_id, delta_y_range_vec, 0)
 
-print "margin", margin
+print("margin", margin)
 plt.figure(1)
 plt.subplot(211)
 plt.plot(delta_y_range_vec, margin, 'g', markersize=15, label='CoM')

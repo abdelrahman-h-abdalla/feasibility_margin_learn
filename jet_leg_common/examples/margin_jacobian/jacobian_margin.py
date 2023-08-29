@@ -24,7 +24,7 @@ from jet_leg_common.jet_leg.plotting.arrow3D import Arrow3D
 plt.close('all')
 math = Math()
 
-''' Set the robot's name (either 'hyq', 'hyqreal', 'anymal_boxy' or 'anymal_coyote')'''
+''' Set the robot's name (either 'hyq', 'hyqreal' or 'anymal_boxy' or 'anymal_coyote')'''
 robot_name = 'anymal_boxy'
 
 '''
@@ -86,7 +86,7 @@ comp_dyn = ComputationalDynamics(robot_name)
 
 '''You now need to fill the 'params' object with all the relevant 
     informations needed for the computation of the IP'''
-params = IterativeProjectionParameters(robot_name)
+params = IterativeProjectionParameters()
 
 start = time.time()
 
@@ -129,13 +129,13 @@ com = CoM(params)
 
 jac = Jacobians("anymal_boxy")
 jac_com_pos = jac.computeComPosJacobian(params)
-print "com pos jacobian", jac_com_pos
+#print "com pos jacobian", jac_com_pos
 
 jac_com_orient = jac.computeComEulerAnglesJacobian(params)
-print "com orientation jacobian", jac_com_orient
+#print "com orientation jacobian", jac_com_orient
 
 jac_com_lin_vel = jac.computeComLinVelJacobian(params)
-print "com lin vel jacobian", jac_com_lin_vel
+#print "com lin vel jacobian", jac_com_lin_vel
 
 jac_com_lin_acc = jac.computeComLinVelJacobian(params)
 #print "com lin acc jacobian", jac_com_lin_acc
@@ -146,6 +146,5 @@ jac_feet = jac.computeFeetJacobian(params)
 #print "LF foot jacobian", jac_feet
 
 state_jacobian = np.hstack([jac_com_pos, jac_com_orient, jac_feet])
-print "jacobian vector: ",state_jacobian
-print "total time", time.time() - start
-
+print("jacobian vector: ",state_jacobian)
+print("total time", time.time() - start)

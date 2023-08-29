@@ -3,7 +3,7 @@
 #
 # Copyright (C) 2018 Romeo Orsolino <romeo.orsolino@iit.it>
 #
-# This file is part of jet_leg.
+# This file is part of jet_leg_common.
 #
 # jet_leg is free software: you can redistribute it and/or modify it under the
 # terms of the GNU Lesser General Public License as published by the Free
@@ -16,7 +16,7 @@
 # details.
 #
 # You should have received a copy of the GNU Lesser General Public License
-# along with jet_leg. If not, see <http://www.gnu.org/licenses/>.
+# along with jet_leg_common. If not, see <http://www.gnu.org/licenses/>.
 
 from distutils.core import setup
 from setuptools import find_packages

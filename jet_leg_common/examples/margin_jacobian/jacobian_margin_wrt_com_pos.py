@@ -14,7 +14,6 @@ from jet_leg_common.jet_leg.dynamics.computational_dynamics import Computational
 from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
 from jet_leg_common.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
 from jet_leg_common.jet_leg.optimization.jacobians import Jacobians
-from jet_leg_common.jet_leg.variables.com import CoM
 import time
 
 import matplotlib.pyplot as plt
@@ -36,7 +35,7 @@ constraint_mode_IP = ['FRICTION_AND_ACTUATION',
                       'FRICTION_AND_ACTUATION',
                       'FRICTION_AND_ACTUATION']
 
-comWF = np.array([0.0, 0.0, 0.0])
+comWF = np.array([.0, 0.0, 0.0])
 comWF_lin_acc = np.array([.0, .0, .0])
 comWF_ang_acc = np.array([.0, .0, .0])
 
@@ -74,7 +73,7 @@ comp_dyn = ComputationalDynamics(robot_name)
 
 '''You now need to fill the 'params' object with all the relevant 
     informations needed for the computation of the IP'''
-params = IterativeProjectionParameters(robot_name)
+params = IterativeProjectionParameters()
 """ contact points in the World Frame"""
 LF_foot = np.array([0.3, 0.2, -0.4])
 RF_foot = np.array([0.3, -0.2, -0.4])
@@ -87,7 +86,7 @@ params.setContactsPosWF(contactsWF)
 
 start = time.time()
 
-params.useContactTorque = True
+# params.useContactTorque = True
 params.useInstantaneousCapturePoint = True
 params.externalCentroidalWrench = extCentroidalWrench
 params.setCoMPosWF(comWF)
@@ -115,7 +114,7 @@ params_base_pitch = deepcopy(params)
 
 jac = Jacobians(robot_name)
 comp_geom = ComputationalGeometry()
-com = CoM(params)
+# com = CoM(params)
 
 delta_pos_range = 0.2
 num_of_tests = 25
@@ -139,21 +138,21 @@ RH_foot = np.array([-0.3, -0.2, -0.4])
 contactsWF = np.vstack((LF_foot, RF_foot, LH_foot, RH_foot))
 params.setContactsPosWF(contactsWF)
 
-vel_margin_x, jac_com_lin_vel_x = jac.plotMarginAndJacobianOfMarginWrtComVelocity(params_com_vel_x, delta_vel_range_vec, 0) # dm / d x_d
-vel_margin_y, jac_com_lin_vel_y = jac.plotMarginAndJacobianOfMarginWrtComVelocity(params_com_vel_y, delta_vel_range_vec, 1) # dm / d y_d
-vel_margin_z, jac_com_lin_vel_z = jac.plotMarginAndJacobianOfMarginWrtComVelocity(params_com_vel_z, delta_vel_range_vec, 2) # dm / d z_d
-
+# vel_margin_x, jac_com_lin_vel_x = jac.plotMarginAndJacobianOfMarginWrtComVelocity(params_com_vel_x, delta_vel_range_vec, 0) # dm / d x_d
+# vel_margin_y, jac_com_lin_vel_y = jac.plotMarginAndJacobianOfMarginWrtComVelocity(params_com_vel_y, delta_vel_range_vec, 1) # dm / d y_d
+# vel_margin_z, jac_com_lin_vel_z = jac.plotMarginAndJacobianOfMarginWrtComVelocity(params_com_vel_z, delta_vel_range_vec, 2) # dm / d z_d
+stanceFeet = [0, 1, 1, 0]
+params.setActiveContacts(stanceFeet)
 delta_acc_range = 8.0
 delta_acc_range_vec = np.linspace(-delta_acc_range/2.0, delta_acc_range/2.0, num_of_tests)
 acc_margin_x, jac_com_lin_acc_x = jac.plotMarginAndJacobianOfMarginWrtComLinAcceleration(params_com_acc_x, delta_acc_range_vec, 0) # dm/d x_dd
 acc_margin_y, jac_com_lin_acc_y = jac.plotMarginAndJacobianOfMarginWrtComLinAcceleration(params_com_acc_y, delta_acc_range_vec, 1) # dm/d y_dd
 acc_margin_z, jac_com_lin_acc_z = jac.plotMarginAndJacobianOfMarginWrtComLinAcceleration(params_com_acc_z, delta_acc_range_vec, 2) # dm/d z_dd
 
-delta_orientation_range = np.pi/4
-delta_orientation_range_vec = np.linspace(-delta_orientation_range/2.0, delta_orientation_range/2.0, num_of_tests)
-roll_margin, jac_base_roll = jac.plotMarginAndJacobianWrtBaseOrientation(params_base_roll, delta_orientation_range_vec, 0) # roll
-pitch_margin, jac_base_pitch = jac.plotMarginAndJacobianWrtBaseOrientation(params_base_pitch, delta_orientation_range_vec, 1) # pitch
-
+# delta_orientation_range = np.pi/4
+# delta_orientation_range_vec = np.linspace(-delta_orientation_range/2.0, delta_orientation_range/2.0, num_of_tests)
+# roll_margin, jac_base_roll = jac.plotMarginAndJacobianWrtBaseOrientation(params_base_roll, delta_orientation_range_vec, 0) # roll
+# pitch_margin, jac_base_pitch = jac.plotMarginAndJacobianWrtBaseOrientation(params_base_pitch, delta_orientation_range_vec, 1) # pitch
 
 ### Plotting
 

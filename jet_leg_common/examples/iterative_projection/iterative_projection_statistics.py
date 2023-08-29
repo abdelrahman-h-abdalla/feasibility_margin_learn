@@ -47,7 +47,7 @@ number_of_tests = 100
 tests3contacts = np.zeros((number_of_tests))
 tests4contacts = np.zeros((number_of_tests))  
 
-params = IterativeProjectionParameters(robot_name)
+params = IterativeProjectionParameters()
 
 for iter in range(0,number_of_tests):
     
@@ -92,6 +92,7 @@ for iter in range(0,number_of_tests):
 #    print contacts
 #    contacts = contactsToStack[0:nc, :]
 
+    torque_limits = comp_dyn.robotModel.robotModel.joint_torque_limits
     comWF = np.array([0.0,0.0,0.0])
     
     ''' compute iterative projection '''
@@ -102,6 +103,7 @@ for iter in range(0,number_of_tests):
     
     params.setContactsPosWF(contacts)
     params.setCoMPosWF(comWF)
+    params.setTorqueLims(torque_limits)
     params.setActiveContacts(stanceLegs)
     params.setConstraintModes(constraint_mode_IP)
     params.setContactNormals(normals)
@@ -166,6 +168,7 @@ for iter in range(0,number_of_tests):
     ''' compute iterative projection '''
     params.setContactsPosWF(contacts)
     params.setCoMPosWF(comWF)
+    params.setTorqueLims(torque_limits)
     params.setActiveContacts(stanceLegs)
     params.setConstraintModes(constraint_mode_IP)
     params.setContactNormals(normals)

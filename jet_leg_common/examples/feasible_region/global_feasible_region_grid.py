@@ -1,24 +1,23 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Jun 12 10:54:31 2018
-
 @author: Romeo Orsolino
 """
 
 import numpy as np
 import time
 from numpy import array
-from jet_leg_common.jet_leg.plotting.plotting_tools import Plotter
+from jet_leg_common.jet_leg.jet_leg.plotting.plotting_tools import Plotter
 import random
-from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
-from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
-from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
-from jet_leg_common.jet_leg.dynamics.instantaneous_capture_point import InstantaneousCapturePoint
-from jet_leg_common.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
-from jet_leg_common.jet_leg.optimization.lp_vertex_redundancy import LpVertexRedundnacy
+from jet_leg_common.jet_leg.jet_leg.computational_geometry.math_tools import Math
+from jet_leg_common.jet_leg.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
+from jet_leg_common.jet_leg.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
+from jet_leg_common.jet_leg.jet_leg.dynamics.instantaneous_capture_point import InstantaneousCapturePoint
+from jet_leg_common.jet_leg.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
+from jet_leg_common.jet_leg.jet_leg.optimization.lp_vertex_redundancy import LpVertexRedundnacy
 
 import matplotlib.pyplot as plt
-from jet_leg_common.jet_leg.plotting.arrow3D import Arrow3D
+from jet_leg_common.jet_leg.jet_leg.plotting.arrow3D import Arrow3D
 
 
 plt.close('all')
@@ -61,14 +60,14 @@ contactsWF = np.vstack((LF_foot, RF_foot, LH_foot, RH_foot))
 mu = 0.5
 
 ''' stanceFeet vector contains 1 is the foot is on the ground and 0 if it is in the air'''
-stanceFeet = [0, 1, 1, 0]
+stanceFeet = [1, 1, 1, 0]
 
 randomSwingLeg = random.randint(0, 3)
 tripleStance = False  # if you want you can define a swing leg using this variable
 if tripleStance:
-    print 'Swing leg', randomSwingLeg
+    print('Swing leg', randomSwingLeg)
     stanceFeet[randomSwingLeg] = 0
-print 'stanceLegs ', stanceFeet
+print('stanceLegs ', stanceFeet)
 
 ''' now I define the normals to the surface of the contact points. By default they are all vertical now'''
 axisZ = array([[0.0], [0.0], [1.0]])
@@ -118,8 +117,8 @@ IP_points, force_polytopes, IP_computation_time = comp_dyn.iterative_projection_
 
 '''I now check whether the given CoM configuration is stable or not'''
 isConfigurationStable, contactForces, forcePolytopes = comp_dyn.check_equilibrium(params)
-print "is CoM stable", isConfigurationStable
-print 'contact forces', contactForces
+print("is CoM stable", isConfigurationStable)
+print('contact forces', contactForces)
 
 ''' compute Instantaneous Capture Point (ICP) and check if it belongs to the feasible region '''
 if params.useInstantaneousCapturePoint:
@@ -128,8 +127,8 @@ if params.useInstantaneousCapturePoint:
     params.instantaneousCapturePoint = icp
     lpCheck = LpVertexRedundnacy()
     isIcpInsideFeasibleRegion, lambdas = lpCheck.isPointRedundant(IP_points.T, icp)
-    print "is ICP stable? ", isIcpInsideFeasibleRegion
-    print "distance from edges of the polygon", np.min(lambdas)
+    print("is ICP stable? ", isIcpInsideFeasibleRegion)
+    print("distance from edges of the polygon", np.min(lambdas))
 
 
 start_t_IP = time.time()
@@ -137,7 +136,10 @@ compGeom = ComputationalGeometry()
 #feasibility = compGeom.isPointRedundantGivenVertices(IP_points, [0.2, 0.1])
 #print "is point feasible", feasibility
 binaryMatrix, feasible_points, unfeasible_points, marginMatrix = compGeom.computeGlobalFeasibleRegionBinaryMatrix(params, comp_dyn, 0.01, 0.01)
-print "time needed to compute the grid points", time.time() - start_t_IP
+print("time needed to compute the grid points", time.time() - start_t_IP)
+import sys
+np.set_printoptions(threshold=sys.maxsize)
+print("marginMatrix: ", marginMatrix)
 
 '''Plotting the contact points in the 3D figure'''
 fig = plt.figure()
@@ -181,7 +183,7 @@ for j in range(0,
     ax.scatter(contactsWF[idx, 0], contactsWF[idx, 1], 0.0, c='k', s=100)
     ax.add_artist(a)
 
-print 'sum of vertical forces is', fz_tot
+print('sum of vertical forces is', fz_tot)
 
 ''' plotting Iterative Projection points '''
 plotter = Plotter()
@@ -226,8 +228,8 @@ unfeasiblePointsSize = np.size(unfeasible_points, 0)
 #    plt.scatter(unfeasible_points[j, 0], unfeasible_points[j, 1], c='r', s=50)
 #    lastUnfeasibleIndex = j
 
-print "number of feasible points", feasiblePointsSize
-print "number of unfeasible points", unfeasiblePointsSize,
+print("number of feasible points", feasiblePointsSize)
+print("number of unfeasible points", unfeasiblePointsSize)
 
 plt.grid()
 plt.xlabel("X [m]")

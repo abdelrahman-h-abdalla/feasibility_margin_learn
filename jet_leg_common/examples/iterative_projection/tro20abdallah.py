@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
 """
 Created on Tue Jun 12 10:54:31 2018
-
 @author: Romeo Orsolino
 """
 
@@ -20,12 +18,12 @@ from jet_leg_common.jet_leg.optimization.lp_vertex_redundancy import LpVertexRed
 
 import matplotlib.pyplot as plt
 from jet_leg_common.jet_leg.plotting.arrow3D import Arrow3D
-        
+
 plt.close('all')
 math = Math()
 
 ''' Set the robot's name (either 'hyq', 'hyqreal' or 'anymal')'''
-robot_name = 'anymal_boxy'
+robot_name = 'anymal'
 
 '''
 possible constraints for each foot:
@@ -210,7 +208,7 @@ for j in range(0,nc): # this will only show the contact positions and normals of
 plt.scatter(shoulder_position_WF[0,0],shoulder_position_WF[0,1], s=250, c = 'k')
 plt.scatter(shoulder_position_WF[1,0],shoulder_position_WF[1,1], s=250, c = 'k')
 plt.plot(shoulder_position_WF[0,0],shoulder_position_WF[0,1],'ko',markersize=15, label='stance feet')
-h2 = plotter.plot_polygon(np.transpose(IP_points), '--b', 5,'Improved Feasible Region')
+h2 = plotter.plot_polygon(np.transpose(IP_points), '--b', 5,'Feasible Region')
 plt.plot([shoulder_position_WF[0,0], shoulder_position_WF[1,0]],[shoulder_position_WF[0,1], shoulder_position_WF[1,1]],'k--',markersize=15,
          alpha = 0.5, label='convex hull of contact points')
 acc_scaling_factor = 10.0
@@ -243,4 +241,3 @@ plt.ylabel("Y [m]")
 plt.legend(prop={'size': 12})
 fig.savefig('../../figs/double_stance_region.pdf')
 plt.show()
-

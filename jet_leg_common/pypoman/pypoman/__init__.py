@@ -31,6 +31,8 @@ from .polygon import plot_polygon
 from .polyhedron import compute_chebyshev_center
 from .projection import project_polytope
 from .projection import project_polytope_bretl
+from .projection import project_polytope_general_plane
+from .projection import project_polytope_general_plane_bretl
 
 __all__ = [
     'compute_chebyshev_center',
@@ -44,6 +46,8 @@ __all__ = [
     'intersect_polygons',
     'plot_polygon',
     'project_polytope',
+    'project_polytope_general_plane',
     'project_polytope_bretl',
+    'project_polytope_general_plane_bretl',
     'solve_lp',
 ]

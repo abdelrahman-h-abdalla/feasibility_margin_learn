@@ -8,7 +8,7 @@ import numpy as np
 from jet_leg_common.jet_leg.computational_geometry.geometry import Geometry
 
 class ComputationalGeometry(Geometry):
-
+    
     def get_facets(self, v_rep):
         vx = v_rep[0,0:8]
         vy = v_rep[1,0:8]
@@ -104,10 +104,10 @@ class ComputationalGeometry(Geometry):
         # Return absolute value
         return np.abs(area / 2.0)
 
+
     def isPointRedundant(self, facets, point2check):
         ''' This code assumes that the facets are given in the form [A|b] where:
                             A x < b                                            '''
-
         A = facets[:, :-1]
         b = facets[:, -1]
         distances_from_edges = np.dot(A, point2check) + b
@@ -116,8 +116,9 @@ class ComputationalGeometry(Geometry):
             isPointInside = False
         else:
             isPointInside = True
-        return isPointInside, min_distance
 
+        return isPointInside, min_distance
+    
     def isPointRedundantGivenVertices(self, IP_points, point2check):
 
         facets = self.compute_halfspaces_convex_hull(IP_points)
@@ -125,17 +126,20 @@ class ComputationalGeometry(Geometry):
 
         return isPointFeasible
 
-    def computeFeasibleRegionBinaryMatrix(self, IP_points, resolutionX=0.01, resolutionY=0.01, windowSizeX=0.9,
-                                          windowSizeY=0.7):
+    def computeFeasibleRegionBinaryMatrix(self, IP_points, resolutionX = 0.01, resolutionY = 0.01, windowSizeX = 0.9, windowSizeY = 0.7):
 
-        binary_matrix = np.zeros((int(windowSizeY / resolutionY), int(windowSizeX / resolutionX)))
-        margin_matrix = np.zeros((int(windowSizeY / resolutionY), int(windowSizeX / resolutionX)))
+        matrix_sizeX = int(windowSizeX / resolutionX)
+        matrix_sizeY = int(windowSizeY / resolutionY)
+        binary_matrix = np.zeros((matrix_sizeY, matrix_sizeX))
+        margin_matrix = np.zeros((matrix_sizeY, matrix_sizeX))
+        rangeX = np.arange(-windowSizeX/2.0, windowSizeX/2.0, resolutionX)
+        rangeY = np.arange(windowSizeY/2.0, -windowSizeY/2.0, -resolutionY)
         feasible_points = np.zeros((0, 2))
         unfeasible_points = np.zeros((0, 2))
-
-        facets = self.compute_halfspaces_convex_hull(IP_points)
-
+    
+        facets = self.compute_halfspaces_convex_hull(IP_points[:,:2])
         idX = 0
+
         for point2checkX in np.arange(-windowSizeX / 2.0, (windowSizeX / 2.0), resolutionX):
             idY = 0
             for point2checkY in np.arange(windowSizeY / 2.0, (-windowSizeY / 2.0), -resolutionY):
@@ -153,37 +157,40 @@ class ComputationalGeometry(Geometry):
                 idY += 1
             idX += 1
         return binary_matrix, feasible_points, unfeasible_points, margin_matrix
+    
 
-    def computeGlobalFeasibleRegionBinaryMatrix(self, params, compDyn, resolutionX=0.01, resolutionY=0.01, windowSizeX=0.9,
-                                          windowSizeY=0.7):
+    def computeGlobalFeasibleRegionBinaryMatrix(self, params, compDyn, resolutionX=0.01, resolutionY=0.01, windowSizeX=0.8,
+                                          windowSizeY=0.6):
 
-        matrix_sizeX = int(windowSizeX / resolutionY)+1
-        matrix_sizeY = int(windowSizeY / resolutionY)+1
-        print("matrix size", matrix_sizeX, matrix_sizeY)
+        matrix_sizeX = int(windowSizeX / resolutionX)
+        matrix_sizeY = int(windowSizeY / resolutionY)
         binary_matrix = np.zeros((matrix_sizeY, matrix_sizeX))
         margin_matrix = np.zeros((matrix_sizeY, matrix_sizeX))
+        rangeX = np.arange(-windowSizeX/2.0, windowSizeX/2.0, resolutionX)
+        rangeY = np.arange(windowSizeY/2.0, -windowSizeY/2.0, -resolutionY)
         feasible_points = np.zeros((0, 2))
         unfeasible_points = np.zeros((0, 2))
 
         idX = 0
-        for point2checkX in np.arange(-windowSizeX / 2.0, windowSizeX / 2.0, resolutionX):
+        for point2checkX in rangeX:
             idY = 0
-            for point2checkY in np.arange(windowSizeY / 2.0, -windowSizeY / 2.0, -resolutionY):
+            for point2checkY in rangeY:
                 comWF = params.getCoMPosWF()
                 comWF = np.array([point2checkX, point2checkY, comWF[2]])
                 point2check = np.array([point2checkX, point2checkY])
                 params.setCoMPosWF(comWF)
                 IP_points, force_polytopes, IP_computation_time = compDyn.try_iterative_projection_bretl(params)
-                print("IP points", IP_points)
+                # print("IP points", IP_points)
                 if IP_points is not False:
-                    facets = self.compute_halfspaces_convex_hull(IP_points)
+                    facets = self.compute_halfspaces_convex_hull(IP_points[:,:2])
                     isPointFeasible, margin = self.isPointRedundant(facets, point2check)
+                    print("margin: ", margin)
                 else:
                     isPointFeasible = False
-                    margin = -0.5
+                    margin = -0.8
                 # LPparams.setCoMPosWF(com_WF)
                 # isPointFeasible, x = lpCheck.isPointRedundant(IP_points.T, point2check)
-                print(idX, idY)
+                print("idx: ", idX, "idY: ", idY)
                 margin_matrix[idY, idX] = margin
                 if isPointFeasible:
                     binary_matrix[idY, idX] = 1
@@ -191,6 +198,6 @@ class ComputationalGeometry(Geometry):
                 else:
                     binary_matrix[idY, idX] = 0
                     unfeasible_points = np.vstack([unfeasible_points, point2check])
-                idY += 1
-            idX += 1
+                idY +=1
+            idX +=1
         return binary_matrix, feasible_points, unfeasible_points, margin_matrix

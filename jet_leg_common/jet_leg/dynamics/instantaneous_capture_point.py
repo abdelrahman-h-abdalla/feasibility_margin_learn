@@ -12,8 +12,7 @@ class InstantaneousCapturePoint():
         self.icp = [0.0, 0.0]
 
     def compute(self, params):
-        robot_height = self.computeAverageRobotHeight(params)
-        print("avg height", robot_height)
+        robot_height = params.computeAverageRobotHeight()
         return self.computeInstantaneousCapturePoint(params.comPositionWF, params.comLinVel, robot_height)
 
     def computeAverageRobotHeight(self, params):
@@ -32,7 +31,6 @@ class InstantaneousCapturePoint():
 
     def computeInstantaneousCapturePoint(self, com_pos_WF, com_vel_WF, robot_height, gravity = -9.81):
         omega = np.sqrt(-gravity/robot_height)
-        print("vel", com_vel_WF)
         icp = com_pos_WF[0:2] + com_vel_WF[0:2]/omega
         return icp
-
+    

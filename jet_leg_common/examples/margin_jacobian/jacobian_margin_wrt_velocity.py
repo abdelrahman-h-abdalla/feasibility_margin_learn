@@ -101,7 +101,7 @@ comp_geom = ComputationalGeometry()
 com = CoM(params)
 
 num_of_tests = 25
-print "number of tests", num_of_tests
+print("number of tests", num_of_tests)
 margin = np.zeros(num_of_tests)
 jac_com_pos = np.zeros(num_of_tests)
 jac_com_orient = np.zeros(num_of_tests)
@@ -120,12 +120,12 @@ contactsWF = np.vstack((LF_foot, RF_foot, LH_foot, RH_foot))
 params.setContactsPosWF(contactsWF)
 delta_vel_range = 0.7
 delta_vel_range_vec = np.linspace(-delta_vel_range/2.0, delta_vel_range/2.0, num_of_tests)
-print num_of_tests, np.shape(delta_vel_range_vec)
+print(num_of_tests, np.shape(delta_vel_range_vec))
 
 margin, jac_com_lin_vel = jac.plotMarginAndJacobianOfMarginWrtComVelocity(params, delta_vel_range_vec)
 
-print margin
-print jac_com_lin_vel
+print(margin)
+print(jac_com_lin_vel)
 plt.figure(2)
 plt.subplot(211)
 plt.plot(delta_vel_range_vec, margin, 'g', markersize=15, label='CoM')
