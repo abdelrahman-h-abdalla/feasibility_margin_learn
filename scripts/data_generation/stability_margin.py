@@ -22,7 +22,7 @@ paths = ProjectPaths()
 save_path = paths.DATA_PATH + '/stability_margin/' + paths.INIT_DATETIME_STR + '/' + ''.join(
         random.choice(string.ascii_uppercase + string.digits) for _ in range(4))
 file_name = 'data_'
-robot_name = 'anymal_coyote'
+robot_name = 'hyqreal'
 
 file_suffix = multiprocessing.Value('i', 0)
 exceptions = multiprocessing.Value('i', 0)

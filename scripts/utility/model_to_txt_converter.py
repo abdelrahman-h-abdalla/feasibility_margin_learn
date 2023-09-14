@@ -38,6 +38,7 @@ def copy_file(src_path, dst_path):
         print("Unexpected error:", sys.exc_info())
 
 def main():
+    robot_name = 'hyqreal'
     paths = ProjectPaths()
 
     model_directory = get_latest_directory(paths.TRAINED_MODELS_PATH + '/stability_margin/')
@@ -56,7 +57,7 @@ def main():
         [network.state_dict()[key].cpu().numpy().reshape(-1) for key in model_parameters])
 
     print("Saving model in:", save_directory)
-    param_save_name = save_directory + 'network_parameters_anymal_c.txt'
+    param_save_name = save_directory + 'network_parameters_' + robot_name + '.txt'
     np.savetxt(param_save_name, model_parameters.reshape((1, -1)), delimiter=', ',
                newline='\n', fmt='%1.10f')
     copy_file(model_directory + 'network_state_dict.pt', save_directory)
