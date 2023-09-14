@@ -100,7 +100,7 @@ def main():
         output = network(local_batch)
 
         loss = nn.MSELoss()(output, local_targets)
-        test_loss += (loss.item() / BATCH_SIZE)
+        test_loss += (loss.item())
 
         if sub_epoch_iterator % EVALUATE_STEPS == EVALUATE_STEPS - 1:
             print('[Test, %d, %5d] loss: %.8f' % (1, sub_epoch_iterator + 1, test_loss / EVALUATE_STEPS))

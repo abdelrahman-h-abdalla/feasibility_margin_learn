@@ -35,7 +35,7 @@ def train(training_dataloader, validation_dataloader, device, optimizer, network
             loss = nn.MSELoss()(output, training_targets)
 
             loss.backward()
-            training_loss += (loss.item() / batch_size) # accumulated loss of training mini-batches
+            training_loss += (loss.item()) # accumulated loss of training mini-batches
 
             optimizer.step()
 
@@ -48,8 +48,8 @@ def train(training_dataloader, validation_dataloader, device, optimizer, network
                 output = network(validation_batch)
                 loss = nn.MSELoss()(output, validation_targets)
 
-                validation_loss += (loss.item() / batch_size) # accumulated loss validation mini-batches
-                epoch_validation_loss += (loss.item() / batch_size) # accumulated loss of all validation batches in each epoch
+                validation_loss += (loss.item()) # accumulated loss validation mini-batches
+                epoch_validation_loss += (loss.item()) # accumulated loss of all validation batches in each epoch
                 
                 if sub_epoch_iterator % evaluate_steps == evaluate_steps - 1:  # update every 50 mini-batches
                     print(
