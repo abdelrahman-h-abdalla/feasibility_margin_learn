@@ -65,12 +65,6 @@ def train(training_dataloader, validation_dataloader, device, optimizer, network
                     writer.add_scalars('Loss', {'Validation': validation_loss / evaluate_steps}, iterator)
                     writer.flush()
 
-                    # Check loss every x mini-batches and update best model if it improved
-                    if validation_loss / evaluate_steps < best_val_loss:
-                        best_val_loss = validation_loss / evaluate_steps
-                        # Save the best model in memory (note it only takes model of only last batch)
-                        best_model = network.state_dict()
-
                     iterator += 1
                     training_loss = 0.0
                     validation_loss = 0.0
@@ -81,8 +75,10 @@ def train(training_dataloader, validation_dataloader, device, optimizer, network
         # Check best loss in last epoch (from all mini-batches)
         if epoch_validation_loss / sub_epoch_iterator < best_epoch_val_loss:
             best_epoch_val_loss = epoch_validation_loss / sub_epoch_iterator
-            best_epoch_model = best_model
+            best_epoch_model = network.state_dict().copy()
             patience_counter = 0  # reset counter
+            if save_path is not None and best_epoch_model is not None:
+                torch.save(best_epoch_model, save_path)
         else:
             patience_counter += 1  # increment counter
             
@@ -90,7 +86,7 @@ def train(training_dataloader, validation_dataloader, device, optimizer, network
         if patience_counter >= patience:
             print("Early stopping due to lack of improvement in validation loss")
             print("Trained!")
-            if save_path is not None and best_model is not None:
+            if save_path is not None and best_epoch_model is not None:
                 torch.save(best_epoch_model, save_path)
             return iterator
     
