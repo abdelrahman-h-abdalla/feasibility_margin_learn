@@ -36,3 +36,5 @@ class RobotModelInterface:
         self.nominal_stance_LH = self.robotModel.nominal_stance_LH
         self.nominal_stance_RH = self.robotModel.nominal_stance_RH
         self.max_dev_from_nominal = self.robotModel.max_dev_from_nominal
+        self.max_ext_force = self.robotModel.max_ext_force
+        self.max_ext_torque = self.robotModel.max_ext_torque

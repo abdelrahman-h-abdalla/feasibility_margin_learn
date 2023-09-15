@@ -49,8 +49,8 @@ def computation(i, q):
     friction = friction_coeff()  # Gazebo uses 0.8
     feet_pos = feet_positions(robot_name)  # Random positions of foot contacts
     feet_contact_normals = contact_normals(math_tools=math_tools)  # List of Normal Rotations for each contact
-    ext_force_world = base_external_force()  # External force applied to base in world frame
-    ext_torque_world = base_external_torque()
+    ext_force_world = base_external_force(robot_name)  # External force applied to base in world frame
+    ext_torque_world = base_external_torque(robot_name)
     com_euler = base_euler()
     parameters = []
     results = []
