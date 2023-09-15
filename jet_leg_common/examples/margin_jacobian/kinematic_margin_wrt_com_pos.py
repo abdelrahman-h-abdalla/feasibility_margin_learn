@@ -53,10 +53,10 @@ projection = nonlinear_projection.NonlinearProjectionBretl(robot_name)
 
 '''You now need to fill the 'params' object with all the relevant 
     informations needed for the computation of the IP'''
-params = IterativeProjectionParameters()
+params = IterativeProjectionParameters(robot_name)
 """ contact points in the World Frame"""
-LF_foot = np.array([0.34, 0.34, -0.48])
-RF_foot = np.array([0.36, -0.30, -0.48])
+LF_foot = np.array([0.34, 0.34, -0.52])
+RF_foot = np.array([0.36, -0.30, -0.52])
 LH_foot = np.array([-0.36, 0.32, -0.52])
 RH_foot = np.array([-0.36, -0.32, -0.52])
 
@@ -101,7 +101,7 @@ jac = KinematicJacobians(robot_name)
 
 
 '''Margin'''
-delta_pos_range = 0.6
+delta_pos_range = 0.4
 num_of_tests = 50
 delta_pos_range_vec = np.linspace(-delta_pos_range/2.0, delta_pos_range/2.0, num_of_tests)
 

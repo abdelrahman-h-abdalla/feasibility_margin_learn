@@ -151,6 +151,40 @@ class Jacobians:
             jacobian[j] = diff / self.delta
 
         return jacobian
+
+    def computeForceJacobian(self, params):
+        jacobian = np.zeros(3)
+        initialPoint = params.getExternalForce()
+
+        for j in np.arange(0, 3):
+            params.externalForce = initialPoint
+            params.externalForce[j] = initialPoint[j] + self.delta / 2.0
+            isPointFeasible, margin1 = self.compDyn.compute_IP_margin(params, "COM")
+
+            params.externalForce = initialPoint
+            params.externalForce[j] = initialPoint[j] - self.delta / 2.0
+            isPointFeasible, margin2 = self.compDyn.compute_IP_margin(params, "COM")
+            diff = margin1 - margin2
+            jacobian[j] = diff / (1.0*self.delta)
+
+        return jacobian
+
+    def computeTorqueJacobian(self, params):
+        jacobian = np.zeros(3)
+        initialPoint = params.getExternalCentroidalTorque()
+
+        for j in np.arange(0, 3):
+            params.externalCentroidalTorque = initialPoint
+            params.externalCentroidalTorque[j] = initialPoint[j] + self.delta / 2.0
+            isPointFeasible, margin1 = self.compDyn.compute_IP_margin(params, "COM")
+
+            params.externalCentroidalTorque = initialPoint
+            params.externalCentroidalTorque[j] = initialPoint[j] - self.delta / 2.0
+            isPointFeasible, margin2 = self.compDyn.compute_IP_margin(params, "COM")
+            diff = margin1 - margin2
+            jacobian[j] = diff / (1.0*self.delta)
+
+        return jacobian
     
     def plotMarginAndJacobianOfMarginWrtComLinAcceleration(self, params, acc_range, dimension):
         num_of_tests = np.shape(acc_range)
@@ -255,7 +289,6 @@ class Jacobians:
             jac_com_pos[:, count] = self.computeComPosJacobian(params, contactsWF)
 
             count += 1
-
         params.setContactsPosWF(default_feet_pos_WF)
         return margin, jac_com_pos
 
@@ -289,6 +322,50 @@ class Jacobians:
             count += 1
 
         return margin, jac_base_orient
+
+    def plotMarginAndJacobianWrtForce(self, params, force_range, dim_to_check):
+        num_of_tests = np.shape(force_range)
+        margin = np.zeros(num_of_tests)
+        jac_force = np.zeros((3,num_of_tests[0]))
+        count = 0
+        default_force_WF = copy.deepcopy(params.getExternalForce())
+
+        for delta in force_range:
+            """ contact points in the World Frame"""
+            extForceWF = copy.deepcopy(default_force_WF)
+            extForceWF[dim_to_check] -= delta
+            params.externalForce = extForceWF
+
+            isPointFeasible, margin[count] = self.compDyn.compute_IP_margin(params, "COM")
+            marginJacWrtForce = self.computeForceJacobian(params)
+            jac_force[:, count] = marginJacWrtForce
+
+            count += 1
+        params.externalForce = default_force_WF
+
+        return margin, jac_force
+
+    def plotMarginAndJacobianWrtTorque(self, params, torque_range, dim_to_check):
+        num_of_tests = np.shape(torque_range)
+        margin = np.zeros(num_of_tests)
+        jac_torque = np.zeros((3,num_of_tests[0]))
+        count = 0
+        default_torque_WF = copy.deepcopy(params.getExternalCentroidalTorque())
+
+        for delta in torque_range:
+            """ contact points in the World Frame"""
+            extTorqueWF = copy.deepcopy(default_torque_WF)
+            extTorqueWF[dim_to_check] -= delta
+            params.externalCentroidalTorque = extTorqueWF
+
+            isPointFeasible, margin[count] = self.compDyn.compute_IP_margin(params, "COM")
+            marginJacWrtTorque = self.computeTorqueJacobian(params)
+            jac_torque[:, count] = marginJacWrtTorque
+
+            count += 1
+        params.externalCentroidalTorque = default_torque_WF
+
+        return margin, jac_torque
 
     def plotMarginAndJacobianWrtFootPosition(self, params, foot_id, foot_pos_range, dimension_to_check):
         num_of_tests = np.shape(foot_pos_range)
