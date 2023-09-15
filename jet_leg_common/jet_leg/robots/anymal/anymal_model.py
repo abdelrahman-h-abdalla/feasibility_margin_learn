@@ -31,6 +31,11 @@ class AnymalModel:
             self.nominal_stance_RH = [-x_nominal_b, -y_nominal_b, z_nominal_b]
             self.max_dev_from_nominal = [0.1, 0.1, 0.1]
 
+            # Max external wrench
+            self.max_ext_force = [100, 100, 100]
+            self.max_ext_torque = [50, 50 ,50]
+            # self.max_ext_torque = [30, 50 ,50]
+
         elif self.anymal_type == 'anymal_coyote':
             self.trunkMass = 52
             self.trunkInertia = np.array([[0.946438, -0.000938112, 0.00595386],
@@ -57,3 +62,8 @@ class AnymalModel:
             self.nominal_stance_LH = [-x_nominal_b, y_nominal_b, z_nominal_b]
             self.nominal_stance_RH = [-x_nominal_b, -y_nominal_b, z_nominal_b]
             self.max_dev_from_nominal = [0.2, 0.1, 0.1]
+
+            # Max external wrench
+            self.max_ext_force = [10, 100, 100]
+            self.max_ext_torque = [50, 50 ,50]
+            # self.max_ext_torque = [30, 50 ,50]

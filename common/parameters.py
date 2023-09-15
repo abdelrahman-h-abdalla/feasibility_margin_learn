@@ -7,8 +7,8 @@ from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
 from jet_leg_common.jet_leg.robots.robot_model_interface import RobotModelInterface
 
 def seed_random():
-    time_part = int(time.time() * 1000) & 0xFFFFFF  # Use milliseconds and keep 24 bits
-    pid_part = os.getpid() & 0xFF  # Keep 8 bits of PID
+    time_part = int(time.time() * 1000) & 0xFFFFFF  # Use milliseconds (higher resolution) and keep 24 bits to fit in 32-bit seed
+    pid_part = os.getpid() & 0xFF  # Keep 8 bits of PID to fit in 32-bit seed
     seed_value = time_part | (pid_part << 24)  # Combine
     print("seed_value:", seed_value)
     random.seed(seed_value)
@@ -125,13 +125,12 @@ def contact_normals(roll_dist=None, pitch_dist=None, math_tools=Math()):
 
 
 def base_external_force(distribution=None):
-    if distribution is None:
-        distribution = [0, 0, 0]
+    model = RobotModelInterface(robot_name)
 
     return np.array([
-        np.random.normal(0, distribution[0]),
-        np.random.normal(0, distribution[1]),
-        np.random.normal(0, distribution[2]),
+        np.random.normal(0, model.max_ext_force[0]),
+        np.random.normal(0, model.max_ext_force[1]),
+        np.random.normal(0, model.max_ext_force[2]),
     ]).flatten()
 
 
@@ -143,14 +142,18 @@ def friction_coeff(limit_range=None):
 
 
 def linear_velocity(x_dist=None, y_dist=None, z_dist=None):
+    # [+- 1.0m/s, +- 1.0m/s, 0.5m/s]
     if x_dist is None:
-        x_dist = [0.0, 0.2]
+        x_dist = [0.0, 0.5]
+        # x_dist = [0.0, 0.2]
 
     if y_dist is None:
-        y_dist = [0.0, 0.2]
+        y_dist = [0.0, 0.5]
+        # y_dist = [0.0, 0.2]
 
     if z_dist is None:
-        z_dist = [0, 0.05]
+        z_dist = [0, 0.25]
+        # z_dist = [0, 0.05]
 
     return np.array([
         np.random.normal(x_dist[0], x_dist[1]),
@@ -160,6 +163,7 @@ def linear_velocity(x_dist=None, y_dist=None, z_dist=None):
 
 
 def linear_acceleration(x_dist=None, y_dist=None, z_dist=None):
+    # [+- 4m/s^2,+- 4m/s^2,+- 3m/s^2]
     if x_dist is None:
         x_dist = [-4, 4]
 
@@ -167,7 +171,8 @@ def linear_acceleration(x_dist=None, y_dist=None, z_dist=None):
         y_dist = [-4, 4]
 
     if z_dist is None:
-        z_dist = [-0, 0]
+        z_dist = [-3, 3]
+        # z_dist = [0, 0]
 
     return np.array([
         np.random.uniform(x_dist[0], x_dist[1]),
@@ -177,14 +182,18 @@ def linear_acceleration(x_dist=None, y_dist=None, z_dist=None):
 
 
 def angular_acceleration(x_dist=None, y_dist=None, z_dist=None):
+    # [+- 1rad/s^2,+- 1rad/s^2,+- 0.5rad/s^2]
     if x_dist is None:
-        x_dist = [0.0, 0.2]
+        x_dist = [0.0, 0.5]
+        # x_dist = [0.0, 0.2]
 
     if y_dist is None:
-        y_dist = [0.0, 0.2]
+        y_dist = [0.0, 0.5]
+        # y_dist = [0.0, 0.2]
 
     if z_dist is None:
-        z_dist = [0, 0.3]
+        z_dist = [0, 0.25]
+        # z_dist = [0, 0.3]
 
     return np.array([
         np.random.normal(x_dist[0], x_dist[1]),
@@ -194,11 +203,9 @@ def angular_acceleration(x_dist=None, y_dist=None, z_dist=None):
 
 
 def base_external_torque(distribution=None):
-    if distribution is None:
-        distribution = [0, 0, 0]
 
     return np.array([
-        np.random.normal(0, distribution[0]),
-        np.random.normal(0, distribution[1]),
-        np.random.normal(0, distribution[2]),
+        np.random.normal(0, model.max_ext_torque[0]),
+        np.random.normal(0, model.max_ext_torque[1]),
+        np.random.normal(0, model.max_ext_torque[2]),
     ]).flatten()

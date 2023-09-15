@@ -81,6 +81,7 @@ def train(training_dataloader, validation_dataloader, device, optimizer, network
                 torch.save(best_epoch_model, save_path)
         else:
             patience_counter += 1  # increment counter
+        print("Patience counter:", patience_counter)
             
         # If performance didn't improve for 'patience' number of epochs, stop training
         if patience_counter >= patience:
