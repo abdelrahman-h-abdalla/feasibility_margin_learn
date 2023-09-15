@@ -28,6 +28,8 @@ class RobotModelInterface:
             self.robotModel = AliengoModel()
             
         self.joint_torque_limits = self.robotModel.joint_torque_limits
+        self.joint_limits_max = self.robotModel.joint_limits_max
+        self.joint_limits_min = self.robotModel.joint_limits_min
         self.contact_torque_limits = self.robotModel.contact_torque_limits
         self.trunkMass = self.robotModel.trunkMass
         self.trunkInertia = self.robotModel.trunkInertia

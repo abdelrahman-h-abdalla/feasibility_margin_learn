@@ -1,17 +1,19 @@
 import numpy as np
+import copy
+from scipy.spatial.transform import Rotation as Rot
+from shapely.geometry import Polygon, Point
 
 from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
 from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
 from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
+from jet_leg_common.jet_leg.optimization.nonlinear_projection import NonlinearProjectionBretl
 from jet_leg_common.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
-import copy
-from scipy.spatial.transform import Rotation as Rot
 
 import eigenpy
 eigenpy.switchToNumpyMatrix()
 
 
-def compute_stability(comp_dyn=ComputationalDynamics('anymal_coyote'),
+def compute_stability(comp_dyn=ComputationalDynamics('anymal_coyote'), kin_proj=NonlinearProjectionBretl('anymal_coyote'),
                       params=IterativeProjectionParameters(robot_name='anymal_coyote'), comp_geom=ComputationalGeometry(),
                       constraint_mode='FRICTION_AND_ACTUATION', com=None, com_euler=None, com_lin_vel=None,
                       com_lin_acc=None, com_ang_acc=None, ext_force=None, ext_torque=None, feet_position=None, mu=0.5,
@@ -70,6 +72,8 @@ def compute_stability(comp_dyn=ComputationalDynamics('anymal_coyote'),
     params.setCoMLinAcc(com_lin_acc)  # [+- 5m/s^2,+- 5m/s^2,+- 5m/s^2]
     params.setCoMAngAcc(com_ang_acc)  # [+- 1rad/s^2,+- 1rad/s^2,+- 1rad/s^2]
     params.setTorqueLims(comp_dyn.robotModel.robotModel.joint_torque_limits)
+    params.setJointLimsMax(comp_dyn.robotModel.robotModel.joint_limits_max)
+    params.setJointLimsMin(comp_dyn.robotModel.robotModel.joint_limits_min)
     params.setActiveContacts(stance_feet)
     params.setConstraintModes(constraint_mode_ip)
     params.setContactNormals(normals)
@@ -83,10 +87,18 @@ def compute_stability(comp_dyn=ComputationalDynamics('anymal_coyote'),
     computation_time = how long it took to compute the iterative projection
     '''
     ip_points, force_polytopes, ip_computation_time = comp_dyn.iterative_projection_bretl(params)
+    reach_reg_points, computation_time = kin_proj.project_polytope(params, None, 10. * np.pi / 180, 0.02)
 
     facets = comp_geom.compute_halfspaces_convex_hull(ip_points[:,:2])
     reference_point = comp_dyn.getReferencePoint(params, "COM")
-    point_feasibility, margin = comp_geom.isPointRedundant(facets, reference_point)
+    point_feasibility, feas_dist = comp_geom.isPointRedundant(facets, reference_point)
+
+    sPolygon = Polygon(reach_reg_points[:-1,:2])
+    sPoint = Point(com[:2])
+    dist = sPoint.distance(sPolygon.exterior)
+    reach_dist = dist if sPolygon.contains(sPoint) else -1 * dist
+    
+    margin = min(feas_dist, reach_dist)
 
     #point_feasibility, margin = comp_dyn.computeMargin(params, "COM")
 

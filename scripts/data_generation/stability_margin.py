@@ -9,6 +9,7 @@ from common.jet_leg_interface import compute_stability
 from common.paths import ProjectPaths
 
 from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
+from jet_leg_common.jet_leg.optimization.nonlinear_projection import NonlinearProjectionBretl 
 from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
 from jet_leg_common.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
 
@@ -38,6 +39,7 @@ def computation(i, q):
     start_time = time.time()
     math_tools = Math()
     comp_dyn = ComputationalDynamics(robot_name)
+    kinematic_projector = NonlinearProjectionBretl(robot_name)
     params = IterativeProjectionParameters(robot_name=robot_name)
     comp_geom = ComputationalGeometry()
     seed_random()
@@ -58,6 +60,7 @@ def computation(i, q):
     try:
         stability_margin = compute_stability(
             comp_dyn=comp_dyn,
+            kin_proj=kinematic_projector,
             params=params,
             comp_geom=comp_geom,
             constraint_mode=CONSTRAINTS,
@@ -73,7 +76,7 @@ def computation(i, q):
             stance_feet=stance_feet_list,
             contact_normals=feet_contact_normals
         )
-        print ('Stability Margin:', stability_margin)
+        print ('Feasibility Margin:', stability_margin)
         parameters = np.concatenate([
             np.array(com_euler).flatten(),
             np.array(com_lin_vel).flatten(),

@@ -21,6 +21,17 @@ class HyqModel:
         self.joint_torque_limits = np.array([LF_tau_lim, RF_tau_lim, LH_tau_lim, RH_tau_lim])
         self.contact_torque_limits = np.array([-5, 5])
 
+        LF_q_lim_max = [0.44, 1.2217, -0.3491]  # HAA, HFE, KFE
+        LF_q_lim_min = [-1.22, -0.8727, -2.4435]  # HAA, HFE, KFE
+        RF_q_lim_max = [0.44, 1.2217, -0.3491]  # HAA, HFE, KFE
+        RF_q_lim_min = [-1.22, -0.8727, -2.4435]  # HAA, HFE, KFE
+        LH_q_lim_max = [0.44, 0.8727, 2.4435]  # HAA, HFE, KFE
+        LH_q_lim_min = [-1.22, -1.2217, 0.3491]  # HAA, HFE, KFE
+        RH_q_lim_max = [0.44, 0.8727, 2.4435]  # HAA, HFE, KFE
+        RH_q_lim_min = [-1.22, -1.2217, 0.3491]  # HAA, HFE, KFE
+        self.joint_limits_max = np.array([LF_q_lim_max, RF_q_lim_max, LH_q_lim_max, RH_q_lim_max])
+        self.joint_limits_min = np.array([LF_q_lim_min, RF_q_lim_min, LH_q_lim_min, RH_q_lim_min])
+
         x_nominal_b = 0.36
         y_nominal_b = 0.32
         z_nominal_b = -0.54
