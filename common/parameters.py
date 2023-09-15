@@ -10,7 +10,6 @@ def seed_random():
     time_part = int(time.time() * 1000) & 0xFFFFFF  # Use milliseconds (higher resolution) and keep 24 bits to fit in 32-bit seed
     pid_part = os.getpid() & 0xFF  # Keep 8 bits of PID to fit in 32-bit seed
     seed_value = time_part | (pid_part << 24)  # Combine
-    print("seed_value:", seed_value)
     random.seed(seed_value)
     np.random.seed(seed_value)
 
@@ -124,9 +123,8 @@ def contact_normals(roll_dist=None, pitch_dist=None, math_tools=Math()):
     return contact_normals_list
 
 
-def base_external_force(distribution=None):
+def base_external_force(robot_name):
     model = RobotModelInterface(robot_name)
-
     return np.array([
         np.random.normal(0, model.max_ext_force[0]),
         np.random.normal(0, model.max_ext_force[1]),
@@ -202,7 +200,8 @@ def angular_acceleration(x_dist=None, y_dist=None, z_dist=None):
     ]).flatten()
 
 
-def base_external_torque(distribution=None):
+def base_external_torque(robot_name):
+    model = RobotModelInterface(robot_name)
 
     return np.array([
         np.random.normal(0, model.max_ext_torque[0]),
