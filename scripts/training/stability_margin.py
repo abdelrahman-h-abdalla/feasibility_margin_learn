@@ -86,7 +86,7 @@ def main():
 
     # Testing
     network.to(device).eval()
-    dataloader_params = {'batch_size': max(16, min(int(BATCH_SIZE / EPOCHS), 48)), 'shuffle': True, 'num_workers': 12}
+    dataloader_params = {'batch_size': BATCH_SIZE, 'shuffle': True, 'num_workers': 12}
     testing_dataloader = data_parser.torch_dataloader(params=dataloader_params, data_type='testing')
 
     test_loss = 0.0
