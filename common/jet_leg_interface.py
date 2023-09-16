@@ -66,6 +66,7 @@ def compute_stability(comp_dyn=ComputationalDynamics('anymal_coyote'),
     params.externalForce = ext_force  # params.externalForceWF is actually used anywhere at the moment
     params.externalCentroidalTorque = ext_torque
     params.setCoMPosWF(com)
+    params.setCoMPosBF(comp_dyn.robotModel.robotModel.com_BF)
     params.setCoMLinVel(com_lin_vel)  # [+- 1.0m/s, +- 1.0m/s, 0.5m/s]
     params.setCoMLinAcc(com_lin_acc)  # [+- 5m/s^2,+- 5m/s^2,+- 5m/s^2]
     params.setCoMAngAcc(com_ang_acc)  # [+- 1rad/s^2,+- 1rad/s^2,+- 1rad/s^2]

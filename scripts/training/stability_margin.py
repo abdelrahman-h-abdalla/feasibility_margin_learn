@@ -25,9 +25,10 @@ LAUNCH_TENSORBOARD = True
 
 
 def main():
+    robot_name = 'hyqreal'
     paths = ProjectPaths()
 
-    training_dataset_handler = TrainingDataset()
+    training_dataset_handler = TrainingDataset(robot_name)
     data_parser = training_dataset_handler.get_training_data_parser(max_files=400)
     data_folder = training_dataset_handler.get_data_folder()
 

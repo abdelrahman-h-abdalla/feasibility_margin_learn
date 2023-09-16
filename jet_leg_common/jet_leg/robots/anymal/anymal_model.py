@@ -9,6 +9,7 @@ class AnymalModel:
             self.trunkInertia = np.array([[0.946438, -0.000938112, 0.00595386],
                                           [-0.000938112, 1.94478, 0.00146328],
                                           [0.00595386, 0.00146328, 2.01835]])
+            self.com_BF = np.array([0., 0., 0.]) # Average of trunk CoM and nominal whole-body CoM
 
             ''' torque limits for each leg (this code assumes three joints per leg)
             HAA = Hip Abduction Adduction
@@ -41,6 +42,7 @@ class AnymalModel:
             self.trunkInertia = np.array([[0.946438, -0.000938112, 0.00595386],
                                           [-0.000938112, 1.94478, 0.00146328],
                                           [0.00595386, 0.00146328, 2.01835]])
+            self.com_BF = np.array([0., 0., 0.]) # Average of trunk CoM and nominal whole-body CoM
             
             ''' torque limits for each leg (this code assumes three joints per leg)
             HAA = Hip Abduction Adduction
