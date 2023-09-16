@@ -7,6 +7,7 @@ class HyqrealModel:
         self.trunkInertia = np.array([[4.91182, -0.115619, -0.961905],
                                               [-0.115619,   19.5025, 0.0136923],
                                               [-0.961905, 0.0136923,   21.2841]])
+        self.com_BF = np.array([0.006, -0.002, -0.044]) # Average of trunk CoM and nominal whole-body CoM
 
         ''' torque limits for each leg (this code assumes a hyq-like design, i.e. three joints per leg)
         HAA = Hip Abduction Adduction
