@@ -26,10 +26,10 @@ class TrainingDataset:
             np.zeros(3),  # Angular acceleration
             np.zeros(3),  # External force
             np.zeros(3),  # External torque
-            np.array([robotModel.nominal_stance_LF[0], robotModel.nominal_stance_LF[1], robotModel.nominal_stance_LF[2]]),  # LF foot
-            np.array([robotModel.nominal_stance_RF[0], robotModel.nominal_stance_RF[1], robotModel.nominal_stance_RF[2]]),  # RF foot
-            np.array([robotModel.nominal_stance_LH[0], robotModel.nominal_stance_LH[1], robotModel.nominal_stance_LH[2]]),  # LH foot
-            np.array([robotModel.nominal_stance_RH[0], robotModel.nominal_stance_RH[1], robotModel.nominal_stance_RH[2]]),  # RH foot
+            np.array([self.robotModel.nominal_stance_LF[0], self.robotModel.nominal_stance_LF[1], self.robotModel.nominal_stance_LF[2]]),  # LF foot
+            np.array([self.robotModel.nominal_stance_RF[0], self.robotModel.nominal_stance_RF[1], self.robotModel.nominal_stance_RF[2]]),  # RF foot
+            np.array([self.robotModel.nominal_stance_LH[0], self.robotModel.nominal_stance_LH[1], self.robotModel.nominal_stance_LH[2]]),  # LH foot
+            np.array([self.robotModel.nominal_stance_RH[0], self.robotModel.nominal_stance_RH[1], self.robotModel.nominal_stance_RH[2]]),  # RH foot
             np.array([0.51]),  # Friction
             np.ones(4) * 0.767,  # Feet in contact
             np.array([0, 0, 1.0] * 4),  # Contact normals
@@ -116,27 +116,27 @@ class TrainingDataset:
 
             # Convert to the base frame, assuming CoM is always in origin of WF
             training_data[:, 18:21] = np.einsum('aik,ak->ai', rotation_matrices_inv,
-                                                training_data[:, 18:21]) + robotModel.com_BF # LF Foot Position
+                                                training_data[:, 18:21]) + self.robotModel.com_BF # LF Foot Position
             training_data[:, 21:24] = np.einsum('aik,ak->ai', rotation_matrices_inv,
-                                                training_data[:, 21:24]) + robotModel.com_BF # RF Foot Position
+                                                training_data[:, 21:24]) + self.robotModel.com_BF # RF Foot Position
             training_data[:, 24:27] = np.einsum('aik,ak->ai', rotation_matrices_inv,
-                                                training_data[:, 24:27]) + robotModel.com_BF # LH Foot Position
+                                                training_data[:, 24:27]) + self.robotModel.com_BF # LH Foot Position
             training_data[:, 27:30] = np.einsum('aik,ak->ai', rotation_matrices_inv,
-                                                training_data[:, 27:30]) + robotModel.com_BF # RH Foot Position
+                                                training_data[:, 27:30]) + self.robotModel.com_BF # RH Foot Position
 
             # If the foot is not in stance, change its position to nominal
-            training_data[np.argwhere(training_data[:, 31] == 0), 18:21] = np.array([robotModel.nominal_stance_LF[0],
-                                                                                    robotModel.nominal_stance_LF[1],
-                                                                                    robotModel.nominal_stance_LF[2]])
-            training_data[np.argwhere(training_data[:, 32] == 0), 21:24] = np.array([robotModel.nominal_stance_RF[0],
-                                                                                    robotModel.nominal_stance_RF[1],
-                                                                                    robotModel.nominal_stance_RF[2]])
-            training_data[np.argwhere(training_data[:, 33] == 0), 24:27] = np.array([robotModel.nominal_stance_LH[0],
-                                                                                    robotModel.nominal_stance_LH[1],
-                                                                                    robotModel.nominal_stance_LH[2]])
-            training_data[np.argwhere(training_data[:, 34] == 0), 27:30] = np.array([robotModel.nominal_stance_RH[0],
-                                                                                    robotModel.nominal_stance_RH[1],
-                                                                                    robotModel.nominal_stance_RH[2]])
+            training_data[np.argwhere(training_data[:, 31] == 0), 18:21] = np.array([self.robotModel.nominal_stance_LF[0],
+                                                                                    self.robotModel.nominal_stance_LF[1],
+                                                                                    self.robotModel.nominal_stance_LF[2]])
+            training_data[np.argwhere(training_data[:, 32] == 0), 21:24] = np.array([self.robotModel.nominal_stance_RF[0],
+                                                                                    self.robotModel.nominal_stance_RF[1],
+                                                                                    self.robotModel.nominal_stance_RF[2]])
+            training_data[np.argwhere(training_data[:, 33] == 0), 24:27] = np.array([self.robotModel.nominal_stance_LH[0],
+                                                                                    self.robotModel.nominal_stance_LH[1],
+                                                                                    self.robotModel.nominal_stance_LH[2]])
+            training_data[np.argwhere(training_data[:, 34] == 0), 27:30] = np.array([self.robotModel.nominal_stance_RH[0],
+                                                                                    self.robotModel.nominal_stance_RH[1],
+                                                                                    self.robotModel.nominal_stance_RH[2]])
 
             # If the foot is not in stance, set its contact normal to vertical
             training_data[np.argwhere(training_data[:, 31] == 0), 35:38] = np.array([0.0, 0.0, 1.0])
