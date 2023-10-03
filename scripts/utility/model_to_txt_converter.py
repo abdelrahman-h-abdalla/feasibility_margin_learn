@@ -37,19 +37,34 @@ def copy_file(src_path, dst_path):
     except:
         print("Unexpected error:", sys.exc_info())
 
+def compute_network_input_dim(stance_legs):
+    no_of_stance = stance_legs.count(1)
+    if no_of_stance == 4:
+        return 40
+    elif no_of_stance == 3:
+        return 34
+    elif no_of_stance == 2:
+        return 28
+    else:
+        print("Wrong number of inputs")
+        return None
+
 def main():
     robot_name = 'hyqreal'
+    stance_legs_str = input("Enter Stance Legs [xxxx]: ")
+    stance_legs = [int(digit) for digit in stance_legs_str if digit.isdigit()]
     paths = ProjectPaths()
 
-    model_directory = get_latest_directory(paths.TRAINED_MODELS_PATH + '/stability_margin/')
-    model_directory = paths.TRAINED_MODELS_PATH + "/stability_margin/" + model_directory + "/"
+    model_directory = get_latest_directory(paths.TRAINED_MODELS_PATH + '/stability_margin/' + stance_legs_str + '/')
+    model_directory = paths.TRAINED_MODELS_PATH + "/stability_margin/" + stance_legs_str + "/" + model_directory + "/"
     print("Loading model from", model_directory)
     save_directory = '/final/stability_margin/'
     save_directory = paths.TRAINED_MODELS_PATH + save_directory
     # Create the destination directory if it doesn't exist
     os.makedirs(save_directory, exist_ok=True)
 
-    network = MultiLayerPerceptron(in_dim=47, out_dim=1, hidden_layers=[256, 128, 128], activation=F.softsign, dropout=0.0)
+    network_input_dim = compute_network_input_dim(stance_legs)
+    network = MultiLayerPerceptron(in_dim=network_input_dim, out_dim=1, hidden_layers=[256, 128, 128], activation=F.softsign, dropout=0.0)
     network.load_state_dict(torch.load(model_directory + 'network_state_dict.pt'))
 
     model_parameters = list(network.state_dict().keys())

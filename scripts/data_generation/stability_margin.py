@@ -23,6 +23,7 @@ save_path = paths.DATA_PATH + '/stability_margin/' + paths.INIT_DATETIME_STR + '
         random.choice(string.ascii_uppercase + string.digits) for _ in range(4))
 file_name = 'data_'
 robot_name = 'hyqreal'
+stance_feet_list = [1, 1, 1, 1]
 
 file_suffix = multiprocessing.Value('i', 0)
 exceptions = multiprocessing.Value('i', 0)
@@ -32,7 +33,7 @@ start_time = None
 
 def computation(i, q):
 
-    global paths, save_path, file_name, robot_name
+    global paths, save_path, file_name, robot_name, stance_feet
     global file_suffix, exceptions, successes
 
     start_time = time.time()
@@ -41,9 +42,8 @@ def computation(i, q):
     params = IterativeProjectionParameters(robot_name=robot_name)
     comp_geom = ComputationalGeometry()
     seed_random()
-    stance_feet_list = stance_feet(high=2)  # Get random stance configuration
+    # stance_feet_list = stance_feet(high=2)  # Get random stance configuration
     com_world = com_positions(robot_name)  # Center of Mass in world frame
-    com_lin_vel = linear_velocity()  # Random Linear Velocity
     com_lin_acc = linear_acceleration()  # Random COM linear acceleration
     com_ang_acc = angular_acceleration()  # Random COM angular acceleration
     friction = friction_coeff()  # Gazebo uses 0.8
@@ -55,6 +55,10 @@ def computation(i, q):
     parameters = []
     results = []
     success = False
+    # Extract only stance feet positions and normals for saving database
+    stance_feet_indices = [i for i, val in enumerate(stance_feet_list) if val == 1]
+    stance_feet_pos = feet_pos[stance_feet_indices]
+    stance_cotact_normals = [feet_contact_normals[i] for i in stance_feet_indices]
     try:
         stability_margin = compute_stability(
             comp_dyn=comp_dyn,
@@ -63,7 +67,6 @@ def computation(i, q):
             constraint_mode=CONSTRAINTS,
             com=com_world,
             com_euler=com_euler,
-            com_lin_vel=com_lin_vel,
             com_lin_acc=com_lin_acc,
             com_ang_acc=com_ang_acc,
             ext_force=ext_force_world,
@@ -76,15 +79,13 @@ def computation(i, q):
         print ('Stability Margin:', stability_margin)
         parameters = np.concatenate([
             np.array(com_euler).flatten(),
-            np.array(com_lin_vel).flatten(),
             np.array(com_lin_acc).flatten(),
             np.array(com_ang_acc).flatten(),
             np.array(ext_force_world).flatten(),
             np.array(ext_torque_world).flatten(),
-            np.array(feet_pos).flatten(),
+            np.array(stance_feet_pos).flatten(),
             np.array([friction]).flatten(),
-            np.array(stance_feet_list).flatten(),
-            np.array(feet_contact_normals).flatten(),
+            np.array(stance_cotact_normals).flatten(),
         ])
         parameters = np.array(parameters, dtype=np.float)
         results = np.concatenate([
