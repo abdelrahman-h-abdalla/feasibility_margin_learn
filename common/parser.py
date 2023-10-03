@@ -6,10 +6,11 @@ import torch.utils.data as utils
 
 
 class DataParser:
-    def __init__(self, filename=None, delimiter=',', dtype=np.float):
+    def __init__(self, filename=None, delimiter=',', dtype=np.float, in_dim=40):
         self._filename = filename
         self._delimiter = delimiter
         self._dtype = dtype
+        self._input_dim = in_dim
 
         if self._filename is not None:
             self._data = self._load_data()
@@ -36,7 +37,7 @@ class DataParser:
                            dtype=self._dtype, header=None).to_numpy()
         data = data[~np.isnan(data).any(axis=1)]
 
-        if data.shape[1] == 48:
+        if data.shape[1] == self._input_dim + 1:
             if append:
                 if self._data is not None:
                     self._data = np.append(self._data, data, axis=0)

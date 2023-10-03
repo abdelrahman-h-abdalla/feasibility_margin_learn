@@ -9,7 +9,7 @@ from jet_leg_common.jet_leg.dynamics.computational_dynamics import Computational
 
 
 class TrainingDataset:
-    def __init__(self, data_folder='stability_margin', robot_name='anymal_coyote'):
+    def __init__(self, data_folder='stability_margin', robot_name='anymal_coyote', in_dim=40, no_of_stance=4):
         self._data_folder = data_folder
         self._data_parser = None
         self.paths = ProjectPaths()
@@ -17,11 +17,12 @@ class TrainingDataset:
         self.normal_save_name = os.path.join(self.paths.DATA_PATH + '/' + self._data_folder) + '/normalization.txt'
         self.comp_dyn = ComputationalDynamics(robot_name)
         self.robotModel = self.comp_dyn.robotModel.robotModel
+        self.input_dim = in_dim
+        self.no_of_stance = no_of_stance
 
         # Set normalization parameters to default values in case saved values doesn't exist
         self._data_offset = np.concatenate([
             np.array([0, 0, 1.0]),  # Rotation along gravity axis
-            np.zeros(3),  # Linear velocity
             np.zeros(3),  # Linear acceleration
             np.zeros(3),  # Angular acceleration
             np.zeros(3),  # External force
@@ -31,13 +32,11 @@ class TrainingDataset:
             np.array([self.robotModel.nominal_stance_LH[0], self.robotModel.nominal_stance_LH[1], self.robotModel.nominal_stance_LH[2]]),  # LH foot
             np.array([self.robotModel.nominal_stance_RH[0], self.robotModel.nominal_stance_RH[1], self.robotModel.nominal_stance_RH[2]]),  # RH foot
             np.array([0.51]),  # Friction
-            np.ones(4) * 0.767,  # Feet in contact
             np.array([0, 0, 1.0] * 4),  # Contact normals
             np.zeros(1)  #  Stability margin
         ])
         self._data_multiplier = np.concatenate([
             np.array([0.0734, 0.0750, 0.003]),  # Rotation along gravity axis
-            np.array([0.198, 0.198, 0.053]),  # Linear velocity
             np.array([2.219, 2.203, 0.233]),  # Linear acceleration
             np.array([0.199, 0.199, 0.304]),  # Angular acceleration
             np.array([1.00, 1.00, 1.0]),  # External force
@@ -55,7 +54,6 @@ class TrainingDataset:
             np.ones(1) * 0.087,
             np.ones(1) * 0.087,   # RH foot
             np.ones(1) * 0.112,  # Friction
-            np.ones(4) * 0.422,  # Feet in contact
             np.array([0.166, 0.160, 0.0348] * 4),  # Contact normals
             np.ones(1) * 0.1111  # Stability margin
         ])
@@ -68,6 +66,7 @@ class TrainingDataset:
                 # Reshape the loaded array to the original shape
                 reshaped_array = loaded_array.reshape(-1, shape[0])
                 self._data_offset, self._data_multiplier = reshaped_array[0], reshaped_array[1]
+                print("Loaded Normalization file:", self.normal_save_name)
             else:
                 print("Normalization file does not contain two arrays of correct shape")
         else:
@@ -81,11 +80,14 @@ class TrainingDataset:
 
     def get_data_folder(self):
         return self._data_folder
+    
+    def get_no_of_input_layers(self):
+        return 
 
     def get_training_data_parser(self, process_data=True, max_files=None):
         if self._data_parser is None:
             # Get training data
-            data_parser = DataParser()
+            data_parser = DataParser(in_dim=self.input_dim)
 
             num_files = 0
             num_files_test = 0
@@ -115,51 +117,38 @@ class TrainingDataset:
             rotation_matrices_inv = np.transpose(rotation_matrices, (0, 2, 1))
 
             # Convert to the base frame, assuming CoM is always in origin of WF
-            training_data[:, 18:21] = np.einsum('aik,ak->ai', rotation_matrices_inv,
-                                                training_data[:, 18:21]) + self.robotModel.com_BF # LF Foot Position
-            training_data[:, 21:24] = np.einsum('aik,ak->ai', rotation_matrices_inv,
-                                                training_data[:, 21:24]) + self.robotModel.com_BF # RF Foot Position
-            training_data[:, 24:27] = np.einsum('aik,ak->ai', rotation_matrices_inv,
-                                                training_data[:, 24:27]) + self.robotModel.com_BF # LH Foot Position
-            training_data[:, 27:30] = np.einsum('aik,ak->ai', rotation_matrices_inv,
-                                                training_data[:, 27:30]) + self.robotModel.com_BF # RH Foot Position
+            for i in range(self.no_of_stance):
+                start_idx = 15 + 3 * i
+                training_data[:, start_idx:start_idx+3] = np.einsum('aik,ak->ai', rotation_matrices_inv,
+                                                                    training_data[:, start_idx:start_idx+3]) + self.robotModel.com_BF # Foot Pos
+            # training_data[:, 15:18] = np.einsum('aik,ak->ai', rotation_matrices_inv,
+            #                                     training_data[:, 15:18]) + self.robotModel.com_BF # 1st Foot Position
+            # training_data[:, 18:21] = np.einsum('aik,ak->ai', rotation_matrices_inv,
+            #                                     training_data[:, 18:21]) + self.robotModel.com_BF # 2nd Foot Position
+            # training_data[:, 21:24] = np.einsum('aik,ak->ai', rotation_matrices_inv,
+            #                                     training_data[:, 21:24]) + self.robotModel.com_BF # 3rd Foot Position
 
-            # If the foot is not in stance, change its position to nominal
-            training_data[np.argwhere(training_data[:, 31] == 0), 18:21] = np.array([self.robotModel.nominal_stance_LF[0],
-                                                                                    self.robotModel.nominal_stance_LF[1],
-                                                                                    self.robotModel.nominal_stance_LF[2]])
-            training_data[np.argwhere(training_data[:, 32] == 0), 21:24] = np.array([self.robotModel.nominal_stance_RF[0],
-                                                                                    self.robotModel.nominal_stance_RF[1],
-                                                                                    self.robotModel.nominal_stance_RF[2]])
-            training_data[np.argwhere(training_data[:, 33] == 0), 24:27] = np.array([self.robotModel.nominal_stance_LH[0],
-                                                                                    self.robotModel.nominal_stance_LH[1],
-                                                                                    self.robotModel.nominal_stance_LH[2]])
-            training_data[np.argwhere(training_data[:, 34] == 0), 27:30] = np.array([self.robotModel.nominal_stance_RH[0],
-                                                                                    self.robotModel.nominal_stance_RH[1],
-                                                                                    self.robotModel.nominal_stance_RH[2]])
+            # Save final training_data
+            stacked_data_list = []
+            stacked_data_list.append(rotation_matrices[:, 2])
+            stacked_data_list.append(np.einsum('aik,ak->ai', rotation_matrices_inv, training_data[:, 3:6]))
+            stacked_data_list.append(np.einsum('aik,ak->ai', rotation_matrices_inv, training_data[:, 6:9]))
+            stacked_data_list.append(np.einsum('aik,ak->ai', rotation_matrices_inv, training_data[:, 9:12]))
+            stacked_data_list.append(np.einsum('aik,ak->ai', rotation_matrices_inv, training_data[:, 12:15]))
 
-            # If the foot is not in stance, set its contact normal to vertical
-            training_data[np.argwhere(training_data[:, 31] == 0), 35:38] = np.array([0.0, 0.0, 1.0])
-            training_data[np.argwhere(training_data[:, 32] == 0), 38:41] = np.array([0.0, 0.0, 1.0])
-            training_data[np.argwhere(training_data[:, 33] == 0), 41:44] = np.array([0.0, 0.0, 1.0])
-            training_data[np.argwhere(training_data[:, 34] == 0), 44:47] = np.array([0.0, 0.0, 1.0])
+            # Dynamically append foot positions based on number of stances
+            start_idx = 15
+            for i in range(self.no_of_stance):
+                stacked_data_list.append(training_data[:, start_idx:start_idx+3])
+                start_idx += 3
+            stacked_data_list.append(training_data[:, start_idx].reshape(-1, 1))  # Friction
+            start_idx += 1
+            stacked_data_list.append(training_data[:, start_idx:start_idx+self.no_of_stance*3]) # Contact normals
+            start_idx += self.no_of_stance * 3
+            stacked_data_list.append(training_data[:, start_idx].reshape(-1, 1))  # Stability Margin
 
-            training_data = np.hstack([
-                rotation_matrices[:, 2],  # Rotation along gravity axis
-                np.einsum('aik,ak->ai', rotation_matrices_inv, training_data[:, 3:6]),  # Linear Velocity
-                np.einsum('aik,ak->ai', rotation_matrices_inv, training_data[:, 6:9]),  # Linear Acceleration
-                np.einsum('aik,ak->ai', rotation_matrices_inv, training_data[:, 9:12]),  # Angular Acceleration
-                np.einsum('aik,ak->ai', rotation_matrices_inv, training_data[:, 12:15]),  # Ext Force applied on CoM expressed in base frame
-                np.einsum('aik,ak->ai', rotation_matrices_inv, training_data[:, 15:18]),  # Ext Torque applied on CoM expressed in base frame
-                training_data[:, 18:21],  # LF Foot Position: base frame
-                training_data[:, 21:24],  # LH Foot Position: base frame
-                training_data[:, 24:27],  # RF Foot Position: base frame
-                training_data[:, 27:30],  # RH Foot Position: base frame
-                training_data[:, 30].reshape(-1, 1),  # Friction
-                training_data[:, 31:35],  # Feet in contact
-                training_data[:, 35:47],  # Contact normals
-                training_data[:, 47].reshape(-1, 1)  # Stability Margin
-            ])
+            training_data = np.hstack(stacked_data_list)
+
             if process_data:
                 self._data_offset = np.mean(training_data, axis=0)
                 self._data_multiplier = np.std(training_data, axis=0)

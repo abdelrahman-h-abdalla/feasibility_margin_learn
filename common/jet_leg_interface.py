@@ -15,7 +15,7 @@ eigenpy.switchToNumpyMatrix()
 
 def compute_stability(comp_dyn=ComputationalDynamics('anymal_coyote'), kin_proj=NonlinearProjectionBretl('anymal_coyote'),
                       params=IterativeProjectionParameters(robot_name='anymal_coyote'), comp_geom=ComputationalGeometry(),
-                      constraint_mode='FRICTION_AND_ACTUATION', com=None, com_euler=None, com_lin_vel=None,
+                      constraint_mode='FRICTION_AND_ACTUATION', com=None, com_euler=None,
                       com_lin_acc=None, com_ang_acc=None, ext_force=None, ext_torque=None, feet_position=None, mu=0.5,
                       stance_feet=None, contact_normals=None):
     if com is None:
@@ -23,9 +23,6 @@ def compute_stability(comp_dyn=ComputationalDynamics('anymal_coyote'), kin_proj=
 
     if com_euler is None:
         com_euler = np.array([0.0, 0.0, 0.0])
-
-    if com_lin_vel is None:
-        com_lin_vel = np.array([0., 0., 0.])
 
     if com_lin_acc is None:
         com_lin_acc = np.array([0., 0., 0.])
@@ -69,7 +66,6 @@ def compute_stability(comp_dyn=ComputationalDynamics('anymal_coyote'), kin_proj=
     params.externalCentroidalTorque = ext_torque
     params.setCoMPosWF(com)
     params.setCoMPosBF(comp_dyn.robotModel.robotModel.com_BF)
-    params.setCoMLinVel(com_lin_vel)  # [+- 1.0m/s, +- 1.0m/s, 0.5m/s]
     params.setCoMLinAcc(com_lin_acc)  # [+- 5m/s^2,+- 5m/s^2,+- 5m/s^2]
     params.setCoMAngAcc(com_ang_acc)  # [+- 1rad/s^2,+- 1rad/s^2,+- 1rad/s^2]
     params.setTorqueLims(comp_dyn.robotModel.robotModel.joint_torque_limits)

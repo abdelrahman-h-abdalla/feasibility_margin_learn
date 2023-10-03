@@ -23,12 +23,30 @@ EVALUATE_STEPS = 50
 PATIENCE = 10
 LAUNCH_TENSORBOARD = True
 
+def compute_network_input_dim(stance_legs):
+    no_of_stance = stance_legs.count(1)
+    if no_of_stance == 4:
+        return 40
+    elif no_of_stance == 3:
+        return 34
+    elif no_of_stance == 2:
+        return 28
+    else:
+        print("Wrong number of inputs")
+        return None
 
 def main():
     robot_name = 'hyqreal'
     paths = ProjectPaths()
+    stance_legs_str = input("Enter Stance Legs [xxxx]: ")
+    stance_legs = [int(digit) for digit in stance_legs_str if digit.isdigit()]
+    data_folder_name = 'stability_margin/' + stance_legs_str + '/'
+    network_input_dim = compute_network_input_dim(stance_legs)
+    pretrained_model_path = paths.TRAINED_MODELS_PATH + "/final/stability_margin/network_state_dict.pt"
 
-    training_dataset_handler = TrainingDataset(robot_name)
+    
+    training_dataset_handler = TrainingDataset(data_folder=data_folder_name, robot_name=robot_name,
+                                                in_dim=network_input_dim, no_of_stance=stance_legs.count(1))
     data_parser = training_dataset_handler.get_training_data_parser(max_files=400)
     data_folder = training_dataset_handler.get_data_folder()
 
@@ -39,7 +57,7 @@ def main():
 
     # Initialize Network Object
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    network = MultiLayerPerceptron(hidden_layers=[256, 128, 128])
+    network = MultiLayerPerceptron(in_dim=network_input_dim, hidden_layers=[256, 128, 128])
     network.to(device)
 
     optimizer = optim.Adam(network.parameters(), lr=LEARNING_RATE)
