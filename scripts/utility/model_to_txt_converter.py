@@ -58,6 +58,7 @@ def main():
     model_directory = get_latest_directory(paths.TRAINED_MODELS_PATH + '/stability_margin/' + stance_legs_str + '/')
     model_directory = paths.TRAINED_MODELS_PATH + "/stability_margin/" + stance_legs_str + "/" + model_directory + "/"
     print("Loading model from", model_directory)
+    print("Loading model", model_directory + os.listdir(model_directory)[0])
     save_directory = '/final/stability_margin/'
     save_directory = paths.TRAINED_MODELS_PATH + save_directory
     # Create the destination directory if it doesn't exist
@@ -65,6 +66,8 @@ def main():
 
     network_input_dim = compute_network_input_dim(stance_legs)
     network = MultiLayerPerceptron(in_dim=network_input_dim, out_dim=1, hidden_layers=[512, 256, 128], activation='relu', dropout=0.0)
+    model_path = model_directory + os.listdir(model_directory)[0]
+    network.load_state_dict(torch.load(model_path))
 
     model_parameters = list(network.state_dict().keys())
     model_parameters = np.concatenate(
@@ -74,7 +77,7 @@ def main():
     param_save_name = save_directory + 'network_parameters_' + robot_name + '.txt'
     np.savetxt(param_save_name, model_parameters.reshape((1, -1)), delimiter=', ',
                newline='\n', fmt='%1.10f')
-    copy_file(model_directory + 'network_state_dict.pt', save_directory)
+    copy_file(model_path, save_directory)
 
     print('\nSaved model parameters in the following order:')
     for parameter_key in list(network.state_dict().keys()):

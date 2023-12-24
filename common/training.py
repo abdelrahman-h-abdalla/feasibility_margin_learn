@@ -2,7 +2,9 @@ import torch
 import torch.nn as nn
 
 import itertools
+import wandb
 
+import datetime
 
 def train(training_dataloader, validation_dataloader, device, optimizer, network, writer, batch_size=64, epochs=8,
           evaluate_steps=50, patience=5, save_path=None):
@@ -64,6 +66,9 @@ def train(training_dataloader, validation_dataloader, device, optimizer, network
                     writer.add_scalars('Loss', {'Training': training_loss / evaluate_steps}, iterator)
                     writer.add_scalars('Loss', {'Validation': validation_loss / evaluate_steps}, iterator)
                     writer.flush()
+                    # Check if WandB is running, then log to WandB
+                    if wandb.run is not None:
+                        wandb.log({'Training Loss': training_loss / evaluate_steps, 'Validation Loss': validation_loss / evaluate_steps}, step=iterator)
 
                     iterator += 1
                     training_loss = 0.0
@@ -72,6 +77,7 @@ def train(training_dataloader, validation_dataloader, device, optimizer, network
                 sub_epoch_iterator += 1
         
         print('Avg validation loss of epoch:', epoch_validation_loss / sub_epoch_iterator)
+
         # Check best loss in last epoch (from all mini-batches)
         if epoch_validation_loss / sub_epoch_iterator < best_epoch_val_loss:
             best_epoch_val_loss = epoch_validation_loss / sub_epoch_iterator
@@ -79,20 +85,27 @@ def train(training_dataloader, validation_dataloader, device, optimizer, network
             patience_counter = 0  # reset counter
             if save_path is not None and best_epoch_model is not None:
                 torch.save(best_epoch_model, save_path)
+                if wandb.run is not None:
+                    wandb.save(save_path)
         else:
             patience_counter += 1  # increment counter
         print("Patience counter:", patience_counter)
             
         # If performance didn't improve for 'patience' number of epochs, stop training
         if patience_counter >= patience:
+        # if False:
             print("Early stopping due to lack of improvement in validation loss")
             print("Trained!")
             if save_path is not None and best_epoch_model is not None:
                 torch.save(best_epoch_model, save_path)
+                if wandb.run is not None:
+                    wandb.save(save_path)
             return iterator
     
     print("Trained!")
     if save_path is not None:
         torch.save(network.state_dict(), save_path)
+        if wandb.run is not None:
+            wandb.save(save_path)
 
     return iterator

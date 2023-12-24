@@ -3,6 +3,7 @@ import time
 import string
 import psutil
 import multiprocessing
+import argparse
 
 from common.parameters import *
 from common.jet_leg_interface import compute_stability
@@ -24,7 +25,8 @@ save_path = paths.DATA_PATH + '/stability_margin/' + paths.INIT_DATETIME_STR + '
         random.choice(string.ascii_uppercase + string.digits) for _ in range(4))
 file_name = 'data_'
 robot_name = 'hyqreal'
-stance_feet_list = [1, 1, 1, 1]
+stance_feet_str = '0111'
+stance_feet_list = [int(char) for char in stance_feet_str]
 
 file_suffix = multiprocessing.Value('i', 0)
 exceptions = multiprocessing.Value('i', 0)
@@ -57,6 +59,7 @@ def computation(i, q):
     parameters = []
     results = []
     success = False
+
     # Extract only stance feet positions and normals for saving database
     stance_feet_indices = [i for i, val in enumerate(stance_feet_list) if val == 1]
     stance_feet_pos = feet_pos[stance_feet_indices]
@@ -79,7 +82,7 @@ def computation(i, q):
             stance_feet=stance_feet_list,
             contact_normals=feet_contact_normals
         )
-        print ('Feasibility Margin:', stability_margin)
+
         parameters = np.concatenate([
             np.array(com_euler).flatten(),
             np.array(com_lin_acc).flatten(),
@@ -127,12 +130,22 @@ def listener(q):
 
 def main():
 
-    global save_path
+    global save_path, stance_feet_str, stance_feet_list
+
+    # Get stance feet configuration upon running script
+    parser = argparse.ArgumentParser(description='Run feasibility margin computation with specified stance feet configuration.')
+    parser.add_argument('stance_feet_str', type=str, help='Stance Legs configuration as a string of 4 digits (e.g., 0111)')
+    args = parser.parse_args()
+    stance_feet_str = args.stance_feet_str
+    stance_feet_list = [int(char) for char in stance_feet_str]
+    save_path = paths.DATA_PATH + '/stability_margin/' + stance_feet_str + '/' + paths.INIT_DATETIME_STR + '/' + ''.join(
+        random.choice(string.ascii_uppercase + string.digits) for _ in range(4))
     try:
         os.makedirs(save_path)
     except OSError:
         pass
 
+    # stance_feet_list = [int(digit) for digit in stance_feet_str if digit.isdigit()]
     num_cpu = psutil.cpu_count(True)
 
     with multiprocessing.Pool(num_cpu) as pool:
