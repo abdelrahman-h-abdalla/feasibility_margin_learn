@@ -40,7 +40,7 @@ class HyqrealModel:
         self.nominal_stance_RF = [x_nominal_b, -y_nominal_b, z_nominal_b]
         self.nominal_stance_LH = [-x_nominal_b, y_nominal_b, z_nominal_b]
         self.nominal_stance_RH = [-x_nominal_b, -y_nominal_b, z_nominal_b]
-        self.max_dev_from_nominal = [0.15, 0.15, 0.15]
+        self.max_dev_from_nominal = [0.2, 0.15, 0.15]
 
         # Max external wrench
         self.max_ext_force = [300, 300, 300]

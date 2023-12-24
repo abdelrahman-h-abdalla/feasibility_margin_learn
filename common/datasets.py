@@ -14,49 +14,120 @@ class TrainingDataset:
         self._data_parser = None
         self.paths = ProjectPaths()
         # File to save normalization parameters for dataset
-        self.normal_save_name = os.path.join(self.paths.DATA_PATH + '/' + self._data_folder) + '/normalization.txt'
+        self.normal_save_name = os.path.join(self.paths.DATA_PATH + '/' + self._data_folder + '/') + 'normalization.txt'
         self.comp_dyn = ComputationalDynamics(robot_name)
         self.robotModel = self.comp_dyn.robotModel.robotModel
         self.input_dim = in_dim
         self.no_of_stance = no_of_stance
 
         # Set normalization parameters to default values in case saved values doesn't exist
-        self._data_offset = np.concatenate([
-            np.array([0, 0, 1.0]),  # Rotation along gravity axis
-            np.zeros(3),  # Linear acceleration
-            np.zeros(3),  # Angular acceleration
-            np.zeros(3),  # External force
-            np.zeros(3),  # External torque
-            np.array([self.robotModel.nominal_stance_LF[0], self.robotModel.nominal_stance_LF[1], self.robotModel.nominal_stance_LF[2]]),  # LF foot
-            np.array([self.robotModel.nominal_stance_RF[0], self.robotModel.nominal_stance_RF[1], self.robotModel.nominal_stance_RF[2]]),  # RF foot
-            np.array([self.robotModel.nominal_stance_LH[0], self.robotModel.nominal_stance_LH[1], self.robotModel.nominal_stance_LH[2]]),  # LH foot
-            np.array([self.robotModel.nominal_stance_RH[0], self.robotModel.nominal_stance_RH[1], self.robotModel.nominal_stance_RH[2]]),  # RH foot
-            np.array([0.51]),  # Friction
-            np.array([0, 0, 1.0] * 4),  # Contact normals
-            np.zeros(1)  #  Stability margin
-        ])
-        self._data_multiplier = np.concatenate([
-            np.array([0.0734, 0.0750, 0.003]),  # Rotation along gravity axis
-            np.array([2.219, 2.203, 0.233]),  # Linear acceleration
-            np.array([0.199, 0.199, 0.304]),  # Angular acceleration
-            np.array([1.00, 1.00, 1.0]),  # External force
-            np.array([1.00, 1.00, 1.0]),  # External torque
-            np.ones(1) * 0.173,
-            np.ones(1) * 0.087,
-            np.ones(1) * 0.087,   # LF foot
-            np.ones(1) * 0.173,
-            np.ones(1) * 0.087,
-            np.ones(1) * 0.087,   # RF foot
-            np.ones(1) * 0.173,
-            np.ones(1) * 0.087,
-            np.ones(1) * 0.087,   # LH foot
-            np.ones(1) * 0.173,
-            np.ones(1) * 0.087,
-            np.ones(1) * 0.087,   # RH foot
-            np.ones(1) * 0.112,  # Friction
-            np.array([0.166, 0.160, 0.0348] * 4),  # Contact normals
-            np.ones(1) * 0.1111  # Stability margin
-        ])
+        if (in_dim == 40):
+            self._data_offset = np.concatenate([
+                np.array([0, 0, 1.0]),  # Rotation along gravity axis
+                np.zeros(3),  # Linear acceleration
+                np.zeros(3),  # Angular acceleration
+                np.zeros(3),  # External force
+                np.zeros(3),  # External torque
+                np.array([self.robotModel.nominal_stance_LF[0], self.robotModel.nominal_stance_LF[1], self.robotModel.nominal_stance_LF[2]]),  # LF foot
+                np.array([self.robotModel.nominal_stance_RF[0], self.robotModel.nominal_stance_RF[1], self.robotModel.nominal_stance_RF[2]]),  # RF foot
+                np.array([self.robotModel.nominal_stance_LH[0], self.robotModel.nominal_stance_LH[1], self.robotModel.nominal_stance_LH[2]]),  # LH foot
+                np.array([self.robotModel.nominal_stance_RH[0], self.robotModel.nominal_stance_RH[1], self.robotModel.nominal_stance_RH[2]]),  # RH foot
+                np.array([0.51]),  # Friction
+                np.array([0, 0, 1.0] * 4),  # Contact normals
+                np.zeros(1)  #  Stability margin
+            ])
+            self._data_multiplier = np.concatenate([
+                np.array([0.0734, 0.0750, 0.003]),  # Rotation along gravity axis
+                np.array([2.219, 2.203, 0.233]),  # Linear acceleration
+                np.array([0.199, 0.199, 0.304]),  # Angular acceleration
+                np.array([1.00, 1.00, 1.0]),  # External force
+                np.array([1.00, 1.00, 1.0]),  # External torque
+                np.ones(1) * 0.173,
+                np.ones(1) * 0.087,
+                np.ones(1) * 0.087,   # LF foot
+                np.ones(1) * 0.173,
+                np.ones(1) * 0.087,
+                np.ones(1) * 0.087,   # RF foot
+                np.ones(1) * 0.173,
+                np.ones(1) * 0.087,
+                np.ones(1) * 0.087,   # LH foot
+                np.ones(1) * 0.173,
+                np.ones(1) * 0.087,
+                np.ones(1) * 0.087,   # RH foot
+                np.ones(1) * 0.112,  # Friction
+                np.array([0.166, 0.160, 0.0348] * 4),  # Contact normals
+                np.ones(1) * 0.1111  # Stability margin
+            ])
+        elif (in_dim == 34):
+            self._data_offset = np.concatenate([
+                np.array([0, 0, 1.0]),  # Rotation along gravity axis
+                np.zeros(3),  # Linear acceleration
+                np.zeros(3),  # Angular acceleration
+                np.zeros(3),  # External force
+                np.zeros(3),  # External torque
+                np.array([self.robotModel.nominal_stance_RF[0], self.robotModel.nominal_stance_RF[1], self.robotModel.nominal_stance_RF[2]]),  # RF foot
+                np.array([self.robotModel.nominal_stance_LH[0], self.robotModel.nominal_stance_LH[1], self.robotModel.nominal_stance_LH[2]]),  # LH foot
+                np.array([self.robotModel.nominal_stance_RH[0], self.robotModel.nominal_stance_RH[1], self.robotModel.nominal_stance_RH[2]]),  # RH foot
+                np.array([0.51]),  # Friction
+                np.array([0, 0, 1.0] * 3),  # Contact normals
+                np.zeros(1)  #  Stability margin
+            ])
+            self._data_multiplier = np.concatenate([
+                np.array([0.0734, 0.0750, 0.003]),  # Rotation along gravity axis
+                np.array([2.219, 2.203, 0.233]),  # Linear acceleration
+                np.array([0.199, 0.199, 0.304]),  # Angular acceleration
+                np.array([1.00, 1.00, 1.0]),  # External force
+                np.array([1.00, 1.00, 1.0]),  # External torque
+                np.ones(1) * 0.173,
+                np.ones(1) * 0.087,
+                np.ones(1) * 0.087,   # RF foot
+                np.ones(1) * 0.173,
+                np.ones(1) * 0.087,
+                np.ones(1) * 0.087,   # LH foot
+                np.ones(1) * 0.173,
+                np.ones(1) * 0.087,
+                np.ones(1) * 0.087,   # RH foot
+                np.ones(1) * 0.112,  # Friction
+                np.array([0.166, 0.160, 0.0348] * 3),  # Contact normals
+                np.ones(1) * 0.1111  # Stability margin
+            ])
+        else:
+            self._data_offset = np.concatenate([
+                np.array([0, 0, 1.0]),  # Rotation along gravity axis
+                np.zeros(3),  # Linear acceleration
+                np.zeros(3),  # Angular acceleration
+                np.zeros(3),  # External force
+                np.zeros(3),  # External torque
+                np.array([self.robotModel.nominal_stance_LF[0], self.robotModel.nominal_stance_LF[1], self.robotModel.nominal_stance_LF[2]]),  # LF foot
+                np.array([self.robotModel.nominal_stance_RF[0], self.robotModel.nominal_stance_RF[1], self.robotModel.nominal_stance_RF[2]]),  # RF foot
+                np.array([self.robotModel.nominal_stance_LH[0], self.robotModel.nominal_stance_LH[1], self.robotModel.nominal_stance_LH[2]]),  # LH foot
+                np.array([self.robotModel.nominal_stance_RH[0], self.robotModel.nominal_stance_RH[1], self.robotModel.nominal_stance_RH[2]]),  # RH foot
+                np.array([0.51]),  # Friction
+                np.array([0, 0, 1.0] * 4),  # Contact normals
+                np.zeros(1)  #  Stability margin
+            ])
+            self._data_multiplier = np.concatenate([
+                np.array([0.0734, 0.0750, 0.003]),  # Rotation along gravity axis
+                np.array([2.219, 2.203, 0.233]),  # Linear acceleration
+                np.array([0.199, 0.199, 0.304]),  # Angular acceleration
+                np.array([1.00, 1.00, 1.0]),  # External force
+                np.array([1.00, 1.00, 1.0]),  # External torque
+                np.ones(1) * 0.173,
+                np.ones(1) * 0.087,
+                np.ones(1) * 0.087,   # LF foot
+                np.ones(1) * 0.173,
+                np.ones(1) * 0.087,
+                np.ones(1) * 0.087,   # RF foot
+                np.ones(1) * 0.173,
+                np.ones(1) * 0.087,
+                np.ones(1) * 0.087,   # LH foot
+                np.ones(1) * 0.173,
+                np.ones(1) * 0.087,
+                np.ones(1) * 0.087,   # RH foot
+                np.ones(1) * 0.112,  # Friction
+                np.array([0.166, 0.160, 0.0348] * 4),  # Contact normals
+                np.ones(1) * 0.1111  # Stability margin
+            ])
 
         if os.path.exists(self.normal_save_name):
             loaded_array = np.loadtxt(self.normal_save_name, dtype=float)

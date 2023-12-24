@@ -370,43 +370,25 @@ class Jacobians:
     def plotMarginAndJacobianWrtFootPosition(self, params, foot_id, foot_pos_range, dimension_to_check):
         num_of_tests = np.shape(foot_pos_range)
         margin = np.zeros(num_of_tests)
-        jac_com_pos = np.zeros(num_of_tests)
+        jac_foot_pos = np.zeros(num_of_tests)
         count = 0
+        default_feet_pos_WF = copy.deepcopy(params.getContactsPosWF())
 
         for delta in foot_pos_range:
-            """ contact points in the World Frame"""
-            LF_foot = np.array([0.3, 0.2, -0.4])
-            RF_foot = np.array([0.3, -0.2, -0.4])
-            LH_foot = np.array([-0.3, 0.2, -0.4])
-            RH_foot = np.array([-0.3, -0.2, -0.4])
+            # """ contact points in the World Frame"""
+            # LF_foot = np.array([0.3, 0.2, -0.4])
+            # RF_foot = np.array([0.3, -0.2, -0.4])
+            # LH_foot = np.array([-0.3, 0.2, -0.4])
+            # RH_foot = np.array([-0.3, -0.2, -0.4])
 
-            contactsWF = np.vstack((LF_foot, RF_foot, LH_foot, RH_foot))
+            # contactsWF = np.vstack((LF_foot, RF_foot, LH_foot, RH_foot))
+            contactsWF = copy.deepcopy(default_feet_pos_WF)
             contactsWF[foot_id, dimension_to_check] += delta
+            # params.setContactsPosWF(contactsWF)
+            isPointFeasible, margin[count] = self.computeComMargin(params, contactsWF)
             params.setContactsPosWF(contactsWF)
-
-            # print("contacts ", params.getContactsPosWF())
-
-            ''' compute iterative projection 
-            Outputs of "iterative_projection_bretl" are:
-            IP_points = resulting 2D vertices
-            actuation_polygons = these are the vertices of the 3D force polytopes (one per leg)
-            computation_time = how long it took to compute the iterative projection
-            '''
-            IP_points, force_polytopes, IP_computation_time = self.compDyn.iterative_projection_bretl(params)
-
-            '''I now check whether the given CoM configuration is stable or not'''
-            isCoMStable, contactForces, forcePolytopes = self.compDyn.check_equilibrium(params)
-            print("is CoM stable?", isCoMStable)
-            # print 'Contact forces:', contactForces
-
-            facets = self.compGeom.compute_halfspaces_convex_hull(IP_points)
-            point2check = self.compDyn.getReferencePoint(params)
-            print(count, params.comLinVel, params.comPositionWF)
-            isPointFeasible, margin[count] = self.compGeom.isPointRedundant(facets, point2check)
-
-            marginJacWrtComPos = self.computeComPosJacobian(params)
-            print("margin jac wrt com pos", marginJacWrtComPos)
-            jac_com_pos[count] = marginJacWrtComPos[1]
+            marginJacWrtFootPos = self.computeFootJacobian(params, foot_id)
+            jac_foot_pos[count] = marginJacWrtFootPos[dimension_to_check]
             count += 1
 
-        return margin, jac_com_pos
+        return margin, jac_foot_pos

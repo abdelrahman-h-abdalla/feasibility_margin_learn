@@ -28,7 +28,7 @@ delta_acc_range_vec = np.linspace(-delta_acc_range/2.0, delta_acc_range/2.0, num
 def plot_learnt_margin():
 
     paths = ProjectPaths()
-    dataset_handler = TrainingDataset()
+    dataset_handler = TrainingDataset('../trained_models/final/stability_margin', robot_name=robot_name)
     model_directory = '/final/stability_margin/'
     model_directory = paths.TRAINED_MODELS_PATH + model_directory
     print("model directory: ", model_directory)

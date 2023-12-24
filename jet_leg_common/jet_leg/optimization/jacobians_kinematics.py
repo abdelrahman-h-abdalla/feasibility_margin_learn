@@ -3,6 +3,7 @@ from jet_leg_common.jet_leg.optimization import nonlinear_projection
 from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
 from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
 import copy
+from shapely.geometry import Polygon, Point
 
 class KinematicJacobians:
     def __init__(self,robot_name):
@@ -102,6 +103,22 @@ class KinematicJacobians:
             jacobian[j] = diff / self.delta
 
         return jacobian
+    
+    def computeFootJacobian(self, params, footID):
+        jacobian = np.zeros(3)
+        initialContacts = copy.deepcopy(params.getContactsPosWF())
+        initiaPoint = copy.deepcopy(initialContacts[footID])
+        for j in np.arange(0, 3):
+            contacts = initialContacts
+            contacts[footID,j] = initiaPoint[j] + self.delta / 2.0
+            isPointFeasible, margin1 = self.computeCoMKinematicMargin(params, contacts)
+            contacts = initialContacts
+            contacts[footID, j] = initiaPoint[j] - self.delta / 2.0
+            isPointFeasible, margin2 = self.computeCoMKinematicMargin(params, contacts)
+            diff = margin1 - margin2
+            jacobian[j] = diff / self.delta
+
+        return jacobian
 
     
     def plotMarginAndJacobianOfMarginWrtComLinAcceleration(self, params, acc_range, dimension):
@@ -192,22 +209,30 @@ class KinematicJacobians:
     #     params.setContactsPosWF(default_feet_pos_WF)
     #     return isPointFeasible, margin
     
+    def computeComMargin(self, params, new_contacts_wf):
+        default_feet_pos_WF = copy.deepcopy(params.getContactsPosWF())
+        params.setContactsPosWF(new_contacts_wf)
+        isPointFeasible, margin = self.compDyn.compute_IP_margin(params, "COM")
+        params.setContactsPosWF(default_feet_pos_WF)
+        return isPointFeasible, margin
+
     def computeCoMKinematicMargin(self, params, new_contacts_wf, reference_type = "COM"):
 
         com_check = params.getCoMPosWF()
         params.setContactsPosWF(new_contacts_wf)
-        print("new contacts: ", new_contacts_wf)
         polygon, computation_time = self.projection.project_polytope(params, com_check, 20. * np.pi / 180, 0.03)    
         if polygon.size > 0 and np.any(polygon):
-            print("polygon:", polygon)
-            facets = self.compGeom.compute_halfspaces_convex_hull(polygon[:,:2])
-            reference_point = self.compDyn.getReferencePoint(params, reference_type)
-            isPointFeasible, margin = self.compGeom.isPointRedundant(facets, reference_point)
-            print("margin: ", margin)
-            return isPointFeasible, margin
+            sPolygon = Polygon(polygon[:-1,:2])
+            sPoint = Point(com_check[:2])
+            dist = sPoint.distance(sPolygon.exterior)
+            isPointFeasible = True
+            if not sPolygon.contains(sPoint):
+                isPointFeasible = False
+                dist = -1 * dist
+            return isPointFeasible, dist
         else:
             print("Warning! IP failed.")
-            return False, -1000.0
+            return False, -1.0
 
     def plotMarginAndJacobianWrtComPosition(self, params, com_pos_range, dim_to_check):
         num_of_tests = np.shape(com_pos_range)
@@ -221,8 +246,9 @@ class KinematicJacobians:
             """ contact points in the World Frame"""
             contactsWF = copy.deepcopy(default_feet_pos_WF) 
             contactsWF[:, dim_to_check] -= delta
-            print("contactsWF:", contactsWF)
-            isPointFeasible, margin[count] = self.computeCoMKinematicMargin(params, contactsWF)
+            isPointFeasible_fr, margin_fr = self.computeComMargin(params, contactsWF)
+            isPointFeasible_kin, margin_kin = self.computeCoMKinematicMargin(params, contactsWF)
+            margin[count] = min(margin_fr, margin_kin)
             jac_com_pos[:, count] = self.computeComPosJacobian(params, contactsWF)
 
             count += 1
@@ -260,3 +286,32 @@ class KinematicJacobians:
             count += 1
 
         return margin, jac_base_orient
+
+    def plotMarginAndJacobianWrtFootPosition(self, params, foot_id, foot_pos_range, dimension_to_check):
+        num_of_tests = np.shape(foot_pos_range)
+        margin = np.zeros(num_of_tests)
+        jac_foot_pos = np.zeros(num_of_tests)
+        count = 0
+        default_feet_pos_WF = copy.deepcopy(params.getContactsPosWF())
+
+        for delta in foot_pos_range:
+            # """ contact points in the World Frame"""
+            # LF_foot = np.array([0.3, 0.2, -0.4])
+            # RF_foot = np.array([0.3, -0.2, -0.4])
+            # LH_foot = np.array([-0.3, 0.2, -0.4])
+            # RH_foot = np.array([-0.3, -0.2, -0.4])
+
+            # contactsWF = np.vstack((LF_foot, RF_foot, LH_foot, RH_foot))
+            contactsWF = copy.deepcopy(default_feet_pos_WF)
+            contactsWF[foot_id, dimension_to_check] += delta
+            # params.setContactsPosWF(contactsWF)
+            isPointFeasible_fr, margin_fr = self.computeComMargin(params, contactsWF)
+            isPointFeasible_kin, margin_kin = self.computeCoMKinematicMargin(params, contactsWF)
+            margin[count] = min(margin_fr, margin_kin)
+            params.setContactsPosWF(contactsWF)
+            marginJacWrtFootPos = self.computeFootJacobian(params, foot_id)
+            jac_foot_pos[count] = marginJacWrtFootPos[dimension_to_check]
+            params.setContactsPosWF(default_feet_pos_WF)
+            count += 1
+
+        return margin, jac_foot_pos
