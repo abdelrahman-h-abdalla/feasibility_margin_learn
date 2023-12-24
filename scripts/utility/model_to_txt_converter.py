@@ -64,8 +64,7 @@ def main():
     os.makedirs(save_directory, exist_ok=True)
 
     network_input_dim = compute_network_input_dim(stance_legs)
-    network = MultiLayerPerceptron(in_dim=network_input_dim, out_dim=1, hidden_layers=[256, 128, 128], activation=F.softsign, dropout=0.0)
-    network.load_state_dict(torch.load(model_directory + 'network_state_dict.pt'))
+    network = MultiLayerPerceptron(in_dim=network_input_dim, out_dim=1, hidden_layers=[512, 256, 128], activation='relu', dropout=0.0)
 
     model_parameters = list(network.state_dict().keys())
     model_parameters = np.concatenate(

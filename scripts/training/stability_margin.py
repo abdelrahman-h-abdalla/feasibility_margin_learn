@@ -57,7 +57,7 @@ def main():
 
     # Initialize Network Object
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    network = MultiLayerPerceptron(in_dim=network_input_dim, hidden_layers=[256, 128, 128])
+    network = MultiLayerPerceptron(in_dim=network_input_dim, out_dim=1, hidden_layers=config.hidden_layers, activation=config.activation_function)
     network.to(device)
 
     optimizer = optim.Adam(network.parameters(), lr=LEARNING_RATE)

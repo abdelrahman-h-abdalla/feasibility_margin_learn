@@ -6,7 +6,7 @@ import numpy as np
 
 
 class MultiLayerPerceptron(nn.Module):
-    def __init__(self, in_dim=47, out_dim=1, hidden_layers=None, activation=F.softsign, dropout=0.0):
+    def __init__(self, in_dim=47, out_dim=1, hidden_layers=None, activation='softsign', dropout=0.0):
         super(MultiLayerPerceptron, self).__init__()
 
         # Network Parameters
@@ -23,8 +23,21 @@ class MultiLayerPerceptron(nn.Module):
             self._layers.insert(len(self._layers), self._out_dim)
 
         self._num_layers = len(self._layers)
-        self._activation = activation
+        # self._activation = activation
         self._dropout = nn.Dropout(p=dropout)
+
+        activation_functions = {
+            'relu': nn.ReLU(),
+            'softsign': F.softsign,
+            # Add other activation functions as needed
+        }
+        # Set the activation function
+        if activation in activation_functions:
+            self._activation = activation_functions[activation]
+        else:
+            print("Unavailable activation function: {}".format(activation))
+            self._activation = F.softsign
+
 
         # Network Layers
         self._fully_connected_layers = nn.ModuleList(
@@ -33,18 +46,12 @@ class MultiLayerPerceptron(nn.Module):
 
     def forward(self, t, output_activation=None):
         for fully_connected_layer in self._fully_connected_layers[:-1]:
-            t = self._dropout(self._activation(fully_connected_layer(t)))
+            t = fully_connected_layer(t)
+            # Applying activation
+            t = self._activation(t)
+            t = self._dropout(t)
 
         t = self._fully_connected_layers[-1](t)
-
-        if output_activation is not None:
-            if type(output_activation) == bool:
-                if output_activation:
-                    return self._activation(t)
-                else:
-                    return t
-            else:
-                return output_activation(t)
 
         return t
 
