@@ -44,13 +44,13 @@ def stance_feet(low=0, high=1):
 
 def base_euler(roll_dist=None, pitch_dist=None, yaw_dist=None):
     if roll_dist is None:
-        roll_dist = [-np.pi/24.0, np.pi/24.0]
+        roll_dist = [-np.pi/8.9, np.pi/8.9]
 
     if pitch_dist is None:
-        pitch_dist = [-np.pi/24.0, np.pi/24.0]
+        pitch_dist = [-np.pi/5.1, np.pi/5.1]
 
     if yaw_dist is None:
-        yaw_dist = [-np.pi/18.0, np.pi/18.0]
+        yaw_dist = [-np.pi/4.0, np.pi/4.0]
 
     return np.array([
         np.random.uniform(roll_dist[0], roll_dist[1]),
