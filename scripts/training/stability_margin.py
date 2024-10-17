@@ -2,6 +2,7 @@ from common.paths import ProjectPaths
 from common.training import train
 from common.networks import MultiLayerPerceptron
 from common.datasets import TrainingDataset
+from common.statistics import binary_predictions, compute_metrics
 
 import os
 import socket
@@ -16,9 +17,13 @@ from tensorboard import program
 from torch.utils.tensorboard import SummaryWriter
 import wandb
 
-EPOCHS = 400
+# Maximum epochs before stopping
+EPOCHS = 2000
+# Parameters used when not sweeping
 BATCH_SIZE_DEFAULT = 2048
 LEARNING_RATE_DEFAULT = 0.0001
+HIDDEN_LAYERS_DEFAULT = [512, 256, 128]
+ACTIVATION_FUNCTION_DEFAULT = 'relu'
 SAVE_TRACED_MODEL = False
 EVALUATE_STEPS = 50
 PATIENCE = 10
@@ -60,7 +65,7 @@ def main_train(config=None, stance_legs_str=None):
 
     training_dataset_handler = TrainingDataset(data_folder=data_folder_name, robot_name=robot_name,
                                                 in_dim=network_input_dim, no_of_stance=stance_legs.count(1))
-    data_parser = training_dataset_handler.get_training_data_parser(max_files=400)
+    data_parser = training_dataset_handler.get_training_data_parser(max_files=800)
     data_folder = training_dataset_handler.get_data_folder()
 
     # Use torch data_loader to sample training data
@@ -129,6 +134,8 @@ def main_train(config=None, stance_legs_str=None):
     sub_epoch_iterator = 0
     prediction_iterator = 0
     iterator = iterator_offset - 1
+    # Initialize overall TP, TN, FP, FN counters
+    overall_TP = overall_TN = overall_FP = overall_FN = 0
 
     for local_batch, local_targets in testing_dataloader:
         local_batch, local_targets = local_batch.to(device), local_targets.to(device)
@@ -137,6 +144,17 @@ def main_train(config=None, stance_legs_str=None):
 
         loss = nn.MSELoss()(output, local_targets)
         test_loss += (loss.item())
+
+        # Convert to binary predictions
+        preds = binary_predictions(output)
+        # Compute metrics for the current batch
+        TP, TN, FP, FN, accuracy = compute_metrics(preds, local_targets)
+
+        # Update overall counters
+        overall_TP += TP
+        overall_TN += TN
+        overall_FP += FP
+        overall_FN += FN
 
         if sub_epoch_iterator % EVALUATE_STEPS == EVALUATE_STEPS - 1:
             print('[Test, %d, %5d] loss: %.8f' % (1, sub_epoch_iterator + 1, test_loss / EVALUATE_STEPS))
@@ -159,6 +177,28 @@ def main_train(config=None, stance_legs_str=None):
             writer.flush()
 
         sub_epoch_iterator += 1
+
+    # Compute overall accuracy
+    total_samples = overall_TP + overall_TN + overall_FP + overall_FN
+    overall_accuracy = (overall_TP + overall_TN) / total_samples if total_samples > 0 else 0
+
+    # Print overall TP, TN, FP, FN, and Accuracy
+    print("True Positives (TP): {}".format(overall_TP))
+    print("True Negatives (TN): {}".format(overall_TN))
+    print("False Positives (FP): {}".format(overall_FP))
+    print("False Negatives (FN): {}".format(overall_FN))
+    print("Accuracy: {:.8f}".format(overall_accuracy))
+
+    # Optionally log overall metrics as well
+    if wandb.run is not None:
+        wandb.log({
+            'True Positives': overall_TP,
+            'True Negatives': overall_TN,
+            'False Positives': overall_FP,
+            'False Negatives': overall_FN,
+            'Accuracy': overall_accuracy
+        })
+
     print("Tested!")
     
     # while True:
@@ -193,12 +233,12 @@ def run_sweep(stance_legs_str):
     sweep_id = wandb.sweep(sweep_config, project='FM')
     wandb.agent(sweep_id, lambda: main_train(sweep_config, stance_legs_str))
 
-def run_single():
+def run_single(stance_legs_str):
     config = DotDict({
         'learning_rate': LEARNING_RATE_DEFAULT,
         'batch_size': BATCH_SIZE_DEFAULT,
-        'hidden_layers': [256, 128, 128],
-        'activation_function': 'softsign'
+        'hidden_layers': HIDDEN_LAYERS_DEFAULT,
+        'activation_function': ACTIVATION_FUNCTION_DEFAULT
     })
     main_train(config, stance_legs_str)
 
