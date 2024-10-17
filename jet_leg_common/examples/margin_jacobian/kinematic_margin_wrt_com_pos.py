@@ -24,7 +24,7 @@ plotter = Plotter()
 math = Math()
 
 ''' Set the robot's name (either 'hyq', 'hyqreal', 'anymal_boxy' or 'anymal_coyote')'''
-robot_name = 'hyq'
+robot_name = 'hyqreal'
 
 '''
 possible constraints for each foot:
@@ -55,10 +55,10 @@ projection = nonlinear_projection.NonlinearProjectionBretl(robot_name)
     informations needed for the computation of the IP'''
 params = IterativeProjectionParameters(robot_name)
 """ contact points in the World Frame"""
-LF_foot = np.array([0.34, 0.34, -0.52])
-RF_foot = np.array([0.36, -0.30, -0.52])
-LH_foot = np.array([-0.36, 0.32, -0.52])
-RH_foot = np.array([-0.36, -0.32, -0.52])
+LF_foot = np.array([0.44, 0.34, -0.55])  # Starting configuration w.o. trunk controller
+RF_foot = np.array([0.44, -0.34, -0.55])
+LH_foot = np.array([-0.44, 0.34, -0.55])
+RH_foot = np.array([-0.44, -0.34, -0.55])
 
 contactsWF = np.vstack((LF_foot, RF_foot, LH_foot, RH_foot))
 
@@ -67,14 +67,22 @@ HAA = Hip Abduction Adduction
 HFE = Hip Flextion Extension
 KFE = Knee Flextion Extension
 '''
-LF_q_lim_max = [0.44, 1.2217, -0.3491]  # HAA, HFE, KFE
-LF_q_lim_min = [-1.22, -0.8727, -2.4435]  # HAA, HFE, KFE
-RF_q_lim_max = [0.44, 1.2217, -0.3491]  # HAA, HFE, KFE
-RF_q_lim_min = [-1.22, -0.8727, -2.4435]  # HAA, HFE, KFE
-LH_q_lim_max = [0.44, 0.8727, 2.4435]  # HAA, HFE, KFE
-LH_q_lim_min = [-1.22, -1.2217, 0.3491]  # HAA, HFE, KFE
-RH_q_lim_max = [0.44, 0.8727, 2.4435]  # HAA, HFE, KFE
-RH_q_lim_min = [-1.22, -1.2217, 0.3491]  # HAA, HFE, KFE
+# LF_q_lim_max = [0.44, 1.2217, -0.3491]  # HAA, HFE, KFE
+# LF_q_lim_min = [-1.22, -0.8727, -2.4435]  # HAA, HFE, KFE
+# RF_q_lim_max = [0.44, 1.2217, -0.3491]  # HAA, HFE, KFE
+# RF_q_lim_min = [-1.22, -0.8727, -2.4435]  # HAA, HFE, KFE
+# LH_q_lim_max = [0.44, 0.8727, 2.4435]  # HAA, HFE, KFE
+# LH_q_lim_min = [-1.22, -1.2217, 0.3491]  # HAA, HFE, KFE
+# RH_q_lim_max = [0.44, 0.8727, 2.4435]  # HAA, HFE, KFE
+# RH_q_lim_min = [-1.22, -1.2217, 0.3491]  # HAA, HFE, KFE
+LF_q_lim_max = [0.401, 2.181, -0.770]  # HAA, HFE, KFE
+LF_q_lim_min = [-0.733, 0.262, -2.770]  # HAA, HFE, KFE
+RF_q_lim_max = [0.401, 2.181, -0.770]  # HAA, HFE, KFE
+RF_q_lim_min = [-0.733, 0.262, -2.770]  # HAA, HFE, KFE
+LH_q_lim_max = [0.401, 2.181, -0.770]  # HAA, HFE, KFE
+LH_q_lim_min = [-0.733, 0.262, -2.770]  # HAA, HFE, KFE
+RH_q_lim_max = [0.401, 2.181, -0.770]  # HAA, HFE, KFE
+RH_q_lim_min = [-0.733, 0.262, -2.770]  # HAA, HFE, KFE
 joint_limits_max = np.array([LF_q_lim_max, RF_q_lim_max, LH_q_lim_max, RH_q_lim_max])
 joint_limits_min = np.array([LF_q_lim_min, RF_q_lim_min, LH_q_lim_min, RH_q_lim_min])
 
@@ -101,7 +109,7 @@ jac = KinematicJacobians(robot_name)
 
 
 '''Margin'''
-delta_pos_range = 0.4
+delta_pos_range = 0.3
 num_of_tests = 50
 delta_pos_range_vec = np.linspace(-delta_pos_range/2.0, delta_pos_range/2.0, num_of_tests)
 
@@ -118,7 +126,7 @@ print("DELTA Y")
 pos_margin_y, jac_com_pos_y = jac.plotMarginAndJacobianWrtComPosition(params_com_y, delta_pos_range_vec, 1) # dm / dy
 print("Jac_y:", jac_com_pos_y)
 print("DELTA Z")
-pos_margin_z, jac_com_pos_z = jac.plotMarginAndJacobianWrtComPosition(params_com_z, delta_pos_range_vec, 2) # dm / dz
+# pos_margin_z, jac_com_pos_z = jac.plotMarginAndJacobianWrtComPosition(params_com_z, delta_pos_range_vec, 2) # dm / dz
 
 # print("pos_margin_x:", pos_margin_x)
 # print("pos_margin_y:", pos_margin_y)
@@ -136,7 +144,7 @@ params_com_y_LH = deepcopy(params)
 params_com_z_LH = deepcopy(params)
 pos_margin_x_LH, jac_com_pos_x_LH = jac.plotMarginAndJacobianWrtComPosition(params_com_x_LH, delta_pos_range_vec, 0) # dm / dx
 pos_margin_y_LH, jac_com_pos_y_LH = jac.plotMarginAndJacobianWrtComPosition(params_com_y_LH, delta_pos_range_vec, 1) # dm / dy
-pos_margin_z_LH, jac_com_pos_z_LH = jac.plotMarginAndJacobianWrtComPosition(params_com_z_LH, delta_pos_range_vec, 2) # dm / dz
+# pos_margin_z_LH, jac_com_pos_z_LH = jac.plotMarginAndJacobianWrtComPosition(params_com_z_LH, delta_pos_range_vec, 2) # dm / dz
 
 ### Plotting
 

@@ -568,7 +568,7 @@ class ComputationalDynamics:
             return isPointFeasible, margin
         else:
             print("Warning! IP failed.")
-            return False, -1.0
+            return False, -0.15
 
     def getReferencePoint(self, iterative_projection_params, type):
 

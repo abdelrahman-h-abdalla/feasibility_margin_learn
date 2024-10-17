@@ -62,7 +62,7 @@ def load_hyperparameters_from_json(model_directory):
         with open(json_path, 'r') as f:
             hyperparemters = json.load(f)
         print("Loaded hyperparameters from:", json_path)
-        return hyperparemters
+        return hyperparemters, json_path
     except json.JSONDecodeError:
         raise ValueError("Error decoding JSON file at {}".format(json_path))
 
@@ -77,7 +77,7 @@ def main():
     print("Loading model", model_directory + os.listdir(model_directory)[0])
 
     # Load hyperparameters from the JSON file
-    hyperparameters = load_hyperparameters_from_json(model_directory)
+    hyperparameters, json_path = load_hyperparameters_from_json(model_directory)
     # Ensure that hyperparameters are present in the JSON file
     hidden_layers = hyperparameters['hidden_layers']
     activation_function = hyperparameters['activation_function']
@@ -108,6 +108,7 @@ def main():
     np.savetxt(param_save_name, model_parameters.reshape((1, -1)), delimiter=', ',
                newline='\n', fmt='%1.10f')
     copy_file(model_path, save_directory)
+    copy_file(json_path, save_directory)
 
     print('\nSaved model parameters in the following order:')
     for parameter_key in list(network.state_dict().keys()):

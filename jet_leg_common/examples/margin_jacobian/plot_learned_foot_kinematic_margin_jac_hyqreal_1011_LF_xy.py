@@ -1,4 +1,6 @@
+import matplotlib
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import time
 from copy import deepcopy
@@ -15,79 +17,62 @@ from jet_leg_common.jet_leg.optimization import nonlinear_projection
 from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
 from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
 from jet_leg_common.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
-from jet_leg_common.jet_leg.optimization.jacobians_kinematics import KinematicJacobians
+from jet_leg_common.jet_leg.optimization.jacobians_kinematics_xy import KinematicJacobiansXY
 
 
 robot_name = 'hyqreal'
 
-num_of_tests = 25
-delta_pos_range_x = 0.6
+num_of_tests = 50
+delta_pos_range_x = 0.4
 delta_pos_range_y = 0.4
-delta_pos_range_vec_x = np.linspace(-delta_pos_range_x/2.0, delta_pos_range_x/2.0, num_of_tests)
-delta_pos_range_vec_y = np.linspace(-delta_pos_range_y/2.0, delta_pos_range_y/2.0, num_of_tests)
+delta_pos_range_vec_xy = np.array([np.linspace(-delta_pos_range_x/2.0, delta_pos_range_x/2.0, num_of_tests),
+                                   np.linspace(-delta_pos_range_y/2.0, delta_pos_range_y/2.0, num_of_tests)])
 
 def plot_learnt_margin():
 
     paths = ProjectPaths()
-    dataset_handler = TrainingDataset('../trained_models/hyqreal/seperate(kinematic)/0111', robot_name=robot_name, in_dim=34)
-    model_directory = '/hyqreal/seperate(kinematic)/0111/'
+    dataset_handler = TrainingDataset('../trained_models/hyqreal/seperate(kinematic)/1011', robot_name=robot_name, in_dim=34)
+    model_directory = '/hyqreal/seperate(kinematic)/1011/'
     model_directory = paths.TRAINED_MODELS_PATH + model_directory
     print("model directory: ", model_directory)
-    network = MultiLayerPerceptron(in_dim=34, out_dim=1, hidden_layers=[256,128,128], activation='softsign', dropout=0.0)
+    network = MultiLayerPerceptron(in_dim=34, out_dim=1, hidden_layers=[512,256,128], activation='relu', dropout=0.0)
     # network.load_state_dict(torch.load(model_directory + 'network_state_dict.pt'))
     network.load_params_from_txt(model_directory + 'network_parameters_hyqreal.txt')
     network.eval()
 
     ## Margin X
-    out_array_x = []
+    out_array_xy = np.zeros((num_of_tests, num_of_tests))
+    count_x = 0
     jac_array_x = []
-    for delta in delta_pos_range_vec_x:
-        network_input = np.concatenate([
-            np.array([0.0, 0.0, 1.0]),
-            np.zeros(12),
-            np.array([0.44 - delta, -0.34, -0.55]),
-            np.array([-0.44 - delta, 0.34, -0.55]),
-            np.array([-0.44 - delta, -0.34, -0.55]),
-            np.array([0.6]),
-            np.array([0.0, 0.0, 1.0] * 3)
-        ])
-        network_input = dataset_handler.scale_input(network_input)
-        network_input = torch.tensor(network_input, requires_grad=True) # requires_grad to record gradients w.r.t input
-        output = network(network_input.float())
-        # output = network(torch.from_numpy(network_input).float()).item()
-        output = dataset_handler.scale_output(output)
-        out_array_x.append(output.detach().numpy()[:][0])
-        # Compute gradients of the output w.r.t. the input
-        output.backward(torch.ones_like(output))
-        unnormalized_gradient = dataset_handler.unscale_gradient(network_input.grad.numpy())
-        jac_array_x.append(unnormalized_gradient[15])
-
-    ## Margin Y
-    out_array_y = []
-    jac_array_y = []
-    for delta in delta_pos_range_vec_y:
-        network_input = np.concatenate([
-            np.array([0.0, 0.0, 1.0]),
-            np.zeros(12),
-            np.array([0.44 , -0.34 - delta, -0.55]),
-            np.array([-0.44, 0.34 - delta, -0.55]),
-            np.array([-0.44, -0.34 - delta, -0.55]),
-            np.array([0.6]),
-            np.array([0.0, 0.0, 1.0] * 3)
-        ])
-        network_input = dataset_handler.scale_input(network_input)
-        network_input = torch.tensor(network_input, requires_grad=True) # requires_grad to record gradients w.r.t input
-        output = network(network_input.float())
-        # output = network(torch.from_numpy(network_input).float()).item()
-        output = dataset_handler.scale_output(output)
-        out_array_y.append(output.detach().numpy()[:][0])
-        # Compute gradients of the output w.r.t. the input
-        output.backward(torch.ones_like(output))
-        unnormalized_gradient = dataset_handler.unscale_gradient(network_input.grad.numpy())
-        jac_array_y.append(unnormalized_gradient[16])
+    for delta_x in delta_pos_range_vec_xy[0]:
+        count_y = 0
+        for delta_y in delta_pos_range_vec_xy[1]:
+            network_input = np.concatenate([
+                np.array([0.0, 0.0, 1.0]),
+                np.array([0., 0., 0.0]),
+                np.zeros(3),
+                np.zeros(3),
+                np.zeros(3),
+                np.array([0.44 + delta_x, 0.34 + delta_y, -0.55]),
+                np.array([-0.44, 0.34, -0.55]),
+                np.array([-0.44, -0.34, -0.55]),
+                np.array([0.6]),
+                np.array([0.0, 0.0, 1.0] * 3)
+            ])
+            network_input = dataset_handler.scale_input(network_input)
+            network_input = torch.tensor(network_input, requires_grad=True)
+            output = network(network_input.float())
+            output = dataset_handler.scale_output(output)
+            out_array_xy[count_x][count_y] = output.detach().numpy()[:][0]
+            # Compute gradients of the output w.r.t. the input
+            # output.backward(torch.ones_like(output))
+            # unnormalized_gradient = dataset_handler.unscale_gradient(network_input.grad.numpy())
+            # jac_array_x.append(unnormalized_gradient[15])
+            count_y += 1
+        count_x += 1
 
 
-    return [[out_array_x, out_array_y], [jac_array_x, jac_array_y]]
+    return out_array_xy
 
 
 ##############################################################################################
@@ -108,7 +93,7 @@ def plot_analytical_margin():
                           'FRICTION_AND_ACTUATION']
 
     comWF = np.array([.0, 0.0, 0.0])
-    comWF_lin_acc = np.array([.0, .0, .0])
+    comWF_lin_acc = np.array([-0.0, -0.0, .0])
     comWF_ang_acc = np.array([.0, .0, .0])
 
     ''' extForceW is an optional external pure force (no external torque for now) applied on the CoM of the robot.'''
@@ -120,7 +105,7 @@ def plot_analytical_margin():
     mu = 0.6
 
     ''' stanceFeet vector contains 1 is the foot is on the ground and 0 if it is in the air'''
-    stanceFeet = [0, 1, 1, 1]
+    stanceFeet = [1, 0, 1, 1]
 
 
     ''' now I define the normals to the surface of the contact points. By default they are all vertical now'''
@@ -180,85 +165,90 @@ def plot_analytical_margin():
     params.setTotalMass(comp_dyn.robotModel.robotModel.trunkMass)
     params.externalForceWF = extForceW  # params.externalForceWF is actually used anywhere at the moment
 
-    params_base_roll = deepcopy(params)
-    params_base_pitch = deepcopy(params)
-
-    jac = KinematicJacobians(robot_name)
-    comp_geom = ComputationalGeometry()
+    jac = KinematicJacobiansXY(robot_name)
 
 
     ''' Margin LF '''
-    params_foot_x = deepcopy(params)
-    params_foot_y = deepcopy(params)
-    params_foot_z = deepcopy(params)
+    params_foot_xy = deepcopy(params)
+
     foot_id = 0
-    margin_foot_pos_x, jac_foot_pos_x = jac.plotMarginAndJacobianWrtComPosition(params_foot_x, delta_pos_range_vec_x, 0)
-    margin_foot_pos_y, jac_foot_pos_y = jac.plotMarginAndJacobianWrtComPosition(params_foot_x, delta_pos_range_vec_y, 1)
-    margin_foot_pos_z, jac_foot_pos_z = jac.plotMarginAndJacobianWrtComPosition(params_foot_x, delta_pos_range_vec_x, 2)
+    margin_foot_pos_xy = jac.plotMarginWrtFootPosition(params_foot_xy, foot_id, delta_pos_range_vec_xy)
 
 
-    print("pos_margin_x:", margin_foot_pos_x)
-    print("pos_margin_y:", margin_foot_pos_y)
-    print("pos_margin_z:", margin_foot_pos_z)
-    print("jac_com_pos_x:", jac_foot_pos_x)
-    print("jac_com_pos_y:", jac_foot_pos_y)
-    print("jac_com_pos_z:", jac_foot_pos_z)
+    print("pos_margin_x:", margin_foot_pos_xy)
+    # print("jac_com_pos_x:", jac_foot_pos_x)
     
         
-    return [[margin_foot_pos_x, margin_foot_pos_y, margin_foot_pos_z], [jac_foot_pos_x, jac_foot_pos_y, jac_foot_pos_z]]
+    return margin_foot_pos_xy
 
 #####################################################################################################
 
 def main():
 
-    margin_learnt, jacobian_learnt = plot_learnt_margin()
+    margin_learnt = plot_learnt_margin()
     print("Computed learnt margin")
-    margin, jacobian = plot_analytical_margin()
+    margin = plot_analytical_margin()
     print("Computed analytical margin")
     ### Plotting
-
+    plt.rcParams.update({'font.size': 12})
+    # plt.subplots_adjust(wspace=0.5)
+    plt.subplots_adjust(top=0.85)
     ## X axis
     fig1 = plt.figure(1)
-    fig1.suptitle("Stability margin")
+    # ax1 = fig1.add_subplot(111, projection='3d')
+    ax1 = fig1.gca(projection='3d')
+    fig1.suptitle("Feasibility margin (1011)", x=0.565, y=1.00)
+    # delta_pos_range_vec_x = np.linspace(-7.delta_pos_range_x/2.0, -7.8 + delta_pos_range_x/2.0, num_of_tests)
+    # delta_pos_range_vec_y = np.linspace(-5.delta_pos_range_y/2.0, -5.1 + delta_pos_range_y/2.0, num_of_tests)
 
-    plt.subplot(121)
-    plt.plot(delta_pos_range_vec_x, margin[0], 'g', markersize=15, label='CoM')
-    plt.plot(delta_pos_range_vec_x, margin_learnt[0], 'b', markersize=15, label='CoM')
-    plt.grid()
-    plt.xlabel("$p_x$ [m]")
-    plt.ylabel("m [m]")
-    plt.title("LF X pos margin")
+    X, Y = np.meshgrid(delta_pos_range_vec_xy[0], delta_pos_range_vec_xy[1])
+    print("X:", X)
+    print("Y:", Y)
+    # print("margin:\n", margin)
 
-    plt.subplot(122)
-    plt.plot(delta_pos_range_vec_y, margin[1], 'g', markersize=15, label='CoM')
-    plt.plot(delta_pos_range_vec_y, margin_learnt[1], 'b', markersize=15, label='CoM')
-    plt.grid()
-    plt.xlabel("$p_y$ [m]")
-    plt.ylabel("m [m]")
-    plt.title("LF Y pos margin")
+    # Plot both surfaces on the same axes
+    ax1.plot_surface(X, Y, margin.T, color='g', alpha=0.7, rstride=1, cstride=1, label='numerical',linewidth=3.0)
+    ax1.plot_surface(X, Y, margin_learnt.T, color='b', alpha=0.6, rstride=1, cstride=1, label='learnt',linewidth=3.0)
+    ax1.set_xlabel("$p_x$ [m]")
+    ax1.set_ylabel("$p_y$ [m]")
+    ax1.set_zlabel("margin [m]")
+    ax1.set_title("LF X")
+
+    # plt.subplot(121)
+    # plt.plot(delta_pos_range_vec_xy, margin[0], 'g', markersize=15, label='analytical',linewidth=3.0)
+    # plt.plot(delta_pos_range_vec_xy, margin_learnt[0], 'b', markersize=15, label='learnt',linewidth=3.0)
+    # plt.grid()
+    # plt.xlabel("$p_x$ [m]")
+    # plt.ylabel("margin [m]")
+    # plt.title("LF X")
+    
 
     # ## Jacobians
     # fig2 = plt.figure(2)
     # fig2.suptitle("Gradients")
-    # print("jacobian", jacobian[0][0])
+    # print("jacobian", jacobian[0])
     # print("jacobian_learnt:", jacobian_learnt[0])
 
-    # plt.subplot(221)
-    # plt.plot(delta_pos_range_vec_x, jacobian[0], 'g', markersize=15, label='learnt (backprop)')
-    # plt.plot(delta_pos_range_vec_x, jacobian_learnt[0], 'b', markersize=15, label='learn (backprop)')
+    # plt.subplot(121)
+    # plt.plot(delta_pos_range_vec_x, jacobian[0], 'g', markersize=15, label='analytical',linewidth=3.0)
+    # plt.plot(delta_pos_range_vec_x, jacobian_learnt[0], 'b', markersize=15, label='learnt',linewidth=3.0)
     # plt.grid()
-    # plt.xlabel("$p_x$ [m]")
-    # plt.ylabel("\delta m/ \delta p_{x}")
+    # plt.xlabel("$c_x$ [m]")
+    # plt.ylabel("\delta m/ \delta c_{x}")
     # # plt.title("CoM X pos margin")
 
-    # plt.subplot(222)
-    # plt.plot(delta_pos_range_vec_y, jacobian[1], 'g', markersize=15, label='learnt (backprop)')
-    # plt.plot(delta_pos_range_vec_y, jacobian_learnt[1], 'b', markersize=15, label='learnt (backprop)')
+    # plt.subplot(122)
+    # plt.plot(delta_pos_range_vec_y, jacobian[1], 'g', markersize=15, label='analytical',linewidth=3.0)
+    # plt.plot(delta_pos_range_vec_y, jacobian_learnt[1], 'b', markersize=15, label='learnt',linewidth=3.0)
     # plt.grid()
-    # plt.xlabel("$p_y$ [m]")
-    # plt.ylabel("\delta m/ \delta p_{y}")
+    # plt.xlabel("$c_y$ [m]")
+    # plt.ylabel("\delta m/ \delta c_{y}")
     # # plt.title("CoM Y pos margin")
 
+    # plt.tight_layout()
+    # plt.ylim(top=2.0)
+    # fig1.tight_layout()
+    # fig2.tight_layout()
     plt.show()
 
 
