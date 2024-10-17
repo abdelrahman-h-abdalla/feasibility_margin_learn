@@ -7,6 +7,7 @@ from common.statistics import binary_predictions, compute_metrics
 import os
 import socket
 import webbrowser
+import json
 
 import torch
 import torch.nn as nn
@@ -46,6 +47,23 @@ def compute_network_input_dim(stance_legs):
     else:
         print("Wrong number of inputs")
         return None
+    
+def save_network_hyperparameters(hidden_layers, activation_function, run_name, save_directory):
+    # Prepare the data t be saved
+    network_params = {
+        "hidden_layers": hidden_layers,
+        "activation_function": activation_function,
+    }
+
+    # Create the filename and path
+    filename = 'network_hyperparameters_{}.json'.format(run_name)
+    file_path = os.path.join(save_directory, filename)
+
+    # Save the data as a JSON file
+    with open(file_path, 'w') as f:
+        json.dump(network_params, f, indent=4)
+
+    print("Network parameters saved to {}".format(file_path))
 
 def main_train(config=None, stance_legs_str=None):
     robot_name = 'hyqreal'
@@ -63,6 +81,15 @@ def main_train(config=None, stance_legs_str=None):
         config = wandb.config  # Convert to WandB config
     run_name = run.name
 
+    model_save_dir = paths.TRAINED_MODELS_PATH + '/' + data_folder + '/' + paths.INIT_DATETIME_STR
+    try:
+        os.makedirs(model_save_dir)
+    except OSError:
+        pass
+
+    # Save network hyperparameters
+    save_network_hyperparameters(config.hidden_layers, config.activation_function, run_name, model_save_dir)
+    # Process dataset
     training_dataset_handler = TrainingDataset(data_folder=data_folder_name, robot_name=robot_name,
                                                 in_dim=network_input_dim, no_of_stance=stance_legs.count(1))
     data_parser = training_dataset_handler.get_training_data_parser(max_files=800)
@@ -102,11 +129,6 @@ def main_train(config=None, stance_legs_str=None):
         webbrowser.open_new_tab(tensorboard_address + '#scalars&_smoothingWeight=0')
 
     # Network Save Path
-    model_save_dir = paths.TRAINED_MODELS_PATH + '/' + data_folder + '/' + paths.INIT_DATETIME_STR
-    try:
-        os.makedirs(model_save_dir)
-    except OSError:
-        pass
     save_path = model_save_dir + '/network_state_dict_' + run_name + '.pt'
 
     # Train and Validate
