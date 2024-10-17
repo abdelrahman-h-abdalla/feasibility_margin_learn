@@ -83,19 +83,22 @@ def compute_stability(comp_dyn=ComputationalDynamics('anymal_coyote'), kin_proj=
     actuation_polygons = these are the vertices of the 3D force polytopes (one per leg)
     computation_time = how long it took to compute the iterative projection
     '''
-    ip_points, force_polytopes, ip_computation_time = comp_dyn.iterative_projection_bretl(params)
+    # ip_points, force_polytopes, ip_computation_time = comp_dyn.iterative_projection_bretl(params)
     reach_reg_points, computation_time = kin_proj.project_polytope(params, None, 10. * np.pi / 180, 0.02)
 
-    facets = comp_geom.compute_halfspaces_convex_hull(ip_points[:,:2])
+    # if reach_reg_points.size == 0:
+    #     return -0.2
+    # facets = comp_geom.compute_halfspaces_convex_hull(ip_points[:,:2])
     reference_point = comp_dyn.getReferencePoint(params, "COM")
-    point_feasibility, feas_dist = comp_geom.isPointRedundant(facets, reference_point)
+    # point_feasibility, feas_dist = comp_geom.isPointRedundant(facets, reference_point)
 
     sPolygon = Polygon(reach_reg_points[:-1,:2])
     sPoint = Point(com[:2])
     dist = sPoint.distance(sPolygon.exterior)
     reach_dist = dist if sPolygon.contains(sPoint) else -1 * dist
     
-    margin = min(feas_dist, reach_dist)
+    # margin = min(feas_dist, reach_dist)
+    margin = reach_dist
 
     #point_feasibility, margin = comp_dyn.computeMargin(params, "COM")
 
