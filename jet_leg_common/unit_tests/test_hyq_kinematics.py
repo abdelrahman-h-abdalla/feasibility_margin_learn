@@ -7,7 +7,7 @@ Created on Mon Jul  2 06:10:18 2018
 
 from context import jet_leg
 
-from jet_leg_common.jet_leg.robot.hyq_kinematics import HyQKinematics
+from jet_leg.robot.hyq_kinematics import HyQKinematics
 
 import numpy as np
 import random

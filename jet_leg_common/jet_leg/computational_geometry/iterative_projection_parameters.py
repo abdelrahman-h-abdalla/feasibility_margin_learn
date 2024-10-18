@@ -9,7 +9,7 @@ from __future__ import absolute_import
 import numpy as np
 from .math_tools import Math
 from scipy.spatial.transform import Rotation as Rot
-from jet_leg_common.jet_leg.robots.robot_model_interface import RobotModelInterface
+from jet_leg.robots.robot_model_interface import RobotModelInterface
 
 
 class IterativeProjectionParameters:

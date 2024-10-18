@@ -6,10 +6,10 @@ Created on Mon Jul  2 05:34:42 2018
 """
 import numpy as np
 
-from jet_leg_common.jet_leg.robots.dog_interface import DogInterface
-from jet_leg_common.jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
-from jet_leg_common.jet_leg.robots.hyq.hyq_kinematics import HyQKinematics
-from jet_leg_common.jet_leg.kinematics.kinematics_pinocchio import robotKinematics
+from jet_leg.robots.dog_interface import DogInterface
+from jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
+from jet_leg.robots.hyq.hyq_kinematics import HyQKinematics
+from jet_leg.kinematics.kinematics_pinocchio import robotKinematics
 
 
 class KinematicsInterface:

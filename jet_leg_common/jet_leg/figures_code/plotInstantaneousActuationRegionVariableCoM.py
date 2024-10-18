@@ -13,9 +13,9 @@ from numpy import array
 from numpy.linalg import norm
 import matplotlib.path as mpath
 
-from jet_leg_common.jet_leg.math_tools import Math
-from jet_leg_common.jet_leg.computational_dynamics import ComputationalDynamics
-from jet_leg_common.jet_leg.iterative_projection_parameters import IterativeProjectionParameters
+from jet_leg.math_tools import Math
+from jet_leg.computational_dynamics import ComputationalDynamics
+from jet_leg.iterative_projection_parameters import IterativeProjectionParameters
 
 import matplotlib as mpl
 import matplotlib.colors as colors
@@ -28,7 +28,7 @@ from matplotlib.collections import PatchCollection
 from matplotlib.collections import LineCollection
 from matplotlib.colors import ListedColormap, BoundaryNorm
 
-from jet_leg_common.jet_leg.arrow3D import Arrow3D
+from jet_leg.arrow3D import Arrow3D
 
 def colorline(
     x, y, z=None, cmap=plt.get_cmap('copper'), norm=plt.Normalize(0.0, 1.0),

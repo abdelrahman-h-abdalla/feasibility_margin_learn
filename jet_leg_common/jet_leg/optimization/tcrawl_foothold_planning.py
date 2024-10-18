@@ -19,13 +19,13 @@ import threading
 from copy import deepcopy
 
 # from context import jet_leg
-from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
-from jet_leg_common.jet_leg.maths.computational_geometry import ComputationalGeometry
-from jet_leg_common.jet_leg.maths.geometry import Geometry
-from jet_leg_common.jet_leg.optimization.foothold_planning_interface import FootholdPlanningInterface
-from jet_leg_common.jet_leg.maths.math_tools import Math
-from jet_leg_common.jet_leg.robots.dog_interface import DogInterface
-from jet_leg_common.jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
+from jet_leg.dynamics.computational_dynamics import ComputationalDynamics
+from jet_leg.maths.computational_geometry import ComputationalGeometry
+from jet_leg.maths.geometry import Geometry
+from jet_leg.optimization.foothold_planning_interface import FootholdPlanningInterface
+from jet_leg.maths.math_tools import Math
+from jet_leg.robots.dog_interface import DogInterface
+from jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
 
 stderr = sys.stderr
 sys.stderr = open(os.devnull, 'w')

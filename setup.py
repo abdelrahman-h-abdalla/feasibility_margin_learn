@@ -8,7 +8,7 @@ setup(
     author_email='siddhant@gangapurwala.com',
     python_requires='>=3.5.0',
     install_requires=[
-        'torch==1.5.1',
+        'torch>=1.5.1',
         'numpy',
         'pandas',
         'matplotlib',

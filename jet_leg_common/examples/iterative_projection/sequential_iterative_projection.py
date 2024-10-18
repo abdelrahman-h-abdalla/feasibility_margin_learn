@@ -26,12 +26,12 @@ from scipy.linalg import block_diag
 from numpy import array, cross, dot, eye, hstack, vstack, zeros, matrix
 
 import matplotlib.pyplot as plt
-from jet_leg_common.jet_leg.plotting_tools import Plotter
-from jet_leg_common.jet_leg.constraints import Constraints
-from jet_leg_common.jet_leg.hyq_kinematics import HyQKinematics
-from jet_leg_common.jet_leg.math_tools import Math
-from jet_leg_common.jet_leg.computational_dynamics import ComputationalDynamics
-from jet_leg_common.jet_leg.height_map import HeightMap
+from jet_leg.plotting_tools import Plotter
+from jet_leg.constraints import Constraints
+from jet_leg.hyq_kinematics import HyQKinematics
+from jet_leg.math_tools import Math
+from jet_leg.computational_dynamics import ComputationalDynamics
+from jet_leg.height_map import HeightMap
 
 class SequentialIterativeProjection:
 

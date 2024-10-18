@@ -13,15 +13,15 @@ import pypoman
 import numpy as np
 from numpy import array, dot, eye, hstack, vstack, zeros
 from scipy.spatial import ConvexHull
-from jet_leg_common.jet_leg.constraints.constraints import Constraints
-from jet_leg_common.jet_leg.kinematics.kinematics_interface import KinematicsInterface
-from jet_leg_common.jet_leg.robots.robot_model_interface import RobotModelInterface
-from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
-from jet_leg_common.jet_leg.computational_geometry.geometry import Geometry
-from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
-from jet_leg_common.jet_leg.dynamics.instantaneous_capture_point import InstantaneousCapturePoint
-from jet_leg_common.jet_leg.dynamics.zero_moment_point import ZeroMomentPoint
-from jet_leg_common.jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
+from jet_leg.constraints.constraints import Constraints
+from jet_leg.kinematics.kinematics_interface import KinematicsInterface
+from jet_leg.robots.robot_model_interface import RobotModelInterface
+from jet_leg.computational_geometry.math_tools import Math
+from jet_leg.computational_geometry.geometry import Geometry
+from jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
+from jet_leg.dynamics.instantaneous_capture_point import InstantaneousCapturePoint
+from jet_leg.dynamics.zero_moment_point import ZeroMomentPoint
+from jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
 from cvxopt import matrix, solvers
 import time
 

@@ -22,8 +22,8 @@ from copy import deepcopy
 import itertools
 from functools import partial
 
-from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
-from jet_leg_common.jet_leg.optimization.nonlinear_projection import NonlinearProjectionBretl
+from jet_leg.dynamics.computational_dynamics import ComputationalDynamics
+from jet_leg.optimization.nonlinear_projection import NonlinearProjectionBretl
 from shapely.geometry import Polygon, LineString, LinearRing
 from shapely.geos import TopologicalError
 

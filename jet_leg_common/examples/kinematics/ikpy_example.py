@@ -3,7 +3,7 @@ from context import jet_leg
 import time
 from numpy import array
 import ikpy
-from jet_leg_common.jet_leg.hyq_kinematics import HyQKinematics
+from jet_leg.hyq_kinematics import HyQKinematics
 
 
 ik_LH = ikpy.chain.Chain.from_urdf_file("../resources/urdfs/hyq/urdf/leg/hyq_leg_LH.urdf")

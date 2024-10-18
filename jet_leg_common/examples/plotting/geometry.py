@@ -1,4 +1,4 @@
-from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
+from jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
 import numpy as np
 
 IP_points = np.array([[1,1], [5,5], [3,1], [1,3]])

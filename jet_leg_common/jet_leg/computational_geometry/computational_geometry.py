@@ -5,7 +5,7 @@ Created on Mon May 28 13:05:01 2018
 @author: rorsolino
 """
 import numpy as np
-from jet_leg_common.jet_leg.computational_geometry.geometry import Geometry
+from jet_leg.computational_geometry.geometry import Geometry
 
 class ComputationalGeometry(Geometry):
     

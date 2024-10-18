@@ -9,11 +9,11 @@ import numpy as np
 from numpy import array
 from copy import deepcopy
 import random
-from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
-from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
-from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
-from jet_leg_common.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
-from jet_leg_common.jet_leg.optimization.jacobians import Jacobians
+from jet_leg.computational_geometry.math_tools import Math
+from jet_leg.dynamics.computational_dynamics import ComputationalDynamics
+from jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
+from jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
+from jet_leg.optimization.jacobians import Jacobians
 import time
 
 import matplotlib.pyplot as plt

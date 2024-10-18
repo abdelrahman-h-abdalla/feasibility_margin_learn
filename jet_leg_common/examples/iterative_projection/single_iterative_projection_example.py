@@ -13,17 +13,17 @@ import numpy as np
 import copy
 from numpy import array
 from scipy.spatial.transform import Rotation as Rot
-from jet_leg_common.jet_leg.plotting.plotting_tools import Plotter
+from jet_leg.plotting.plotting_tools import Plotter
 import random
-from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
-from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
-from jet_leg_common.jet_leg.dynamics.instantaneous_capture_point import InstantaneousCapturePoint
-from jet_leg_common.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
-from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
-from jet_leg_common.jet_leg.optimization.lp_vertex_redundancy import LpVertexRedundnacy
+from jet_leg.computational_geometry.math_tools import Math
+from jet_leg.dynamics.computational_dynamics import ComputationalDynamics
+from jet_leg.dynamics.instantaneous_capture_point import InstantaneousCapturePoint
+from jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
+from jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
+from jet_leg.optimization.lp_vertex_redundancy import LpVertexRedundnacy
 
 import matplotlib.pyplot as plt
-from jet_leg_common.jet_leg.plotting.arrow3D import Arrow3D
+from jet_leg.plotting.arrow3D import Arrow3D
         
 plt.close('all')
 math = Math()

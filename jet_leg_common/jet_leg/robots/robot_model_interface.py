@@ -6,11 +6,11 @@ Created on Mon Jul  2 05:34:42 2018
 """
 import numpy as np
 
-from jet_leg_common.jet_leg.robots.hyq.hyq_model import HyqModel
-from jet_leg_common.jet_leg.robots.anymal.anymal_model import AnymalModel
-from jet_leg_common.jet_leg.robots.hyqreal.hyqreal_model import HyqrealModel
-from jet_leg_common.jet_leg.robots.crex.crex_model import CrexModel
-from jet_leg_common.jet_leg.robots.aliengo.aliengo_model import AliengoModel
+from jet_leg.robots.hyq.hyq_model import HyqModel
+from jet_leg.robots.anymal.anymal_model import AnymalModel
+from jet_leg.robots.hyqreal.hyqreal_model import HyqrealModel
+from jet_leg.robots.crex.crex_model import CrexModel
+from jet_leg.robots.aliengo.aliengo_model import AliengoModel
 
 
 class RobotModelInterface:

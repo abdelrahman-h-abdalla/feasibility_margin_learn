@@ -14,15 +14,15 @@ from context import jet_leg
 
 from numpy import array, cross, dot, eye, hstack, vstack, zeros, matrix
 from numpy.linalg import norm
-from jet_leg_common.jet_leg.plotting_tools import Plotter
+from jet_leg.plotting_tools import Plotter
 
-from jet_leg_common.jet_leg.math_tools import Math
-from jet_leg_common.jet_leg.computational_dynamics import ComputationalDynamics
-from jet_leg_common.jet_leg.vertex_based_projection import VertexBasedProjection
-from jet_leg_common.jet_leg.iterative_projection_parameters import IterativeProjectionParameters
+from jet_leg.math_tools import Math
+from jet_leg.computational_dynamics import ComputationalDynamics
+from jet_leg.vertex_based_projection import VertexBasedProjection
+from jet_leg.iterative_projection_parameters import IterativeProjectionParameters
 import random
 import matplotlib.pyplot as plt
-from jet_leg_common.jet_leg.arrow3D import Arrow3D
+from jet_leg.arrow3D import Arrow3D
         
 plt.close('all')
 math = Math()

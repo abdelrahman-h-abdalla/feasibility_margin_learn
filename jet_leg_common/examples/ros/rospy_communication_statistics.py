@@ -29,9 +29,9 @@ from std_srvs.srv import Empty
 from termcolor import colored
 
 from context import jet_leg 
-from jet_leg_common.jet_leg.computational_dynamics import ComputationalDynamics
-from jet_leg_common.jet_leg.iterative_projection_parameters import IterativeProjectionParameters
-from jet_leg_common.jet_leg.math_tools import Math
+from jet_leg.computational_dynamics import ComputationalDynamics
+from jet_leg.iterative_projection_parameters import IterativeProjectionParameters
+from jet_leg.math_tools import Math
 
 
 stderr = sys.stderr

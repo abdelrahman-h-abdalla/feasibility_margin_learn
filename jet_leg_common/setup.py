@@ -21,7 +21,6 @@
 from distutils.core import setup
 from setuptools import find_packages
 
-
 setup(
     name='jet_leg_common',
     version='0.1.0',
@@ -37,7 +36,14 @@ setup(
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: GNU Lesser General Public License (LGPL)',
         'Operating System :: POSIX :: Linux',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3',
         'Topic :: Scientific/Engineering :: Mathematics'],
-    packages=find_packages()
+    packages=find_packages(),
+    include_package_data=True, install_requires=['numpy>=1.26.4',
+                                                 'scipy>=1.14.1',
+                                                 'python-cdd>=0.0.98',
+                                                 'cvxopt>=1.3.2',
+                                                 'matplotlib>=3.9.2',
+                                                 'shapely>=2.0.6',
+                                                 'pin']
 )

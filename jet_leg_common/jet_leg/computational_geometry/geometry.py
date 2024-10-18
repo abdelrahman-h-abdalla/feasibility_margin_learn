@@ -7,7 +7,7 @@ Created on Tue Oct 30 15:18:59 2018
 
 import numpy as np
 from scipy.spatial import ConvexHull
-from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
+from jet_leg.computational_geometry.math_tools import Math
 
 class Geometry(Math):
     

@@ -34,12 +34,12 @@ from copy import deepcopy
 # from termcolor import colored
 
 #from context import jet_leg 
-from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
-from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
-from jet_leg_common.jet_leg.optimization.foothold_planning_interface import FootholdPlanningInterface
-from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
-from jet_leg_common.jet_leg.robots.dog_interface import DogInterface
-from jet_leg_common.jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
+from jet_leg.dynamics.computational_dynamics import ComputationalDynamics
+from jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
+from jet_leg.optimization.foothold_planning_interface import FootholdPlanningInterface
+from jet_leg.computational_geometry.math_tools import Math
+from jet_leg.robots.dog_interface import DogInterface
+from jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
 
 
 stderr = sys.stderr

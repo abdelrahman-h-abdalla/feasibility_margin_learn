@@ -28,9 +28,9 @@ from copy import deepcopy
 # from std_srvs.srv import Empty
 # from termcolor import colored
 
-from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
-from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
-from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
+from jet_leg.dynamics.computational_dynamics import ComputationalDynamics
+from jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
+from jet_leg.computational_geometry.math_tools import Math
 
 
 stderr = sys.stderr

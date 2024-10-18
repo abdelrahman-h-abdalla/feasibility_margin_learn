@@ -10,14 +10,14 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
-from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
-from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
-from jet_leg_common.jet_leg.computational_geometry.leg_force_polytopes import LegForcePolytopes
+from jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
+from jet_leg.computational_geometry.math_tools import Math
+from jet_leg.computational_geometry.leg_force_polytopes import LegForcePolytopes
 from scipy.linalg import block_diag
 from scipy.spatial.transform import Rotation as Rot
-from jet_leg_common.jet_leg.robots.dog_interface import DogInterface
-from jet_leg_common.jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
-from jet_leg_common.jet_leg.constraints.friction_cone_constraint import FrictionConeConstraint
+from jet_leg.robots.dog_interface import DogInterface
+from jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
+from jet_leg.constraints.friction_cone_constraint import FrictionConeConstraint
 from numpy import matlib
 
 
@@ -44,7 +44,7 @@ class ForcePolytopeConstraint:
             #            print 'Jacobians',jacobianMatrices
             current_actuation_polygons = self.computeActuationPolygons(jacobianMatrices, torque_limits, leg_self_weight)
             rot = Rot.from_euler('xyz', [euler_angles[0], euler_angles[1], euler_angles[2]], degrees=False)
-            W_R_B = rot.as_dcm()
+            W_R_B = rot.as_matrix()
             current_actuation_polygons_WF = W_R_B.dot(current_actuation_polygons[contact_iterator])
             ''' in the case of the IP alg. the contact force limits must be divided by the mass
 			because the gravito inertial wrench is normalized'''

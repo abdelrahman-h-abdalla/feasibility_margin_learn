@@ -4,7 +4,7 @@ Created on Fri 19 June 2020
 """
 
 import numpy as np
-from jet_leg_common.jet_leg.dynamics.instantaneous_capture_point import InstantaneousCapturePoint
+from jet_leg.dynamics.instantaneous_capture_point import InstantaneousCapturePoint
 
 class ZeroMomentPoint():
     def __init__(self):

@@ -12,8 +12,8 @@ from __future__ import print_function
 import time
 import numpy as np
 import scipy.spatial
-from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
-from jet_leg_common.jet_leg.constraints.constraints import Constraints
+from jet_leg.computational_geometry.math_tools import Math
+from jet_leg.constraints.constraints import Constraints
 
 
 class VertexBasedProjection():

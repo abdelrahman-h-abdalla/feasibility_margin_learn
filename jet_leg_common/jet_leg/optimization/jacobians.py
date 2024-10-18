@@ -1,6 +1,6 @@
 import numpy as np
-from jet_leg_common.jet_leg.dynamics.computational_dynamics import ComputationalDynamics
-from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
+from jet_leg.dynamics.computational_dynamics import ComputationalDynamics
+from jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
 import copy
 
 class Jacobians:

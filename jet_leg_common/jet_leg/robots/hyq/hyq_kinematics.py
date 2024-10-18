@@ -14,8 +14,8 @@ import yaml
 import sys
 import os
 
-from jet_leg_common.jet_leg.robots.dog_interface import DogInterface
-from jet_leg_common.jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
+from jet_leg.robots.dog_interface import DogInterface
+from jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
 
 class HyQKinematics:
     def __init__(self):

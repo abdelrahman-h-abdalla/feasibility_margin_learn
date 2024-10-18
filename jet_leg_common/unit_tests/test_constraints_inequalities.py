@@ -6,9 +6,9 @@ Created on Sun Jul 15 17:22:17 2018
 """
 from context import jet_leg
 
-from jet_leg_common.jet_leg.hyq_kinematics import HyQKinematics
-from jet_leg_common.jet_leg.math_tools import Math
-from jet_leg_common.jet_leg.constraints import Constraints
+from jet_leg.hyq_kinematics import HyQKinematics
+from jet_leg.math_tools import Math
+from jet_leg.constraints import Constraints
 
 import numpy as np
 import random

@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-from jet_leg_common.jet_leg.robots.anymal.anymal_kinematics import anymalKinematics
+from jet_leg.robots.anymal.anymal_kinematics import anymalKinematics
 from pinocchio.utils import *
 
 import time

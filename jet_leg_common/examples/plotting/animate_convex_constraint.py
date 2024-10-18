@@ -16,7 +16,7 @@ import context
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import animation
-from jet_leg_common.jet_leg.bilinear_constraints import BilinearConstraints
+from jet_leg.bilinear_constraints import BilinearConstraints
 
 # First set up the figure, the axis, and the plot element we want to animate
 fig = plt.figure()

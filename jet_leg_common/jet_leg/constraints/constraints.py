@@ -10,14 +10,14 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
-from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
-from jet_leg_common.jet_leg.computational_geometry.leg_force_polytopes import LegForcePolytopes
+from jet_leg.computational_geometry.math_tools import Math
+from jet_leg.computational_geometry.leg_force_polytopes import LegForcePolytopes
 from scipy.linalg import block_diag
-from jet_leg_common.jet_leg.robots.dog_interface import DogInterface
-from jet_leg_common.jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
-from jet_leg_common.jet_leg.computational_geometry.polytopes import Polytope
-from jet_leg_common.jet_leg.constraints.friction_cone_constraint import FrictionConeConstraint
-from jet_leg_common.jet_leg.constraints.force_polytope_constraint import ForcePolytopeConstraint
+from jet_leg.robots.dog_interface import DogInterface
+from jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
+from jet_leg.computational_geometry.polytopes import Polytope
+from jet_leg.constraints.friction_cone_constraint import FrictionConeConstraint
+from jet_leg.constraints.force_polytope_constraint import ForcePolytopeConstraint
 
 class Constraints:    
     def __init__(self, robot_kinematics, robot_model):

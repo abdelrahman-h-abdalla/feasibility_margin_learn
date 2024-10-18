@@ -9,15 +9,15 @@ import numpy as np
 from numpy import array
 from copy import deepcopy
 import random
-from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
-from jet_leg_common.jet_leg.optimization import nonlinear_projection
-from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
-from jet_leg_common.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
-from jet_leg_common.jet_leg.optimization.jacobians_kinematics import KinematicJacobians
+from jet_leg.computational_geometry.math_tools import Math
+from jet_leg.optimization import nonlinear_projection
+from jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
+from jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
+from jet_leg.optimization.jacobians_kinematics import KinematicJacobians
 import time
 
 import matplotlib.pyplot as plt
-from jet_leg_common.jet_leg.plotting.plotting_tools import Plotter
+from jet_leg.plotting.plotting_tools import Plotter
 
 plt.close('all')
 plotter = Plotter()

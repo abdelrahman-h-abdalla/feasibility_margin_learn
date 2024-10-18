@@ -1,10 +1,10 @@
 import numpy as np
-from jet_leg_common.jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
-from jet_leg_common.jet_leg.computational_geometry.math_tools import Math
-from jet_leg_common.jet_leg.kinematics.kinematics_interface import KinematicsInterface
+from jet_leg.computational_geometry.computational_geometry import ComputationalGeometry
+from jet_leg.computational_geometry.math_tools import Math
+from jet_leg.kinematics.kinematics_interface import KinematicsInterface
 from scipy.linalg import block_diag
-from jet_leg_common.jet_leg.robots.dog_interface import DogInterface
-from jet_leg_common.jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
+from jet_leg.robots.dog_interface import DogInterface
+from jet_leg.dynamics.rigid_body_dynamics import RigidBodyDynamics
 
 class polytopesLinearInterpolation:
     def __init__(self, robot_kinematics, comp_dynamics):
