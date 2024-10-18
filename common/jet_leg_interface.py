@@ -9,8 +9,8 @@ from jet_leg_common.jet_leg.dynamics.computational_dynamics import Computational
 from jet_leg_common.jet_leg.optimization.nonlinear_projection import NonlinearProjectionBretl
 from jet_leg_common.jet_leg.computational_geometry.iterative_projection_parameters import IterativeProjectionParameters
 
-import eigenpy
-eigenpy.switchToNumpyMatrix()
+# import eigenpy
+# eigenpy.switchToNumpyMatrix()
 
 
 def compute_stability(comp_dyn=ComputationalDynamics('anymal_coyote'), kin_proj=NonlinearProjectionBretl('anymal_coyote'),

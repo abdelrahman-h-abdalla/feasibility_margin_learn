@@ -1005,8 +1005,10 @@ class HyQKinematics:
 
     def isOutOfWorkSpace(self, contactsBF_check, joint_limits_max, joint_limits_min, stance_index, foot_vel):
 
+
         q = self.fixedBaseInverseKinematics(contactsBF_check, foot_vel)
         self.q = q
-        q_to_check = np.concatenate([list(q[leg * 3: leg * 3 + 3]) for leg in stance_index])
+        stance_index = np.array(stance_index, dtype=int)  # Ensure stance_index is an array of integers
+        q_to_check = np.concatenate([q[leg * 3: leg * 3 + 3] for leg in stance_index])
 
         return self.isOutOfJointLims(q_to_check, joint_limits_max[stance_index,:], joint_limits_min[stance_index,:])

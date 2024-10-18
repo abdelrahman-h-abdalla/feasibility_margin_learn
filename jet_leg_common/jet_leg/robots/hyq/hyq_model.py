@@ -8,6 +8,8 @@ class HyqModel:
         self.trunkInertia = np.array([[0.946438, -0.000938112, 0.00595386],
                                         [-0.000938112, 1.94478, 0.00146328],
                                         [0.00595386, 0.00146328, 2.01835]])
+        
+        self.com_BF = np.array([0.0094, 0.0002, -0.0458]) # Average of trunk CoM and nominal whole-body CoM
 
         ''' torque limits for each leg (this code assumes a hyq-like design, i.e. three joints per leg)
         HAA = Hip Abduction Adduction
@@ -40,3 +42,7 @@ class HyqModel:
         self.nominal_stance_LH = [-x_nominal_b, y_nominal_b, z_nominal_b]
         self.nominal_stance_RH = [-x_nominal_b, -y_nominal_b, z_nominal_b]
         self.max_dev_from_nominal = [0.15, 0.15, 0.15]
+        
+        # Max external wrench
+        self.max_ext_force = [300, 300, 300]
+        self.max_ext_torque = [150, 150, 150]

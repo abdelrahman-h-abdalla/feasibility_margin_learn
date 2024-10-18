@@ -20,14 +20,14 @@ import matplotlib.pyplot as plt
 
 plt.close('all')
 
-robot_name = 'hyq'
+robot_name = 'hyqreal'
 projection = nonlinear_projection.NonlinearProjectionBretl(robot_name)
 math = Math()
 
 
 # comWF = np.array([.55, 0.005, 0.5])  # pos of COM in world frame
 # comWF = np.array([0.0107, 0.0003, 0.5])  # pos of COM in world frame w.o. trunk controller
-comWF = np.array([0.009, 0.0001, 0.549])  # pos of COM in world frame w. trunk controller
+comWF = np.array([0.009, 0.0001, 0.5])  # pos of COM in world frame w. trunk controller
 # comBF = np.array([0.0094,  0.0002, -0.0433])  # pos of COM in body frame w.o. trunk controller
 comBF = np.array([0.0094, 0.0002, -0.0458])  # pos of COM in body frame w. trunk controller
 # rpy = np.array([0.00012, 0.00601, 3.6e-05])  # orientation of body frame w.o. trunk controller
@@ -38,10 +38,10 @@ rpy = np.array([0.00001589, -0.00000726, -0.00000854])  # orientation of body fr
 # RF_foot = np.array([1., -0.3, 0.02])
 # LH_foot = np.array([0.1, 0.3, 0.02])
 # RH_foot = np.array([0.2, -0.3, 0.02])
-LF_foot = np.array([0.36, 0.32, 0.02])  # Starting configuration w.o. trunk controller
-RF_foot = np.array([0.36, -0.32, 0.02])
-LH_foot = np.array([-0.36, 0.32, 0.02])
-RH_foot = np.array([-0.36, -0.32, 0.02])
+LF_foot = np.array([0.44, 0.34, 0.02])  # Starting configuration w.o. trunk controller
+RF_foot = np.array([0.44, -0.34, 0.02])
+LH_foot = np.array([-0.44, 0.34, 0.02])
+RH_foot = np.array([-0.44, -0.34, 0.02])
 
 contactsWF = np.vstack((LF_foot, RF_foot, LH_foot, RH_foot))
 
@@ -61,21 +61,21 @@ HAA = Hip Abduction Adduction
 HFE = Hip Flextion Extension
 KFE = Knee Flextion Extension
 '''
-LF_q_lim_max = [0.44, 1.2217, -0.3491]  # HAA, HFE, KFE
-LF_q_lim_min = [-1.22, -0.8727, -2.4435]  # HAA, HFE, KFE
-RF_q_lim_max = [0.44, 1.2217, -0.3491]  # HAA, HFE, KFE
-RF_q_lim_min = [-1.22, -0.8727, -2.4435]  # HAA, HFE, KFE
-LH_q_lim_max = [0.44, 0.8727, 2.4435]  # HAA, HFE, KFE
-LH_q_lim_min = [-1.22, -1.2217, 0.3491]  # HAA, HFE, KFE
-RH_q_lim_max = [0.44, 0.8727, 2.4435]  # HAA, HFE, KFE
-RH_q_lim_min = [-1.22, -1.2217, 0.3491]  # HAA, HFE, KFE
+LF_q_lim_max = [0.401, 2.181, -0.770]  # HAA, HFE, KFE
+LF_q_lim_min = [-0.733, 0.262, -2.770]  # HAA, HFE, KFE
+RF_q_lim_max = [0.401, 2.181, -0.770]  # HAA, HFE, KFE
+RF_q_lim_min = [-0.733, 0.262, -2.770]  # HAA, HFE, KFE
+LH_q_lim_max = [0.401, 2.181, -0.770]  # HAA, HFE, KFE
+LH_q_lim_min = [-0.733, 0.262, -2.770]  # HAA, HFE, KFE
+RH_q_lim_max = [0.401, 2.181, -0.770]  # HAA, HFE, KFE
+RH_q_lim_min = [-0.733, 0.262, -2.770]  # HAA, HFE, KFE
 joint_limits_max = np.array([LF_q_lim_max, RF_q_lim_max, LH_q_lim_max, RH_q_lim_max])
 joint_limits_min = np.array([LF_q_lim_min, RF_q_lim_min, LH_q_lim_min, RH_q_lim_min])
 
 '''You now need to fill the 'params' object with all the relevant 
     informations needed for the computation of the IP'''
 
-params = IterativeProjectionParameters()
+params = IterativeProjectionParameters(robot_name)
 params.setContactsPosWF(contactsWF)
 params.setCoMPosWF(comWF)
 params.setCoMPosBF(comBF)
@@ -133,6 +133,6 @@ for j in range(0, nc):  # this will only show the contact positions and normals 
     idx = int(stanceID[j])
     ''' The black spheres represent the projection of the contact points on the same plane of the feasible region'''
     h5 = plt.plot(contactsWF[idx, 0], contactsWF[idx, 1], 'ko', markersize=15, label='stance feet')
-h6 = plotter.plot_polygon(np.transpose(final), '--b', 'Iterative Projection')
+h6 = plotter.plot_polygon(np.transpose(final), '--b', 5, 'Iterative Projection')
 
 plt.show()

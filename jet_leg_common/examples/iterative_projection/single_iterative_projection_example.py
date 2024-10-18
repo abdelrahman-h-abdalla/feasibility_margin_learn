@@ -63,7 +63,7 @@ RH_foot = np.array([-0.39, -0.32, -0.47])
 contactsBF = np.vstack((LF_foot, RF_foot, LH_foot, RH_foot))
 contactsWF = copy.copy(contactsBF);
 rot = Rot.from_euler('xyz', [rpy_base[0], rpy_base[1], rpy_base[2]], degrees=False)
-W_R_B = rot.as_dcm()
+W_R_B = rot.as_matrix()
 for j in np.arange(0,4):
     contactsWF[j,:] = np.add(np.dot(W_R_B,copy.copy(contactsBF[j, :])), comWF)
 

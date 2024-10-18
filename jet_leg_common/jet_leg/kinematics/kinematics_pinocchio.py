@@ -14,13 +14,14 @@ import math
 
 class robotKinematics():
     def __init__(self, robotName):
-
+        
+        base_path = os.path.dirname(os.path.abspath(__file__))
         if sys.version_info[:2] == (2, 7) or sys.version_info[:2] == (3, 5):
-            self.PKG = os.path.dirname(os.path.abspath(__file__)) + '/../../resources/urdfs/{}/'.format(robotName)
+            self.PKG = base_path + '/../../resources/urdfs/{}/'.format(robotName)
             self.URDF = self.PKG + 'urdf/{}.urdf'.format(robotName)
         else:
-            self.PKG = os.path.dirname(os.path.abspath(__file__)) + '/../../resources/urdfs/{robotName}/'
-            self.URDF = self.PKG + 'urdf/{robotName}.urdf'
+            self.PKG = f"{base_path}/../../resources/urdfs/{robotName}/"
+            self.URDF = f"{self.PKG}urdf/{robotName}.urdf"
 
         self.FEET = self.PKG + 'robot_data.yaml'
         if self.PKG is None:
@@ -181,7 +182,7 @@ class robotKinematics():
             q = np.hstack([q, q_leg])
             self.feet_jac.append(foot_jac)
 
-
+        stance_idx = np.array(stance_idx, dtype=int)  # Ensure stance_index is an array of integers
         number_of_stance_feet = np.shape(stance_idx)[0]
         are_stance_feet_in_workspace = np.full((1, number_of_stance_feet), False, dtype=bool)[0]
         previous_flag = True
@@ -218,8 +219,10 @@ class robotKinematics():
                or not np.all(np.greater_equal(q, joint_limits_min))
 
     def isOutOfWorkSpace(self, contactsBF_check, joint_limits_max, joint_limits_min, stance_index, foot_vel):
+        stance_index = np.array(stance_index, dtype=int)  # Ensure stance_index is an array of integers
         q, ik_success = self.fixedBaseInverseKinematics(contactsBF_check, stance_index)
-        out = self.isOutOfJointLims(q, joint_limits_max, joint_limits_min)
+        q_to_check = np.concatenate([q[leg * 3: leg * 3 + 3] for leg in stance_index])
+        out = self.isOutOfJointLims(q_to_check, joint_limits_max, joint_limits_min)
         if not out:
             self.q = q
 

@@ -6,7 +6,7 @@ import torch.utils.data as utils
 
 
 class DataParser:
-    def __init__(self, filename=None, delimiter=',', dtype=np.float, in_dim=40):
+    def __init__(self, filename=None, delimiter=',', dtype=float, in_dim=40):
         self._filename = filename
         self._delimiter = delimiter
         self._dtype = dtype

@@ -137,8 +137,9 @@ class NonlinearProjectionBretl:
 			c_t = np.append(c_t_xy, z_coordinate)
 			contactsBF = self.getcontactsBF(params, c_t)
 			q = self.kin.inverse_kin(contactsBF, foot_vel, q_0)
-			q_to_check = np.concatenate([list(q[leg*3 : leg*3+3]) for leg in stanceIndex]) # To check 3 or 4 feet stance
-
+			stanceIndex = np.array(stanceIndex, dtype=int)  # Ensure stance_index is an array of integers
+			q_to_check = np.concatenate([q[leg * 3: leg * 3 + 3] for leg in stanceIndex])  # To check 3 or 4 feet stance
+      
 			# if (not self.kin.hyqreal_ik_success) or self.kin.isOutOfJointLims(q, params.getJointLimsMax(), params.getJointLimsMin()):
 			if (not self.kin.hyqreal_ik_success) or \
 					self.kin.isOutOfJointLims(q_to_check, params.getJointLimsMax()[stanceIndex,:],

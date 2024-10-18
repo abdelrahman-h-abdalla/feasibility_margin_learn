@@ -61,9 +61,9 @@ def computation(i, q):
     success = False
 
     # Extract only stance feet positions and normals for saving database
-    stance_feet_indices = [i for i, val in enumerate(stance_feet_list) if val == 1]
+    stance_feet_indices = [it for it, val in enumerate(stance_feet_list) if val == 1]
     stance_feet_pos = feet_pos[stance_feet_indices]
-    stance_cotact_normals = [feet_contact_normals[i] for i in stance_feet_indices]
+    stance_cotact_normals = [feet_contact_normals[it] for it in stance_feet_indices]
     try:
         stability_margin = compute_stability(
             comp_dyn=comp_dyn,
@@ -93,11 +93,11 @@ def computation(i, q):
             np.array([friction]).flatten(),
             np.array(stance_cotact_normals).flatten(),
         ])
-        parameters = np.array(parameters, dtype=np.float)
+        parameters = np.array(parameters, dtype=float)
         results = np.concatenate([
             np.array([stability_margin]).flatten()
         ])
-        results = np.array(results, dtype=np.float)
+        results = np.array(results, dtype=float)
 
         successes.value += 1
         success = True

@@ -75,7 +75,7 @@ class MultiLayerPerceptron(nn.Module):
         self._dropout = nn.Dropout(p=min(max(0, p), 1))
 
     def load_params_from_txt(self, file_path):
-        loaded_params = np.loadtxt(file_path, delimiter=', ')
+        loaded_params = np.loadtxt(file_path, delimiter=',')
 
         network_params = []
         iterator = 0
