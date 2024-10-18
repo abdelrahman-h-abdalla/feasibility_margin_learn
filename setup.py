@@ -13,10 +13,11 @@ setup(
         'pandas',
         'matplotlib',
         'scipy',
-        'tensorboard==2.4.1',
-	'protobuf==3.19.6',
+        'tensorboard==2.18.0',
+	    'protobuf==3.19.6',
         'seaborn',
         'transforms3d==0.3.1',
-        'psutil'
+        'psutil',
+        'wandb'
     ]
 )
