@@ -184,7 +184,7 @@ class TrainingDataset:
             training_data = data_parser.data()
 
             # Compute rotation matrix (from base to world) from roll/pitch/yaw - Intrinsic rotations.
-            rotation_matrices = R.from_euler('XYZ', training_data[:, :3], degrees=False).as_dcm() # 
+            rotation_matrices = R.from_euler('XYZ', training_data[:, :3], degrees=False).as_matrix() # 
             rotation_matrices_inv = np.transpose(rotation_matrices, (0, 2, 1))
 
             # Convert to the base frame, assuming CoM is always in origin of WF

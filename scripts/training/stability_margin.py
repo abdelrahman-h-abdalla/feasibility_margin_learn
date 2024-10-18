@@ -81,7 +81,7 @@ def main_train(config=None, stance_legs_str=None):
         config = wandb.config  # Convert to WandB config
     run_name = run.name
 
-    model_save_dir = paths.TRAINED_MODELS_PATH + '/' + data_folder + '/' + paths.INIT_DATETIME_STR
+    model_save_dir = paths.TRAINED_MODELS_PATH + '/' + data_folder_name + '/' + paths.INIT_DATETIME_STR
     try:
         os.makedirs(model_save_dir)
     except OSError:
