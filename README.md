@@ -69,3 +69,12 @@ python utility/model_to_txt_converter.py
 
 ## Author(s)
 * Siddhant Gangapurwala <siddhant@gangapurwala.com>
+* Abdelrahman Abdalla <abdulrahman.h.abdallah@gmail.com>
+  
+
+## Installation Errors
+You might need to set the PYTHONPATH to your Conda environment's site-packages
+```
+export PYTHONPATH=/path/to/miniconda3/envs/your-env/lib/pythonX.Y/site-packages
+
+```
